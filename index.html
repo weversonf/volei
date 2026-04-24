@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Juiz de Vôlei v08</title>
+    <title>Vôlei v09</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -90,7 +90,7 @@
         <div id="create-view" class="glass-card rounded-3xl p-7 animate-fade-in">
             <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b border-gray-200/50 pb-3">Novo Jogo</h2>
             <form id="create-form" class="space-y-4">
-                <input type="text" id="input-location" required class="w-full px-4 py-3 bg-white/60 border border-white/50 rounded-2xl focus:bg-white focus:outline-none" placeholder="Nome do Jogo (Ex: Vôlei do Augusto)">
+                <input type="text" id="input-location" required class="w-full px-4 py-3 bg-white/60 border border-white/50 rounded-2xl focus:bg-white focus:outline-none font-medium" placeholder="Nome do Jogo (Ex: Vôlei do Augusto)">
                 <input type="text" id="input-address" required class="w-full px-4 py-3 bg-white/60 border border-white/50 rounded-2xl focus:bg-white focus:outline-none" placeholder="Endereço para o GPS">
                 <div class="grid grid-cols-2 gap-3">
                     <input type="datetime-local" id="input-datetime" required class="w-full px-4 py-3 bg-white/60 border border-white/50 rounded-2xl focus:bg-white focus:outline-none text-sm">
@@ -142,7 +142,7 @@
             <div id="tab-content-score" class="glass-card rounded-3xl p-6 hidden">
                 <div class="flex flex-col gap-3 mb-6">
                     <div class="flex justify-between items-center bg-white/60 p-3 rounded-2xl border border-white/50">
-                        <span class="text-xs font-bold text-gray-600">FECHA SET EM:</span>
+                        <span class="text-xs font-bold text-gray-600 uppercase">Fecha set em:</span>
                         <select id="config-max-score" class="bg-white border rounded-xl px-2 py-1 text-sm font-black text-orange-600">
                             <option value="15">15 Pontos</option><option value="21">21 Pontos</option><option value="25">25 Pontos</option>
                         </select>
@@ -154,15 +154,15 @@
                 </div>
                 <div class="flex justify-between items-stretch gap-3 text-center">
                     <div class="flex-1 bg-white/60 rounded-2xl p-4 border border-white/50 relative shadow-sm">
-                        <div class="text-[10px] font-bold text-gray-500 mb-2">SETS: <span id="sets-a" class="text-orange-600">0</span></div>
-                        <input type="text" id="name-team-a" class="w-full text-center bg-transparent font-bold text-xs border-b border-gray-300 pb-1 mb-3 uppercase" value="VERMELHO">
+                        <div class="text-[10px] font-bold text-gray-500 mb-2 uppercase">Sets: <span id="sets-a" class="text-orange-600">0</span></div>
+                        <input type="text" id="name-team-a" class="w-full text-center bg-transparent font-bold text-xs border-b border-gray-300 pb-1 mb-3 uppercase focus:outline-none" value="VERMELHO">
                         <div class="text-6xl font-black text-gray-800 my-4" id="score-a">0</div>
                         <div class="flex gap-2"><button onclick="updateScore('A', -1)" class="flex-1 bg-red-100 text-red-600 py-3 rounded-xl">-</button><button onclick="updateScore('A', 1)" class="flex-[2] bg-green-500 text-white py-3 rounded-xl font-bold shadow-md">+</button></div>
                     </div>
                     <div class="flex items-center text-gray-300 font-black">X</div>
                     <div class="flex-1 bg-white/60 rounded-2xl p-4 border border-white/50 relative shadow-sm">
-                        <div class="text-[10px] font-bold text-gray-500 mb-2">SETS: <span id="sets-b" class="text-orange-600">0</span></div>
-                        <input type="text" id="name-team-b" class="w-full text-center bg-transparent font-bold text-xs border-b border-gray-300 pb-1 mb-3 uppercase" value="AZUL">
+                        <div class="text-[10px] font-bold text-gray-500 mb-2 uppercase">Sets: <span id="sets-b" class="text-orange-600">0</span></div>
+                        <input type="text" id="name-team-b" class="w-full text-center bg-transparent font-bold text-xs border-b border-gray-300 pb-1 mb-3 uppercase focus:outline-none" value="AZUL">
                         <div class="text-6xl font-black text-gray-800 my-4" id="score-b">0</div>
                         <div class="flex gap-2"><button onclick="updateScore('B', -1)" class="flex-1 bg-red-100 text-red-600 py-3 rounded-xl">-</button><button onclick="updateScore('B', 1)" class="flex-[2] bg-green-500 text-white py-3 rounded-xl font-bold shadow-md">+</button></div>
                     </div>
@@ -225,6 +225,42 @@
         const toastEl = document.getElementById('toast');
         const toastMsg = document.getElementById('toast-msg');
 
+        // FUNÇÕES GLOBAIS (CONECTADAS AOS BOTÕES DO HTML)
+        window.updateScore = async (team, amt) => {
+            if(!currentEventId || !localEventData) return;
+            const field = team === 'A' ? 'scoreA' : 'scoreB';
+            const setField = team === 'A' ? 'setsA' : 'setsB';
+            let cur = (localEventData[field] || 0) + amt;
+            if(cur < 0) cur = 0;
+            
+            const max = parseInt(document.getElementById('config-max-score').value);
+            const other = team === 'A' ? (localEventData.scoreB || 0) : (localEventData.scoreA || 0);
+
+            if(cur >= max && (cur - other) >= 2) {
+                await updateDoc(doc(db, 'volei_events', currentEventId), { scoreA:0, scoreB:0, [setField]: increment(1) });
+                showToast("Fim de Set!");
+            } else {
+                await updateDoc(doc(db, 'volei_events', currentEventId), { [field]: cur });
+            }
+        };
+
+        window.resetScore = async () => {
+            if(!currentEventId) return;
+            if(confirm("Deseja ZERAR OS PONTOS E OS SETS desta partida?")) {
+                try {
+                    await updateDoc(doc(db, 'volei_events', currentEventId), {
+                        scoreA: 0, scoreB: 0, setsA: 0, setsB: 0
+                    });
+                    showToast("Partida zerada!");
+                } catch(e) { showToast("Erro ao zerar."); }
+            }
+        };
+
+        window.removePlayer = async (id) => {
+            const p = localEventData.participants.find(x => x.entryId === id);
+            await updateDoc(doc(db, 'volei_events', currentEventId), { participants: arrayRemove(p) });
+        };
+
         // Modal Logic
         const openEdit = () => {
             document.getElementById('modal-edit-title').value = localEventData.location;
@@ -232,6 +268,7 @@
             editModal.style.display = 'flex';
         };
         const closeEdit = () => editModal.style.display = 'none';
+
         document.getElementById('modal-save').onclick = async () => {
             const newTitle = document.getElementById('modal-edit-title').value.trim();
             const newAddr = document.getElementById('modal-edit-address').value.trim();
@@ -245,7 +282,7 @@
         document.getElementById('modal-close-bg').onclick = closeEdit;
         document.getElementById('btn-open-edit').onclick = openEdit;
 
-        // Tabs Logic
+        // Abas
         const switchTab = (tab) => {
             const isPlayers = tab === 'players';
             document.getElementById('tab-content-players').classList.toggle('hidden', !isPlayers);
@@ -269,7 +306,7 @@
                         else showView('create');
                     }
                 });
-            } catch (e) { showToast("Ative o login anônimo no Firebase."); }
+            } catch (e) { showToast("Erro no servidor."); }
         };
 
         const showView = (v) => {
@@ -290,28 +327,30 @@
 
         const renderEvent = (data) => {
             document.getElementById('main-title-text').innerText = data.location;
+            document.title = data.location;
             document.querySelector('#display-address-text span').innerText = data.address || 'Sem endereço';
             const encoded = encodeURIComponent(data.address);
             document.getElementById('link-maps').href = `https://www.google.com/maps/search/?api=1&query=${encoded}`;
             document.getElementById('link-waze').href = `https://waze.com/ul?q=${encoded}`;
             
-            const cost = new Intl.NumberFormat('pt-BR', {style:'currency', currency:'BRL'}).format(data.totalCost);
-            document.getElementById('display-total-cost').innerText = cost;
+            document.getElementById('display-total-cost').innerText = new Intl.NumberFormat('pt-BR', {style:'currency', currency:'BRL'}).format(data.totalCost);
             const p = data.participants || [];
             document.getElementById('display-person-cost').innerText = new Intl.NumberFormat('pt-BR', {style:'currency', currency:'BRL'}).format(data.totalCost / Math.max(1, p.length));
             document.getElementById('display-count').innerText = data.playerLimit ? `${p.length}/${data.playerLimit}` : p.length;
             
             if(data.playerLimit) {
                 document.getElementById('progress-container').classList.remove('hidden');
-                document.getElementById('progress-bar').style.width = (p.length / data.playerLimit * 100) + '%';
+                document.getElementById('progress-bar').style.width = Math.min(100, (p.length / data.playerLimit * 100)) + '%';
+            } else {
+                document.getElementById('progress-container').classList.add('hidden');
             }
 
             document.getElementById('participants-list').innerHTML = p.map((u) => `
                 <li class="flex items-center justify-between p-3 bg-white/80 rounded-2xl shadow-sm animate-pop">
-                    <span class="font-bold text-gray-700 ml-2">${u.name}</span>
-                    <button onclick="removePlayer('${u.entryId}')" class="text-red-400 p-2"><i class="fa-solid fa-trash-can"></i></button>
+                    <span class="font-bold text-gray-700 ml-2 uppercase truncate">${u.name}</span>
+                    <button onclick="removePlayer('${u.entryId}')" class="text-red-400 p-2 hover:text-red-600 transition-colors"><i class="fa-solid fa-trash-can"></i></button>
                 </li>
-            `).join('');
+            `).join('') || '<li class="text-center py-4 text-gray-400 text-sm italic">Nenhum jogador na lista.</li>';
 
             document.getElementById('score-a').innerText = data.scoreA || 0;
             document.getElementById('score-b').innerText = data.scoreB || 0;
@@ -328,9 +367,9 @@
                 const text = e.results[e.results.length - 1][0].transcript.toLowerCase();
                 const teamA = document.getElementById('name-team-a').value.toLowerCase();
                 const teamB = document.getElementById('name-team-b').value.toLowerCase();
-                if(text.includes('ponto')) {
-                    if(text.includes(teamA)) updateScore('A', 1);
-                    else if(text.includes(teamB)) updateScore('B', 1);
+                if(text.includes('ponto') || text.includes('marca')) {
+                    if(text.includes(teamA)) window.updateScore('A', 1);
+                    else if(text.includes(teamB)) window.updateScore('B', 1);
                 }
             };
             document.getElementById('btn-voice').onclick = () => {
@@ -340,31 +379,10 @@
                     btn.querySelector('span').innerText = "Ativar Juiz de Voz";
                 } else {
                     rec.start(); btn.classList.add('listening', 'bg-red-100', 'animate-pulse');
-                    btn.querySelector('span').innerText = "Ouvindo...";
+                    btn.querySelector('span').innerText = "Juiz Ouvindo...";
                 }
             };
         }
-
-        // Global Actions
-        window.updateScore = async (team, amt) => {
-            const field = team === 'A' ? 'scoreA' : 'scoreB';
-            const setField = team === 'A' ? 'setsA' : 'setsB';
-            let cur = (localEventData[field] || 0) + amt;
-            const max = parseInt(document.getElementById('config-max-score').value);
-            const other = team === 'A' ? (localEventData.scoreB || 0) : (localEventData.scoreA || 0);
-
-            if(cur >= max && (cur - other) >= 2) {
-                await updateDoc(doc(db, 'volei_events', currentEventId), { scoreA:0, scoreB:0, [setField]: increment(1) });
-                showToast("Fim de Set!");
-            } else {
-                await updateDoc(doc(db, 'volei_events', currentEventId), { [field]: cur < 0 ? 0 : cur });
-            }
-        };
-
-        window.removePlayer = async (id) => {
-            const p = localEventData.participants.find(x => x.entryId === id);
-            await updateDoc(doc(db, 'volei_events', currentEventId), { participants: arrayRemove(p) });
-        };
 
         document.getElementById('btn-join').onclick = async () => {
             const n = document.getElementById('input-name').value.trim();
@@ -377,22 +395,31 @@
 
         document.getElementById('create-form').onsubmit = async (e) => {
             e.preventDefault();
-            const ref = await addDoc(collection(db, 'volei_events'), {
-                location: document.getElementById('input-location').value,
-                address: document.getElementById('input-address').value,
-                totalCost: parseFloat(document.getElementById('input-total').value),
-                playerLimit: document.getElementById('check-unlimited').checked ? 0 : parseInt(document.getElementById('input-limit').value),
-                participants: [], scoreA:0, scoreB:0, setsA:0, setsB:0, maxScore: 25
-            });
-            window.location.href = `?id=${ref.id}`;
+            const btn = e.target.querySelector('button');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            try {
+                const ref = await addDoc(collection(db, 'volei_events'), {
+                    location: document.getElementById('input-location').value,
+                    address: document.getElementById('input-address').value,
+                    totalCost: parseFloat(document.getElementById('input-total').value),
+                    playerLimit: document.getElementById('check-unlimited').checked ? 0 : parseInt(document.getElementById('input-limit').value),
+                    participants: [], scoreA:0, scoreB:0, setsA:0, setsB:0, maxScore: 15, datetime: document.getElementById('input-datetime').value
+                });
+                window.location.href = `?id=${ref.id}`;
+            } catch(err) { showToast("Erro ao criar."); btn.disabled = false; }
         };
 
         document.getElementById('btn-share').onclick = () => {
             navigator.clipboard.writeText(window.location.href);
-            showToast("Link copiado!");
+            showToast("Link copiado para o WhatsApp!");
         };
 
-        const showToast = (m) => { toastMsg.innerText = m; toastEl.classList.add('show'); setTimeout(() => toastEl.classList.remove('show'), 3000); };
+        const showToast = (m) => { 
+            toastMsg.innerText = m; 
+            toastEl.classList.add('show'); 
+            setTimeout(() => toastEl.classList.remove('show'), 3000); 
+        };
 
         init();
     </script>
