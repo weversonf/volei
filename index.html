@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vôlei v15</title>
+    <title>Vôlei v16</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -44,7 +44,7 @@
         <div id="create-view" class="space-y-6">
             <div class="glass-card rounded-3xl p-6 animate-fade-in border-orange-200/50 border-2 shadow-lg">
                 <h3 class="text-xs font-bold text-orange-600 uppercase tracking-widest mb-3 flex items-center gap-2">
-                    <i class="fa-solid fa-magnifying-glass"></i> Já tem um código?
+                    <i class="fa-solid fa-magnifying-glass"></i> Código do Jogo
                 </h3>
                 <div class="flex gap-2">
                     <input type="text" id="input-search-id" class="flex-1 px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none uppercase font-mono text-sm tracking-widest" placeholder="EX: XS4567">
@@ -55,21 +55,18 @@
             <div class="glass-card rounded-3xl p-7 animate-fade-in">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3 uppercase tracking-tighter">Novo Jogo</h2>
                 <form id="create-form" class="space-y-4">
-                    <input type="text" id="input-location" required class="w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Nome do Jogo">
-                    <input type="text" id="input-address" required class="w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Endereço">
-                    <input type="text" id="input-group-link" class="w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-green-500 outline-none" placeholder="Link do Grupo de WhatsApp">
-                    
+                    <input type="text" id="input-location" required class="w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none font-medium" placeholder="Nome do Jogo (Ex: Vôlei do Augusto)">
+                    <input type="text" id="input-address" required class="w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Endereço GPS">
+                    <input type="text" id="input-group-link" class="w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-green-500 outline-none font-medium" placeholder="Link do Grupo de WhatsApp (Opcional)">
                     <div class="grid grid-cols-2 gap-3">
                         <input type="datetime-local" id="input-datetime" required class="w-full px-4 py-3 border rounded-2xl text-sm focus:outline-none">
                         <input type="number" step="0.01" id="input-total" required class="w-full px-4 py-3 border rounded-2xl focus:outline-none" placeholder="Valor Total R$">
                     </div>
-
                     <div class="flex items-center justify-between px-1">
                         <label class="text-sm font-semibold text-gray-700">Limite de Jogadores</label>
-                        <input type="checkbox" id="check-unlimited" checked class="w-6 h-6 text-orange-500 rounded-lg cursor-pointer">
+                        <input type="checkbox" id="check-unlimited" checked class="w-6 h-6 text-orange-500 rounded-lg">
                     </div>
                     <input type="number" min="2" id="input-limit" class="w-full px-4 py-3 bg-gray-100 border rounded-2xl opacity-60" placeholder="Máximo" disabled>
-                    
                     <button type="submit" class="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold py-4 rounded-2xl shadow-lg uppercase tracking-widest mt-4">Criar Partida</button>
                 </form>
             </div>
@@ -83,19 +80,18 @@
                     <i class="fa-solid fa-location-dot text-orange-500 mr-1"></i> <span>Endereço...</span>
                 </p>
 
-                <div class="flex items-center gap-3 mb-6 overflow-x-auto pb-2 no-scrollbar">
+                <div class="flex items-center gap-3 mb-6">
                     <div class="h-11 px-4 bg-orange-100 border border-orange-200 rounded-2xl flex flex-col items-center justify-center shrink-0 shadow-sm">
                         <span class="text-[8px] uppercase font-bold text-orange-400 leading-none">CÓDIGO</span>
                         <span class="text-xs font-mono font-black text-orange-700 tracking-tighter" id="display-game-id">--0000</span>
                     </div>
-
-                    <a id="link-maps" target="_blank" class="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm border border-gray-100 text-blue-600 active:scale-90 shrink-0"><i class="fa-solid fa-map-location-dot text-lg"></i></a>
-                    <a id="link-waze" target="_blank" class="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm border border-gray-100 text-cyan-500 active:scale-90 shrink-0"><i class="fa-brands fa-waze text-xl"></i></a>
-                    <button id="btn-calendar" class="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm border border-gray-100 text-orange-500 active:scale-90 shrink-0"><i class="fa-regular fa-calendar-plus text-lg"></i></button>
+                    <a id="link-maps" target="_blank" class="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm border border-gray-100 text-blue-600 active:scale-90"><i class="fa-solid fa-map-location-dot text-lg"></i></a>
+                    <a id="link-waze" target="_blank" class="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm border border-gray-100 text-cyan-500 active:scale-90"><i class="fa-brands fa-waze text-xl"></i></a>
+                    <button id="btn-calendar" class="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm border border-gray-100 text-orange-500 active:scale-90"><i class="fa-regular fa-calendar-plus text-lg"></i></button>
                 </div>
 
                 <div class="bg-white/40 rounded-2xl p-4 flex justify-between items-center border border-white/50">
-                    <div><p class="text-[10px] uppercase font-bold text-gray-500">Total</p><p class="font-bold text-gray-800" id="display-total-cost">R$ 0,00</p></div>
+                    <div><p class="text-[10px] uppercase font-bold text-gray-500">Valor Total</p><p class="font-bold text-gray-800" id="display-total-cost">R$ 0,00</p></div>
                     <div class="text-right"><p class="text-[10px] uppercase font-bold text-gray-500">Por Pessoa</p><p class="font-black text-green-600 text-2xl" id="display-person-cost">R$ 0,00</p></div>
                 </div>
             </div>
@@ -106,24 +102,24 @@
             </div>
 
             <div id="tab-content-players" class="glass-card rounded-3xl p-6 block animate-pop">
-                <div class="flex justify-between items-end mb-4"><h3 class="text-xl font-bold text-gray-800">Lista de Presença</h3><span id="display-count" class="bg-orange-500 text-white text-sm font-bold px-3 py-1 rounded-xl shadow-md">0</span></div>
+                <div class="flex justify-between items-end mb-4"><h3 class="text-xl font-bold text-gray-800">Presença</h3><span id="display-count" class="bg-orange-500 text-white text-sm font-bold px-3 py-1 rounded-xl shadow-md">0</span></div>
                 <div id="progress-container" class="w-full bg-white/50 rounded-full h-3 mb-5 hidden overflow-hidden shadow-inner"><div id="progress-bar" class="bg-gradient-to-r from-yellow-400 to-orange-500 h-full"></div></div>
                 <ul id="participants-list" class="space-y-2 mb-6 max-h-[300px] overflow-y-auto pr-1"></ul>
                 <div id="action-area" class="border-t pt-5">
                     <div id="join-form-area" class="flex gap-2">
-                        <input type="text" id="input-name" class="flex-1 px-4 py-3 bg-white border-0 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none shadow-inner" placeholder="Nome de quem vai...">
+                        <input type="text" id="input-name" class="flex-1 px-4 py-3 bg-white border-0 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none shadow-inner" placeholder="Nome...">
                         <button id="btn-join" class="bg-green-500 text-white font-bold px-6 rounded-2xl shadow-lg active:scale-95 transition-transform"><i class="fa-solid fa-plus"></i></button>
                     </div>
-                    <a id="btn-join-group" target="_blank" class="hidden w-full mt-4 bg-green-500 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-xl hover:brightness-110 transition-all border-b-4 border-green-700 uppercase text-[10px] tracking-widest"><i class="fa-brands fa-whatsapp text-xl"></i> GRUPO DO ZAP</a>
+                    <a id="btn-join-group" target="_blank" class="hidden w-full mt-4 bg-green-500 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-xl hover:brightness-110 transition-all border-b-4 border-green-700 uppercase text-[10px] tracking-widest"><i class="fa-brands fa-whatsapp text-xl"></i> Grupo do Vôlei</a>
                 </div>
             </div>
 
             <div id="tab-content-score" class="glass-card rounded-3xl p-6 hidden text-center animate-pop">
-                <div class="flex justify-between items-center mb-6 bg-white/60 p-3 rounded-2xl border border-white/50"><span class="text-xs font-bold text-gray-600 uppercase tracking-widest">Set Fecha em:</span><select id="config-max-score" class="bg-white border rounded-xl px-2 py-1 text-sm font-black text-orange-600 focus:outline-none"><option value="15">15 pts</option><option value="21">21 pts</option><option value="25">25 pts</option></select></div>
+                <div class="flex justify-between items-center mb-6 bg-white/60 p-3 rounded-2xl border border-white/50"><span class="text-xs font-bold text-gray-600 uppercase">Set Fecha em:</span><select id="config-max-score" class="bg-white border rounded-xl px-2 py-1 text-sm font-black text-orange-600 focus:outline-none"><option value="15">15 pts</option><option value="21">21 pts</option><option value="25">25 pts</option></select></div>
                 <div class="flex justify-between items-stretch gap-3">
-                    <div class="flex-1 bg-white/60 rounded-2xl p-4 shadow-sm border border-white/40"><div class="text-[10px] font-bold text-gray-400 mb-2 uppercase">Sets: <span id="sets-a" class="text-orange-600 text-sm">0</span></div><input type="text" id="name-team-a" class="w-full text-center bg-transparent font-bold text-xs border-b mb-3 focus:outline-none uppercase" value="TIME A"><div class="text-6xl font-black text-gray-800 my-4" id="score-a">0</div><div class="flex gap-2"><button onclick="updateScore('A', -1)" class="flex-1 bg-red-100 text-red-600 py-3 rounded-xl">-</button><button onclick="updateScore('A', 1)" class="flex-[2] bg-green-500 text-white py-3 rounded-xl font-bold shadow-md active:scale-95 transition-all">+</button></div></div>
+                    <div class="flex-1 bg-white/60 rounded-2xl p-4 shadow-sm border border-white/40"><div class="text-[10px] font-bold text-gray-400 mb-2 uppercase">Sets: <span id="sets-a" class="text-orange-600 text-sm">0</span></div><input type="text" id="name-team-a" class="w-full text-center bg-transparent font-bold text-xs border-b mb-3 focus:outline-none uppercase" value="TIME A"><div class="text-6xl font-black text-gray-800 my-4" id="score-a">0</div><div class="flex gap-2"><button onclick="updateScore('A', -1)" class="flex-1 bg-red-100 text-red-600 py-3 rounded-xl">-</button><button onclick="updateScore('A', 1)" class="flex-[2] bg-green-500 text-white py-3 rounded-xl font-bold shadow-md">+</button></div></div>
                     <div class="flex items-center text-gray-300 font-black">X</div>
-                    <div class="flex-1 bg-white/60 rounded-2xl p-4 shadow-sm border border-white/40"><div class="text-[10px] font-bold text-gray-400 mb-2 uppercase">Sets: <span id="sets-b" class="text-orange-600 text-sm">0</span></div><input type="text" id="name-team-b" class="w-full text-center bg-transparent font-bold text-xs border-b mb-3 focus:outline-none uppercase" value="TIME B"><div class="text-6xl font-black text-gray-800 my-4" id="score-b">0</div><div class="flex gap-2"><button onclick="updateScore('B', -1)" class="flex-1 bg-red-100 text-red-600 py-3 rounded-xl">-</button><button onclick="updateScore('B', 1)" class="flex-[2] bg-blue-500 text-white py-3 rounded-xl font-bold shadow-md active:scale-95 transition-all">+</button></div></div>
+                    <div class="flex-1 bg-white/60 rounded-2xl p-4 shadow-sm border border-white/40"><div class="text-[10px] font-bold text-gray-400 mb-2 uppercase">Sets: <span id="sets-b" class="text-orange-600 text-sm">0</span></div><input type="text" id="name-team-b" class="w-full text-center bg-transparent font-bold text-xs border-b mb-3 focus:outline-none uppercase" value="TIME B"><div class="text-6xl font-black text-gray-800 my-4" id="score-b">0</div><div class="flex gap-2"><button onclick="updateScore('B', -1)" class="flex-1 bg-red-100 text-red-600 py-3 rounded-xl">-</button><button onclick="updateScore('B', 1)" class="flex-[2] bg-blue-500 text-white py-3 rounded-xl font-bold shadow-md">+</button></div></div>
                 </div>
                 <div class="mt-6"><button onclick="resetScore()" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest hover:text-red-500 transition-colors"><i class="fa-solid fa-rotate-left mr-1"></i> Zerar Partida</button></div>
             </div>
@@ -132,7 +128,7 @@
 
     <div id="edit-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4" style="background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);">
         <div class="glass-card w-full max-w-sm rounded-3xl p-6 relative animate-pop shadow-2xl">
-            <h3 class="text-xl font-bold mb-4 flex items-center gap-2"><i class="fa-solid fa-gear text-orange-500"></i> Ajustar Detalhes</h3>
+            <h3 class="text-xl font-bold mb-4 flex items-center gap-2"><i class="fa-solid fa-gear text-orange-500"></i> Ajustar Jogo</h3>
             <div class="space-y-3">
                 <input type="text" id="modal-edit-title" class="w-full px-4 py-3 border rounded-2xl focus:outline-none" placeholder="Nome do Jogo">
                 <input type="text" id="modal-edit-address" class="w-full px-4 py-3 border rounded-2xl focus:outline-none" placeholder="Endereço">
@@ -153,11 +149,10 @@
         let db, auth, currentUser, currentEventId, localEventData;
         const urlParams = new URLSearchParams(window.location.search);
         
-        // --- CORREÇÃO DE COMPATIBILIDADE ---
+        // --- LOGICA DE COMPATIBILIDADE ---
         const rawId = urlParams.get('id');
         if (rawId) {
-            // Se for padrão novo (6 dígitos), deixa maiúsculo. 
-            // Se for padrão antigo (Firebase longo), deixa original.
+            // Se for o ID curto (6 dígitos), força maiúsculo. Se for o longo antigo, deixa exatamente como está.
             currentEventId = (rawId.length === 6) ? rawId.toUpperCase() : rawId;
         }
 
@@ -180,7 +175,7 @@
         document.getElementById('btn-calendar').onclick = () => {
             if(!localEventData) return;
             const startStr = localEventData.datetime.replace(/-/g, '').replace(/:/g, '') + '00';
-            const googleUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(localEventData.location)}&dates=${startStr}/${startStr}&details=${encodeURIComponent('Link: '+window.location.href)}&location=${encodeURIComponent(localEventData.address)}`;
+            const googleUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(localEventData.location)}&dates=${startStr}/${startStr}&details=${encodeURIComponent('Link do Jogo: '+window.location.href)}&location=${encodeURIComponent(localEventData.address)}`;
             window.open(googleUrl, '_blank');
         };
 
@@ -208,7 +203,7 @@
             const entryId = Math.random().toString(36).substr(2, 9);
             await updateDoc(doc(db, 'volei_events', currentEventId), { participants: arrayUnion({ entryId, name: n }) });
             document.getElementById('input-name').value = '';
-            showToast("Presença confirmada! 🏐");
+            showToast("Você está na lista!");
         };
 
         const init = async () => {
@@ -233,7 +228,7 @@
             document.querySelector('#display-address-text span').innerText = d.address;
             document.getElementById('display-game-id').innerText = currentEventId;
             const enc = encodeURIComponent(d.address);
-            document.getElementById('link-maps').href = `http://googleusercontent.com/maps.google.com/8{enc}`;
+            document.getElementById('link-maps').href = `http://googleusercontent.com/maps.google.com/9{enc}`;
             document.getElementById('link-waze').href = `https://waze.com/ul?q=${enc}`;
             const btnGroup = document.getElementById('btn-join-group');
             if(d.groupLink) { btnGroup.href = d.groupLink; btnGroup.classList.remove('hidden'); } else { btnGroup.classList.add('hidden'); }
@@ -273,7 +268,11 @@
             } catch(err) { showToast("Erro ao criar."); btn.disabled = false; }
         };
 
-        document.getElementById('btn-share').onclick = () => { navigator.clipboard.writeText(window.location.href); showToast("Link do Jogo Copiado! 🏐"); };
+        document.getElementById('btn-share').onclick = () => {
+            navigator.clipboard.writeText(window.location.href);
+            showToast("Link do jogo copiado! 🏐");
+        };
+
         const showToast = (m) => { toastMsg.innerText = m; toastEl.classList.add('show'); setTimeout(() => toastEl.classList.remove('show'), 3000); };
         init();
     </script>
