@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vôlei v13</title>
+    <title>Vôlei v14</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -15,14 +15,12 @@
         #create-view, #event-view, #loading-view, #edit-modal { display: none; }
         .toast { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: translateY(150%) translateX(-50%); opacity: 0; z-index: 1000; }
         .toast.show { transform: translateY(0) translateX(-50%); opacity: 1; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: rgba(249, 115, 22, 0.5); border-radius: 10px; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="text-gray-800 pb-12 overflow-x-hidden relative">
 
-    <div class="fixed top-10 right-10 w-32 h-32 bg-yellow-300 rounded-full blur-2xl opacity-60 pointer-events-none"></div>
+    <div class="fixed top-10 right-10 w-32 h-32 bg-yellow-300 rounded-full blur-2xl opacity-60 pointer-events-none animate-pulse-slow"></div>
 
     <header class="pt-10 pb-6 text-center relative z-10">
         <div class="flex items-center justify-center gap-3 px-4">
@@ -155,11 +153,12 @@
         let db, auth, currentUser, currentEventId, localEventData;
         const urlParams = new URLSearchParams(window.location.search);
         
-        // CORREÇÃO PARA ACEITAR ID ANTIGO E NOVO
+        // --- CORREÇÃO DE COMPATIBILIDADE ---
         const rawId = urlParams.get('id');
         if (rawId) {
-            // Se o ID for curto (XS4567), força maiúsculo. Se for o longo do Firebase, mantém original.
-            currentEventId = (rawId.length <= 6) ? rawId.toUpperCase() : rawId;
+            // Se for padrão novo (6 dígitos), deixa maiúsculo. 
+            // Se for padrão antigo (Firebase longo), deixa original.
+            currentEventId = (rawId.length === 6) ? rawId.toUpperCase() : rawId;
         }
 
         const viewLoading = document.getElementById('loading-view');
@@ -209,7 +208,7 @@
             const entryId = Math.random().toString(36).substr(2, 9);
             await updateDoc(doc(db, 'volei_events', currentEventId), { participants: arrayUnion({ entryId, name: n }) });
             document.getElementById('input-name').value = '';
-            showToast("Você está na lista! 🏐");
+            showToast("Presença confirmada! 🏐");
         };
 
         const init = async () => {
@@ -234,7 +233,7 @@
             document.querySelector('#display-address-text span').innerText = d.address;
             document.getElementById('display-game-id').innerText = currentEventId;
             const enc = encodeURIComponent(d.address);
-            document.getElementById('link-maps').href = `http://googleusercontent.com/maps.google.com/7{enc}`;
+            document.getElementById('link-maps').href = `http://googleusercontent.com/maps.google.com/8{enc}`;
             document.getElementById('link-waze').href = `https://waze.com/ul?q=${enc}`;
             const btnGroup = document.getElementById('btn-join-group');
             if(d.groupLink) { btnGroup.href = d.groupLink; btnGroup.classList.remove('hidden'); } else { btnGroup.classList.add('hidden'); }
@@ -274,7 +273,7 @@
             } catch(err) { showToast("Erro ao criar."); btn.disabled = false; }
         };
 
-        document.getElementById('btn-share').onclick = () => { navigator.clipboard.writeText(window.location.href); showToast("Link Copiado! 🏐"); };
+        document.getElementById('btn-share').onclick = () => { navigator.clipboard.writeText(window.location.href); showToast("Link do Jogo Copiado! 🏐"); };
         const showToast = (m) => { toastMsg.innerText = m; toastEl.classList.add('show'); setTimeout(() => toastEl.classList.remove('show'), 3000); };
         init();
     </script>
