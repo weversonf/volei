@@ -191,23 +191,15 @@
                 <ul id="participants-list" class="space-y-3 mb-6 max-h-[300px] overflow-y-auto pr-1"></ul>
 
                 <div id="action-area" class="border-t border-gray-200/50 pt-5">
+                    
                     <div id="join-form-area" class="animate-pop">
-                        <p class="text-sm font-semibold text-gray-700 mb-2 ml-1">Bora pro jogo?</p>
+                        <p class="text-sm font-semibold text-gray-700 mb-2 ml-1">Adicionar jogador:</p>
                         <div class="flex gap-2">
-                            <input type="text" id="input-name" class="flex-1 px-4 py-3 bg-white/80 border border-white/50 rounded-2xl focus:bg-white focus:ring-2 focus:ring-green-500 focus:outline-none text-base shadow-sm font-medium" placeholder="Digite seu nome">
-                            <button id="btn-join" class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-3 px-6 rounded-2xl transition-all transform hover:scale-105 shadow-md flex items-center gap-2">
-                                <i class="fa-solid fa-check"></i> Eu vou!
+                            <input type="text" id="input-name" class="flex-1 px-4 py-3 bg-white/80 border border-white/50 rounded-2xl focus:bg-white focus:ring-2 focus:ring-green-500 focus:outline-none text-base shadow-sm font-medium" placeholder="Nome do jogador">
+                            <button id="btn-join" class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-3 px-5 rounded-2xl transition-all transform hover:scale-105 shadow-md flex items-center gap-2">
+                                <i class="fa-solid fa-plus"></i> Add
                             </button>
                         </div>
-                    </div>
-                    
-                    <div id="already-joined-area" class="hidden text-center animate-pop bg-green-50/80 border border-green-200 p-4 rounded-2xl">
-                        <p class="text-green-600 font-bold text-lg mb-2 flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-circle-check text-2xl"></i> Presença Confirmada!
-                        </p>
-                        <button id="btn-leave" class="text-sm text-red-500 hover:text-red-700 font-bold hover:underline transition-colors mt-1">
-                            Cancelar minha presença
-                        </button>
                     </div>
 
                     <div id="full-area" class="hidden text-center p-4 bg-red-50/80 border border-red-200 rounded-2xl animate-pop">
@@ -270,7 +262,6 @@
                 });
             } catch (error) {
                 console.error("Firebase Error:", error);
-                
                 if (error.code === 'auth/configuration-not-found' || error.code === 'auth/operation-not-allowed') {
                     showToast("⚠️ Ative o Login Anônimo no Firebase!");
                     document.querySelector('#loading-view p').innerHTML = "Para funcionar, vá no painel do Firebase > Authentication > Sign-in method e ative o <b>Anônimo</b>.";
@@ -278,7 +269,6 @@
                     showToast("Erro ao iniciar o aplicativo.");
                     document.querySelector('#loading-view p').innerHTML = "Erro de conexão com o servidor.";
                 }
-                
                 const icon = document.querySelector('#loading-view i');
                 icon.classList.remove('animate-spin', 'fa-volleyball', 'text-white');
                 icon.classList.add('fa-triangle-exclamation', 'text-red-500');
@@ -373,34 +363,88 @@
             } else progCont.classList.add('hidden');
 
             const listEl = document.getElementById('participants-list');
-            listEl.innerHTML = participants.length ? '' : '<li class="text-center py-4 opacity-50">Ninguém ainda.</li>';
+            listEl.innerHTML = participants.length ? '' : '<li class="text-center py-4 opacity-50 font-medium">Ninguém ainda.</li>';
+            
             participants.forEach((p, i) => {
                 const li = document.createElement('li');
-                li.className = "animate-pop flex items-center gap-3 p-3 bg-white/80 rounded-2xl border border-white/60 shadow-sm";
-                li.innerHTML = `<div class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold text-xs">${i+1}</div><span class="font-bold truncate">${p.name}</span>`;
+                li.className = "animate-pop flex items-center justify-between p-3 bg-white/80 rounded-2xl border border-white/60 shadow-sm";
+                li.innerHTML = `
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold text-xs shrink-0">${i+1}</div>
+                        <span class="font-bold truncate text-gray-700">${p.name}</span>
+                    </div>
+                    <button data-entryid="${p.entryId}" class="btn-remove w-8 h-8 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors shrink-0" title="Remover jogador">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                `;
                 listEl.appendChild(li);
             });
 
-            const myP = participants.find(p => p.id === currentUser.uid);
-            document.getElementById('join-form-area').classList.toggle('hidden', !!myP || (data.playerLimit > 0 && participants.length >= data.playerLimit));
-            document.getElementById('already-joined-area').classList.toggle('hidden', !myP);
-            document.getElementById('full-area').classList.toggle('hidden', !!myP || data.playerLimit === 0 || participants.length < data.playerLimit);
+            const isFull = data.playerLimit > 0 && participants.length >= data.playerLimit;
+            document.getElementById('join-form-area').classList.toggle('hidden', isFull);
+            document.getElementById('full-area').classList.toggle('hidden', !isFull);
         };
 
+        // Adicionar jogador
         document.getElementById('btn-join').addEventListener('click', async () => {
-            const name = document.getElementById('input-name').value.trim();
-            if(!name) return showToast("Digite seu nome.");
-            await updateDoc(doc(db, 'volei_events', currentEventId), {
-                participants: arrayUnion({ id: currentUser.uid, name, ts: new Date().toISOString() })
-            });
-            showToast("Confirmado! 🏐");
+            const input = document.getElementById('input-name');
+            const name = input.value.trim();
+            if(!name) return showToast("Digite o nome do jogador.");
+            
+            const btn = document.getElementById('btn-join');
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+            // Gera um ID único para essa vaga específica (assim podemos excluir ela depois)
+            const entryId = Date.now().toString(36) + Math.random().toString(36).substring(2);
+
+            try {
+                await updateDoc(doc(db, 'volei_events', currentEventId), {
+                    participants: arrayUnion({ entryId: entryId, id: currentUser.uid, name: name, ts: new Date().toISOString() })
+                });
+                showToast(name + " confirmado! 🏐");
+                input.value = ''; // Limpa o campo para poder digitar o próximo nome
+            } catch (error) {
+                console.error(error);
+                showToast("Erro ao adicionar.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
         });
 
-        document.getElementById('btn-leave').addEventListener('click', async () => {
-            const snap = await getDoc(doc(db, 'volei_events', currentEventId));
-            const p = snap.data().participants.find(x => x.id === currentUser.uid);
-            await updateDoc(doc(db, 'volei_events', currentEventId), { participants: arrayRemove(p) });
-            showToast("Você saiu da lista.");
+        // Remover jogador (Delegação de evento na lista)
+        document.getElementById('participants-list').addEventListener('click', async (e) => {
+            const btnRemove = e.target.closest('.btn-remove');
+            if(!btnRemove) return;
+
+            const entryId = btnRemove.dataset.entryid;
+            
+            // Pega o botão para mostrar carregando (opcional, aqui só bloqueamos cliques rápidos)
+            btnRemove.style.opacity = '0.5';
+            btnRemove.disabled = true;
+
+            try {
+                const snap = await getDoc(doc(db, 'volei_events', currentEventId));
+                if(snap.exists()) {
+                    const data = snap.data();
+                    // Procura a vaga exata pelo ID gerado
+                    const participantToRem = data.participants.find(p => p.entryId === entryId);
+                    
+                    if(participantToRem) {
+                        await updateDoc(doc(db, 'volei_events', currentEventId), {
+                            participants: arrayRemove(participantToRem)
+                        });
+                        showToast("Jogador removido da lista.");
+                    }
+                }
+            } catch(error) {
+                console.error("Erro ao remover:", error);
+                showToast("Erro ao remover jogador.");
+                btnRemove.style.opacity = '1';
+                btnRemove.disabled = false;
+            }
         });
 
         document.getElementById('btn-share').addEventListener('click', () => {
