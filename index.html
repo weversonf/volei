@@ -11,13 +11,11 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            /* Degradê simulando Céu -> Mar -> Areia */
             background: linear-gradient(170deg, #38bdf8 0%, #0ea5e9 30%, #fde047 70%, #f97316 100%);
             background-attachment: fixed;
             min-height: 100vh;
         }
 
-        /* Efeito de Vidro Fosco (Glassmorphism) */
         .glass-card {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
@@ -26,7 +24,6 @@
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
 
-        /* Animações CSS */
         .animate-float {
             animation: float 3s ease-in-out infinite;
         }
@@ -46,7 +43,7 @@
 
         .animate-pop {
             animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            opacity: 0; /* Começa invisível para a animação assumir */
+            opacity: 0;
         }
         @keyframes popIn {
             0% { transform: scale(0.8); opacity: 0; }
@@ -57,35 +54,29 @@
             animation: pulse 3s infinite;
         }
 
-        /* Ocultar telas inicialmente */
         #create-view, #event-view, #loading-view {
             display: none;
         }
 
-        /* Toast de notificação */
         .toast {
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transform: translateY(150%);
+            transform: translateY(150%) translateX(-50%);
             opacity: 0;
         }
         .toast.show {
-            transform: translateY(0);
+            transform: translateY(0) translateX(-50%);
             opacity: 1;
         }
 
-        /* Scrollbar customizada para a lista */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(249, 115, 22, 0.5); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(249, 115, 22, 0.8); }
     </style>
 </head>
 <body class="text-gray-800 pb-12 overflow-x-hidden relative">
 
-    <!-- Decorações de Fundo (Sol) -->
     <div class="fixed top-10 right-10 w-32 h-32 bg-yellow-300 rounded-full blur-2xl opacity-60 pointer-events-none animate-pulse-slow"></div>
 
-    <!-- Header -->
     <header class="pt-10 pb-6 text-center">
         <h1 class="text-4xl font-bold text-white drop-shadow-lg flex items-center justify-center gap-3 cursor-pointer transition-transform hover:scale-105" onclick="window.location.href=window.location.pathname">
             <i class="fa-solid fa-volleyball text-yellow-300 animate-float drop-shadow-md"></i> 
@@ -96,7 +87,6 @@
 
     <main class="max-w-md mx-auto px-4 relative z-10">
         
-        <!-- Tela de Carregamento -->
         <div id="loading-view" class="text-center py-20 animate-fade-in">
             <div class="relative inline-block">
                 <i class="fa-solid fa-volleyball animate-spin text-6xl text-white drop-shadow-lg" style="animation-duration: 1.5s;"></i>
@@ -104,7 +94,6 @@
             <p class="mt-6 text-white font-semibold tracking-wider drop-shadow-md">AQUECENDO...</p>
         </div>
 
-        <!-- Tela 1: Criar Evento -->
         <div id="create-view" class="glass-card rounded-3xl p-7 animate-fade-in">
             <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center border-b border-gray-200/50 pb-3">
                 <i class="fa-solid fa-umbrella-beach text-orange-500 mr-3"></i> Novo Jogo
@@ -156,10 +145,7 @@
             </form>
         </div>
 
-        <!-- Tela 2: Visualizar Evento / Confirmar Presença -->
         <div id="event-view" class="space-y-5 animate-fade-in">
-            
-            <!-- Card de Info -->
             <div class="glass-card rounded-3xl p-6 relative">
                 <button id="btn-share" class="absolute top-5 right-5 bg-white text-orange-500 hover:bg-orange-500 hover:text-white p-3 rounded-full transition-all duration-300 shadow-md transform hover:scale-110 w-12 h-12 flex items-center justify-center" title="Compartilhar Link">
                     <i class="fa-solid fa-share-nodes text-lg"></i>
@@ -190,7 +176,6 @@
                 </div>
             </div>
 
-            <!-- Card de Confirmação e Lista -->
             <div class="glass-card rounded-3xl p-6">
                 <div class="flex justify-between items-end mb-5">
                     <h3 class="text-xl font-bold text-gray-800 flex items-center">
@@ -199,20 +184,13 @@
                     <span id="display-count" class="bg-orange-500 text-white text-sm font-bold px-3 py-1.5 rounded-xl shadow-sm">0</span>
                 </div>
 
-                <!-- Barra de progresso (se houver limite) -->
                 <div id="progress-container" class="w-full bg-white/50 rounded-full h-3 mb-5 border border-white/50 hidden overflow-hidden shadow-inner">
                     <div id="progress-bar" class="bg-gradient-to-r from-yellow-400 to-orange-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
                 </div>
 
-                <!-- Lista -->
-                <ul id="participants-list" class="space-y-3 mb-6 max-h-[300px] overflow-y-auto pr-1">
-                    <!-- Preenchido via JS -->
-                </ul>
+                <ul id="participants-list" class="space-y-3 mb-6 max-h-[300px] overflow-y-auto pr-1"></ul>
 
-                <!-- Área de Ação -->
                 <div id="action-area" class="border-t border-gray-200/50 pt-5">
-                    
-                    <!-- Formulário Entrar -->
                     <div id="join-form-area" class="animate-pop">
                         <p class="text-sm font-semibold text-gray-700 mb-2 ml-1">Bora pro jogo?</p>
                         <div class="flex gap-2">
@@ -223,7 +201,6 @@
                         </div>
                     </div>
                     
-                    <!-- Já Confirmado -->
                     <div id="already-joined-area" class="hidden text-center animate-pop bg-green-50/80 border border-green-200 p-4 rounded-2xl">
                         <p class="text-green-600 font-bold text-lg mb-2 flex items-center justify-center gap-2">
                             <i class="fa-solid fa-circle-check text-2xl"></i> Presença Confirmada!
@@ -233,7 +210,6 @@
                         </button>
                     </div>
 
-                    <!-- Lista Cheia -->
                     <div id="full-area" class="hidden text-center p-4 bg-red-50/80 border border-red-200 rounded-2xl animate-pop">
                         <p class="text-red-600 font-bold text-lg flex items-center justify-center gap-2">
                             <i class="fa-solid fa-ban text-xl"></i> Lista Cheia
@@ -243,360 +219,196 @@
                 </div>
             </div>
         </div>
-
     </main>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="toast fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-900/90 backdrop-blur-sm text-white px-5 py-3 rounded-2xl shadow-2xl text-sm z-50 flex items-center gap-3 font-medium border border-gray-700">
+    <div id="toast" class="toast fixed bottom-6 left-1/2 bg-gray-900/90 backdrop-blur-sm text-white px-5 py-3 rounded-2xl shadow-2xl text-sm z-50 flex items-center gap-3 font-medium border border-gray-700">
         <i class="fa-solid fa-bell text-orange-400 text-lg"></i>
         <span id="toast-msg">Mensagem</span>
     </div>
 
-    <!-- Firebase e Lógica -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, updateDoc, onSnapshot, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, collection, addDoc, getDoc, updateDoc, onSnapshot, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Variáveis Globais
+        const firebaseConfig = {
+            apiKey: "AIzaSyA3RQucgd5vMeJzZgZnC4Zim9hkFVVWXnw",
+            authDomain: "volei-3f30d.firebaseapp.com",
+            projectId: "volei-3f30d",
+            storageBucket: "volei-3f30d.firebasestorage.app",
+            messagingSenderId: "969073040869",
+            appId: "1:969073040869:web:c0f6005d98fae4144de30c"
+        };
+
         let db, auth, currentUser, currentEventId;
-        let eventUnsubscribe = null;
         const urlParams = new URLSearchParams(window.location.search);
         currentEventId = urlParams.get('id');
 
-        // UI Elements
         const viewLoading = document.getElementById('loading-view');
         const viewCreate = document.getElementById('create-view');
         const viewEvent = document.getElementById('event-view');
         const toastEl = document.getElementById('toast');
         const toastMsg = document.getElementById('toast-msg');
 
-        // Configuração Firebase Segura
-        const initFirebase = async () => {
+        const init = async () => {
             try {
-                const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-                
-                if (!firebaseConfig) throw new Error("Configuração ausente");
-
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
 
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
+                await signInAnonymously(auth);
 
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
                         currentUser = user;
                         if (currentEventId) {
-                            loadEventData(appId, currentEventId);
+                            loadEvent(currentEventId);
                         } else {
                             showView('create');
                         }
                     }
                 });
             } catch (error) {
-                console.error("Erro Firebase:", error);
-                showToast("Erro ao conectar ao servidor. Tente novamente.");
+                console.error("Firebase Error:", error);
+                
+                if (error.code === 'auth/configuration-not-found' || error.code === 'auth/operation-not-allowed') {
+                    showToast("⚠️ Ative o Login Anônimo no Firebase!");
+                    document.querySelector('#loading-view p').innerHTML = "Para funcionar, vá no painel do Firebase > Authentication > Sign-in method e ative o <b>Anônimo</b>.";
+                } else {
+                    showToast("Erro ao iniciar o aplicativo.");
+                    document.querySelector('#loading-view p').innerHTML = "Erro de conexão com o servidor.";
+                }
+                
+                const icon = document.querySelector('#loading-view i');
+                icon.classList.remove('animate-spin', 'fa-volleyball', 'text-white');
+                icon.classList.add('fa-triangle-exclamation', 'text-red-500');
             }
         };
 
-        // Utilitários de UI
         const showView = (view) => {
             viewLoading.style.display = 'none';
             viewCreate.style.display = 'none';
             viewEvent.style.display = 'none';
-
             if (view === 'create') viewCreate.style.display = 'block';
             if (view === 'event') viewEvent.style.display = 'block';
             if (view === 'loading') viewLoading.style.display = 'block';
         };
 
         let toastTimeout;
-        const showToast = (msg, duration = 3000) => {
+        const showToast = (msg) => {
             toastMsg.textContent = msg;
             toastEl.classList.add('show');
             clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => {
-                toastEl.classList.remove('show');
-            }, duration);
+            toastTimeout = setTimeout(() => toastEl.classList.remove('show'), 3000);
         };
 
-        const formatCurrency = (val) => {
-            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
-        };
+        const formatCurrency = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
 
-        const formatDate = (isoString) => {
-            const date = new Date(isoString);
-            return {
-                data: date.toLocaleDateString('pt-BR'),
-                hora: date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-            };
-        };
-
-        // Lógica de Formulário (Criar)
         const checkUnlimited = document.getElementById('check-unlimited');
         const inputLimit = document.getElementById('input-limit');
-        
         checkUnlimited.addEventListener('change', (e) => {
             inputLimit.disabled = e.target.checked;
             if(e.target.checked) {
                 inputLimit.value = '';
-                inputLimit.classList.add('opacity-60', 'bg-gray-100/50');
-                inputLimit.classList.remove('bg-white/60');
+                inputLimit.classList.add('opacity-60');
             } else {
-                inputLimit.classList.remove('opacity-60', 'bg-gray-100/50');
-                inputLimit.classList.add('bg-white/60');
+                inputLimit.classList.remove('opacity-60');
                 inputLimit.focus();
             }
         });
 
         document.getElementById('create-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(!currentUser) return;
-
             const btn = e.target.querySelector('button');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-volleyball fa-spin"></i> Preparando...';
-            btn.disabled = true;
-
-            const location = document.getElementById('input-location').value;
-            const datetime = document.getElementById('input-datetime').value;
-            const totalCost = parseFloat(document.getElementById('input-total').value);
-            const playerLimit = checkUnlimited.checked ? 0 : parseInt(document.getElementById('input-limit').value || 0);
-
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-            
-            try {
-                const eventsRef = collection(db, 'artifacts', appId, 'public', 'data', 'volei_events');
-                const docRef = await addDoc(eventsRef, {
-                    location,
-                    datetime,
-                    totalCost,
-                    playerLimit,
-                    organizerId: currentUser.uid,
-                    participants: [],
-                    createdAt: new Date().toISOString()
-                });
-
-                showToast("Jogo criado com sucesso!");
-                window.location.href = `?id=${docRef.id}`;
-            } catch (error) {
-                console.error("Erro ao criar:", error);
-                showToast("Erro ao criar jogo.");
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
-        });
-
-        // Lógica do Evento
-        const loadEventData = (appId, eventId) => {
-            if(!currentUser) return;
-            showView('loading');
-
-            const eventRef = doc(db, 'artifacts', appId, 'public', 'data', 'volei_events', eventId);
-            
-            eventUnsubscribe = onSnapshot(eventRef, (docSnap) => {
-                if (!docSnap.exists()) {
-                    showToast("Jogo não encontrado!");
-                    showView('create');
-                    return;
-                }
-                updateEventUI(docSnap.data(), eventId);
-                showView('event');
-            }, (error) => {
-                console.error("Erro no listener:", error);
-                showToast("Erro ao carregar dados.");
-            });
-        };
-
-        const updateEventUI = (data, eventId) => {
-            document.getElementById('display-location').textContent = data.location;
-            
-            const dtInfo = formatDate(data.datetime);
-            document.getElementById('display-date').textContent = dtInfo.data;
-            document.getElementById('display-time').textContent = dtInfo.hora;
-            document.getElementById('display-total-cost').textContent = formatCurrency(data.totalCost);
-
-            const participants = data.participants || [];
-            const isUnlimited = data.playerLimit === 0;
-            
-            const divider = Math.max(1, participants.length);
-            const costPerPerson = data.totalCost / divider;
-            document.getElementById('display-person-cost').textContent = formatCurrency(costPerPerson);
-
-            const countDisplay = document.getElementById('display-count');
-            countDisplay.textContent = isUnlimited ? `${participants.length} confirmados` : `${participants.length} / ${data.playerLimit}`;
-
-            const progContainer = document.getElementById('progress-container');
-            const progBar = document.getElementById('progress-bar');
-            if(!isUnlimited && data.playerLimit > 0) {
-                progContainer.classList.remove('hidden');
-                const pct = Math.min(100, (participants.length / data.playerLimit) * 100);
-                progBar.style.width = `${pct}%`;
-                
-                // Muda cor da barra se estiver cheia
-                if(pct >= 100) {
-                    progBar.classList.replace('from-yellow-400', 'from-red-500');
-                    progBar.classList.replace('to-orange-500', 'to-red-600');
-                } else {
-                    progBar.classList.replace('from-red-500', 'from-yellow-400');
-                    progBar.classList.replace('to-red-600', 'to-orange-500');
-                }
-            } else {
-                progContainer.classList.add('hidden');
-            }
-
-            const listEl = document.getElementById('participants-list');
-            listEl.innerHTML = '';
-            
-            if (participants.length === 0) {
-                listEl.innerHTML = '<li class="text-sm font-medium text-gray-500 text-center py-6 bg-white/40 rounded-2xl border border-white/40 border-dashed animate-pop">Ninguém confirmou ainda. Seja o primeiro a sacar! 🏐</li>';
-            } else {
-                participants.forEach((p, idx) => {
-                    const li = document.createElement('li');
-                    // Efeito visual com delay para parecer que estão entrando
-                    li.style.animationDelay = `${idx * 0.05}s`;
-                    li.className = "animate-pop flex items-center gap-4 p-3 bg-white/80 rounded-2xl border border-white/60 shadow-sm transition-transform hover:scale-[1.02]";
-                    
-                    const isMe = p.id === currentUser.uid;
-                    
-                    li.innerHTML = `
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br ${isMe ? 'from-green-400 to-emerald-500 text-white' : 'from-orange-100 to-orange-200 text-orange-600'} flex items-center justify-center font-bold text-sm shadow-inner shrink-0">
-                            ${idx + 1}
-                        </div>
-                        <span class="font-bold text-gray-700 text-base truncate ${isMe ? 'text-green-700' : ''}">${p.name}</span>
-                        ${isMe ? '<span class="ml-auto text-xs bg-green-100 text-green-700 font-bold px-2 py-1 rounded-lg shrink-0">VOCÊ</span>' : ''}
-                    `;
-                    listEl.appendChild(li);
-                });
-            }
-
-            const myParticipation = participants.find(p => p.id === currentUser.uid);
-            const isFull = !isUnlimited && participants.length >= data.playerLimit;
-
-            const areaJoin = document.getElementById('join-form-area');
-            const areaJoined = document.getElementById('already-joined-area');
-            const areaFull = document.getElementById('full-area');
-
-            areaJoin.classList.add('hidden');
-            areaJoined.classList.add('hidden');
-            areaFull.classList.add('hidden');
-
-            if (myParticipation) {
-                areaJoined.classList.remove('hidden');
-                document.getElementById('btn-leave').dataset.name = myParticipation.name;
-            } else if (isFull) {
-                areaFull.classList.remove('hidden');
-            } else {
-                areaJoin.classList.remove('hidden');
-            }
-        };
-
-        // Ações de Botões
-        document.getElementById('btn-join').addEventListener('click', async () => {
-            const inputName = document.getElementById('input-name');
-            const name = inputName.value.trim();
-            
-            if(!name) {
-                showToast("Digite seu nome para confirmar.");
-                inputName.focus();
-                return;
-            }
-
-            if(!currentUser || !currentEventId) return;
-
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-            const eventRef = doc(db, 'artifacts', appId, 'public', 'data', 'volei_events', currentEventId);
-            
-            const btn = document.getElementById('btn-join');
-            const origHTML = btn.innerHTML;
             btn.disabled = true;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
             try {
-                await updateDoc(eventRef, {
-                    participants: arrayUnion({
-                        id: currentUser.uid,
-                        name: name,
-                        timestamp: new Date().toISOString()
-                    })
+                const docRef = await addDoc(collection(db, 'volei_events'), {
+                    location: document.getElementById('input-location').value,
+                    datetime: document.getElementById('input-datetime').value,
+                    totalCost: parseFloat(document.getElementById('input-total').value),
+                    playerLimit: checkUnlimited.checked ? 0 : parseInt(document.getElementById('input-limit').value),
+                    participants: [],
+                    createdAt: new Date().toISOString()
                 });
-                showToast("Bora pro jogo! Presença confirmada. 🏐");
-                inputName.value = '';
-            } catch(e) {
-                console.error("Erro ao entrar:", e);
-                showToast("Erro ao confirmar presença.");
+                window.location.href = `?id=${docRef.id}`;
+            } catch (err) {
+                showToast("Erro ao criar jogo.");
                 btn.disabled = false;
-                btn.innerHTML = origHTML;
             }
         });
 
-        document.getElementById('btn-leave').addEventListener('click', async (e) => {
-            if(!currentUser || !currentEventId) return;
-            
-            const myName = e.target.dataset.name;
-            if(!myName) return;
-
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-            const eventRef = doc(db, 'artifacts', appId, 'public', 'data', 'volei_events', currentEventId);
-            
-            try {
-                const docSnap = await getDoc(eventRef);
-                if(docSnap.exists()) {
-                    const data = docSnap.data();
-                    const participantToRem = data.participants.find(p => p.id === currentUser.uid);
-                    
-                    if(participantToRem) {
-                        await updateDoc(eventRef, {
-                            participants: arrayRemove(participantToRem)
-                        });
-                        showToast("Você saiu da lista.");
-                    }
+        const loadEvent = (eventId) => {
+            showView('loading');
+            onSnapshot(doc(db, 'volei_events', eventId), (snap) => {
+                if (!snap.exists()) {
+                    showToast("Jogo não encontrado.");
+                    showView('create');
+                    return;
                 }
-            } catch(error) {
-                console.error("Erro ao sair:", error);
-                showToast("Erro ao sair da lista.");
-            }
+                renderEvent(snap.data());
+                showView('event');
+            });
+        };
+
+        const renderEvent = (data) => {
+            document.getElementById('display-location').textContent = data.location;
+            const dt = new Date(data.datetime);
+            document.getElementById('display-date').textContent = dt.toLocaleDateString('pt-BR');
+            document.getElementById('display-time').textContent = dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('display-total-cost').textContent = formatCurrency(data.totalCost);
+
+            const participants = data.participants || [];
+            const costPer = data.totalCost / Math.max(1, participants.length);
+            document.getElementById('display-person-cost').textContent = formatCurrency(costPer);
+
+            const countEl = document.getElementById('display-count');
+            countEl.textContent = data.playerLimit === 0 ? `${participants.length} pessoas` : `${participants.length} / ${data.playerLimit}`;
+
+            const progCont = document.getElementById('progress-container');
+            if(data.playerLimit > 0) {
+                progCont.classList.remove('hidden');
+                document.getElementById('progress-bar').style.width = `${(participants.length / data.playerLimit) * 100}%`;
+            } else progCont.classList.add('hidden');
+
+            const listEl = document.getElementById('participants-list');
+            listEl.innerHTML = participants.length ? '' : '<li class="text-center py-4 opacity-50">Ninguém ainda.</li>';
+            participants.forEach((p, i) => {
+                const li = document.createElement('li');
+                li.className = "animate-pop flex items-center gap-3 p-3 bg-white/80 rounded-2xl border border-white/60 shadow-sm";
+                li.innerHTML = `<div class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold text-xs">${i+1}</div><span class="font-bold truncate">${p.name}</span>`;
+                listEl.appendChild(li);
+            });
+
+            const myP = participants.find(p => p.id === currentUser.uid);
+            document.getElementById('join-form-area').classList.toggle('hidden', !!myP || (data.playerLimit > 0 && participants.length >= data.playerLimit));
+            document.getElementById('already-joined-area').classList.toggle('hidden', !myP);
+            document.getElementById('full-area').classList.toggle('hidden', !!myP || data.playerLimit === 0 || participants.length < data.playerLimit);
+        };
+
+        document.getElementById('btn-join').addEventListener('click', async () => {
+            const name = document.getElementById('input-name').value.trim();
+            if(!name) return showToast("Digite seu nome.");
+            await updateDoc(doc(db, 'volei_events', currentEventId), {
+                participants: arrayUnion({ id: currentUser.uid, name, ts: new Date().toISOString() })
+            });
+            showToast("Confirmado! 🏐");
+        });
+
+        document.getElementById('btn-leave').addEventListener('click', async () => {
+            const snap = await getDoc(doc(db, 'volei_events', currentEventId));
+            const p = snap.data().participants.find(x => x.id === currentUser.uid);
+            await updateDoc(doc(db, 'volei_events', currentEventId), { participants: arrayRemove(p) });
+            showToast("Você saiu da lista.");
         });
 
         document.getElementById('btn-share').addEventListener('click', () => {
-            const url = window.location.href;
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(url).then(() => {
-                    showToast("Link copiado! Manda lá no grupo.");
-                }).catch(() => {
-                    fallbackCopyTextToClipboard(url);
-                });
-            } else {
-                fallbackCopyTextToClipboard(url);
-            }
+            navigator.clipboard.writeText(window.location.href);
+            showToast("Link copiado!");
         });
 
-        function fallbackCopyTextToClipboard(text) {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.position = "fixed";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            try {
-                document.execCommand('copy');
-                showToast("Link copiado! Manda lá no grupo.");
-            } catch (err) {
-                showToast("Erro ao copiar. Copie a URL do navegador.");
-            }
-            document.body.removeChild(textArea);
-        }
-
-        // Inicializa o app
-        showView('loading');
-        initFirebase();
-
+        init();
     </script>
 </body>
 </html>
