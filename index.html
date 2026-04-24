@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vôlei do Italo v06</title>
+    <title>Vôlei v07</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -66,11 +66,16 @@
 
     <div class="fixed top-10 right-10 w-32 h-32 bg-yellow-300 rounded-full blur-2xl opacity-60 pointer-events-none animate-pulse-slow"></div>
 
-    <header class="pt-10 pb-6 text-center">
-        <h1 class="text-4xl font-bold text-white drop-shadow-lg flex items-center justify-center gap-3 cursor-pointer transition-transform hover:scale-105" onclick="window.location.href=window.location.pathname">
-            <i class="fa-solid fa-volleyball text-yellow-300 animate-float drop-shadow-md"></i> 
-            Vôlei do Italo
-        </h1>
+    <header class="pt-10 pb-6 text-center relative z-10">
+        <div class="flex items-center justify-center gap-3 px-4">
+            <h1 class="text-3xl sm:text-4xl font-bold text-white drop-shadow-lg cursor-pointer transition-transform hover:scale-105 flex items-center" onclick="window.location.href=window.location.pathname" title="Voltar ao Início">
+                <i class="fa-solid fa-volleyball text-yellow-300 animate-float drop-shadow-md mr-3"></i> 
+                <span id="main-title-text">Vôlei do Italo</span>
+            </h1>
+            <button id="btn-edit-title" class="hidden text-white/80 hover:text-white bg-white/20 hover:bg-white/40 w-10 h-10 rounded-full transition-all flex items-center justify-center shadow-sm backdrop-blur-sm shrink-0" title="Editar Nome do Jogo">
+                <i class="fa-solid fa-pen text-sm"></i>
+            </button>
+        </div>
         <p class="text-sm text-white/90 font-medium mt-2 drop-shadow">Agende sua rede e divida a quadra</p>
     </header>
 
@@ -90,10 +95,10 @@
             
             <form id="create-form" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1 ml-1">Nome do Local</label>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1 ml-1">Nome do Jogo ou Local</label>
                     <div class="relative group">
                         <i class="fa-solid fa-umbrella-beach absolute left-4 top-3.5 text-gray-400 group-focus-within:text-orange-500 transition-colors"></i>
-                        <input type="text" id="input-location" required class="w-full pl-12 pr-4 py-3 bg-white/60 border border-white/50 rounded-2xl focus:bg-white focus:ring-2 focus:ring-orange-400 focus:outline-none transition-all shadow-sm" placeholder="Ex: Barraca do Sol">
+                        <input type="text" id="input-location" required class="w-full pl-12 pr-4 py-3 bg-white/60 border border-white/50 rounded-2xl focus:bg-white focus:ring-2 focus:ring-orange-400 focus:outline-none transition-all shadow-sm" placeholder="Ex: Vôlei do Augusto">
                     </div>
                 </div>
 
@@ -128,20 +133,19 @@
                 </div>
 
                 <button type="submit" class="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-4 px-4 rounded-2xl transition-all transform hover:scale-[1.02] hover:shadow-lg shadow-md mt-4 flex items-center justify-center gap-2 text-lg">
-                    <i class="fa-solid fa-rocket"></i> Criar Vôlei do Italo
+                    <i class="fa-solid fa-rocket"></i> Criar Jogo
                 </button>
             </form>
         </div>
 
         <div id="event-view" class="space-y-5 animate-fade-in">
             <div class="glass-card rounded-3xl p-6 relative">
-                <button id="btn-share" class="absolute top-5 right-5 bg-white text-orange-500 hover:bg-orange-500 hover:text-white p-3 rounded-full transition-all duration-300 shadow-md transform hover:scale-110 w-12 h-12 flex items-center justify-center" title="Compartilhar Link">
+                <button id="btn-share" class="absolute top-5 right-5 bg-white text-orange-500 hover:bg-orange-500 hover:text-white p-3 rounded-full transition-all duration-300 shadow-md transform hover:scale-110 w-12 h-12 flex items-center justify-center z-10" title="Compartilhar Link">
                     <i class="fa-solid fa-share-nodes text-lg"></i>
                 </button>
 
-                <h2 class="text-2xl font-bold text-gray-800 mb-2 pr-14 leading-tight" id="display-location">Carregando...</h2>
-                <p class="text-xs text-gray-500 mb-4 flex items-start gap-1" id="display-address-text">
-                    <i class="fa-solid fa-location-dot mt-0.5"></i> <span>Endereço...</span>
+                <p class="text-sm text-gray-700 mb-4 pr-16 flex items-start gap-2 font-medium" id="display-address-text">
+                    <i class="fa-solid fa-location-dot mt-1 text-orange-500"></i> <span>Endereço...</span>
                 </p>
 
                 <div class="grid grid-cols-2 gap-2 mb-4">
@@ -205,29 +209,36 @@
 
             <div id="tab-content-score" class="glass-card rounded-3xl p-6 hidden">
                 
-                <div class="flex justify-between items-center mb-6 bg-white/60 p-3 rounded-2xl border border-white/50 shadow-sm animate-pop">
-                    <span class="text-xs font-bold text-gray-600 uppercase tracking-wider flex items-center">
-                        <i class="fa-solid fa-gear text-orange-400 mr-2"></i> Fecha o set em:
-                    </span>
-                    <select id="config-max-score" class="bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-sm font-black text-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-shadow shadow-sm cursor-pointer">
-                        <option value="10">10 Pontos</option>
-                        <option value="15">15 Pontos</option>
-                        <option value="21">21 Pontos</option>
-                        <option value="25">25 Pontos</option>
-                    </select>
+                <div class="flex flex-col gap-3 mb-6 animate-pop">
+                    <div class="flex justify-between items-center bg-white/60 p-3 rounded-2xl border border-white/50 shadow-sm">
+                        <span class="text-xs font-bold text-gray-600 uppercase tracking-wider flex items-center">
+                            <i class="fa-solid fa-gear text-orange-400 mr-2"></i> Fecha o set em:
+                        </span>
+                        <select id="config-max-score" class="bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-sm font-black text-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-shadow shadow-sm cursor-pointer">
+                            <option value="10">10 Pontos</option>
+                            <option value="15">15 Pontos</option>
+                            <option value="21">21 Pontos</option>
+                            <option value="25">25 Pontos</option>
+                        </select>
+                    </div>
+
+                    <button id="btn-voice" class="w-full bg-white/80 hover:bg-white text-gray-700 font-bold py-3 px-4 rounded-2xl border border-gray-200 shadow-sm transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-microphone-lines text-lg text-gray-400"></i>
+                        <span>Ativar Juiz de Voz</span>
+                    </button>
+                    <p class="text-[10px] text-center text-gray-500 font-medium px-2">Diga <b>"Ponto" + o nome do time</b>. Ex: <i>"Ponto Azul"</i>.</p>
                 </div>
 
                 <div class="flex justify-between items-stretch gap-3">
                     
                     <div class="flex-1 bg-white/60 rounded-2xl p-4 border border-white/50 shadow-sm flex flex-col items-center relative">
-                        
                         <div class="flex items-center gap-1 bg-gray-100/80 px-2 py-1 rounded-full mb-3 border border-gray-200 shadow-inner">
                             <button onclick="updateSets('A', -1)" class="w-5 h-5 rounded-full bg-white text-gray-400 font-bold text-xs hover:bg-gray-200 hover:text-red-500 shadow-sm flex items-center justify-center transition-colors">-</button>
                             <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Sets: <span id="sets-a" class="text-orange-600 text-sm ml-0.5">0</span></span>
                             <button onclick="updateSets('A', 1)" class="w-5 h-5 rounded-full bg-white text-gray-400 font-bold text-xs hover:bg-gray-200 hover:text-green-500 shadow-sm flex items-center justify-center transition-colors ml-1">+</button>
                         </div>
 
-                        <input type="text" id="name-team-a" class="w-full text-center bg-transparent font-bold text-gray-700 uppercase tracking-wide text-sm border-b border-dashed border-gray-300 pb-1 focus:outline-none focus:border-orange-500 transition-colors" value="TIME A">
+                        <input type="text" id="name-team-a" class="w-full text-center bg-transparent font-bold text-gray-700 uppercase tracking-wide text-sm border-b border-dashed border-gray-300 pb-1 focus:outline-none focus:border-orange-500 transition-colors" value="VERMELHO">
                         
                         <div class="text-[5rem] leading-none font-black text-gray-800 my-4 score-number drop-shadow-sm" id="score-a">0</div>
                         
@@ -240,14 +251,13 @@
                     <div class="text-gray-300 font-black text-2xl shrink-0 flex items-center justify-center pb-10">X</div>
 
                     <div class="flex-1 bg-white/60 rounded-2xl p-4 border border-white/50 shadow-sm flex flex-col items-center relative">
-                        
                         <div class="flex items-center gap-1 bg-gray-100/80 px-2 py-1 rounded-full mb-3 border border-gray-200 shadow-inner">
                             <button onclick="updateSets('B', -1)" class="w-5 h-5 rounded-full bg-white text-gray-400 font-bold text-xs hover:bg-gray-200 hover:text-red-500 shadow-sm flex items-center justify-center transition-colors">-</button>
                             <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Sets: <span id="sets-b" class="text-orange-600 text-sm ml-0.5">0</span></span>
                             <button onclick="updateSets('B', 1)" class="w-5 h-5 rounded-full bg-white text-gray-400 font-bold text-xs hover:bg-gray-200 hover:text-green-500 shadow-sm flex items-center justify-center transition-colors ml-1">+</button>
                         </div>
 
-                        <input type="text" id="name-team-b" class="w-full text-center bg-transparent font-bold text-gray-700 uppercase tracking-wide text-sm border-b border-dashed border-gray-300 pb-1 focus:outline-none focus:border-orange-500 transition-colors" value="TIME B">
+                        <input type="text" id="name-team-b" class="w-full text-center bg-transparent font-bold text-gray-700 uppercase tracking-wide text-sm border-b border-dashed border-gray-300 pb-1 focus:outline-none focus:border-orange-500 transition-colors" value="AZUL">
                         
                         <div class="text-[5rem] leading-none font-black text-gray-800 my-4 score-number drop-shadow-sm" id="score-b">0</div>
                         
@@ -276,7 +286,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, collection, addDoc, getDoc, updateDoc, onSnapshot, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, collection, addDoc, getDoc, updateDoc, onSnapshot, arrayUnion, arrayRemove, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA3RQucgd5vMeJzZgZnC4Zim9hkFVVWXnw",
@@ -288,7 +298,7 @@
         };
 
         let db, auth, currentUser, currentEventId;
-        let localEventData = null; // Guarda os dados mais recentes para lógica do placar
+        let localEventData = null; 
         
         const urlParams = new URLSearchParams(window.location.search);
         currentEventId = urlParams.get('id');
@@ -298,8 +308,27 @@
         const viewEvent = document.getElementById('event-view');
         const toastEl = document.getElementById('toast');
         const toastMsg = document.getElementById('toast-msg');
+        const btnEditTitle = document.getElementById('btn-edit-title');
 
-        // Navegação de Abas
+        // Edição do Título Principal
+        btnEditTitle.addEventListener('click', async (e) => {
+            e.stopPropagation(); 
+            const currentTitleText = document.getElementById('main-title-text').innerText;
+            const newTitle = prompt("Digite o nome do jogo ou local:", currentTitleText);
+            
+            if (newTitle && newTitle.trim() !== "" && newTitle.trim() !== currentTitleText) {
+                if (currentEventId) {
+                    try {
+                        await updateDoc(doc(db, 'volei_events', currentEventId), { location: newTitle.trim() });
+                        showToast("Título atualizado com sucesso!");
+                    } catch (error) {
+                        showToast("Erro ao atualizar o título.");
+                    }
+                }
+            }
+        });
+
+        // Abas
         const btnTabPlayers = document.getElementById('tab-btn-players');
         const btnTabScore = document.getElementById('tab-btn-score');
         const contentPlayers = document.getElementById('tab-content-players');
@@ -347,7 +376,6 @@
                         if (scoreB < 0) scoreB = 0;
                     }
 
-                    // Checa Regra do Vôlei: Precisa atingir o máximo E ter 2 pontos de diferença
                     let setWonBy = null;
                     if (scoreA >= maxScore && (scoreA - scoreB) >= 2) {
                         setWonBy = 'A';
@@ -359,7 +387,6 @@
                         if (setWonBy === 'A') setsA++; else setsB++;
                         scoreA = 0;
                         scoreB = 0;
-                        
                         const teamName = setWonBy === 'A' ? (localEventData.teamNameA || "Time A") : (localEventData.teamNameB || "Time B");
                         showToast(`🏐 FIM DE SET! ${teamName} levou essa!`);
                     }
@@ -371,7 +398,6 @@
                     }
                 };
 
-                // Lógica para Correção Manual de Sets
                 window.updateSets = async (team, amount) => {
                     if(!currentEventId || !localEventData) return;
                     let setsA = localEventData.setsA || 0;
@@ -389,7 +415,7 @@
                 };
 
                 window.resetScore = async () => {
-                    if(confirm("Tem certeza que deseja ZERAR OS PONTOS E OS SETS para começar um jogo novo?")) {
+                    if(confirm("Tem certeza que deseja ZERAR OS PONTOS E OS SETS?")) {
                         await updateDoc(doc(db, 'volei_events', currentEventId), {
                             scoreA: 0, scoreB: 0, setsA: 0, setsB: 0
                         });
@@ -397,12 +423,12 @@
                     }
                 };
 
-                // Auto-salvar nomes dos times e limite do set
+                // Auto-salvar nomes dos times
                 ['name-team-a', 'name-team-b'].forEach(id => {
                     document.getElementById(id).addEventListener('change', async (e) => {
                         if(!currentEventId) return;
                         const field = id === 'name-team-a' ? 'teamNameA' : 'teamNameB';
-                        await updateDoc(doc(db, 'volei_events', currentEventId), { [field]: e.target.value });
+                        await updateDoc(doc(db, 'volei_events', currentEventId), { [field]: e.target.value.toUpperCase() });
                     });
                 });
 
@@ -429,12 +455,93 @@
             }
         };
 
+        // --- SISTEMA DE RECONHECIMENTO DE VOZ ---
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const btnVoice = document.getElementById('btn-voice');
+        const voiceText = btnVoice.querySelector('span');
+        const voiceIcon = btnVoice.querySelector('i');
+        let recognition = null;
+        let isListening = false;
+
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.lang = 'pt-BR';
+            recognition.interimResults = false;
+
+            recognition.onstart = () => {
+                isListening = true;
+                btnVoice.classList.replace('bg-white/80', 'bg-red-100');
+                btnVoice.classList.replace('text-gray-700', 'text-red-600');
+                voiceIcon.classList.replace('text-gray-400', 'text-red-500');
+                btnVoice.classList.add('animate-pulse', 'border-red-300');
+                voiceText.innerText = "Juiz Ouvindo...";
+                showToast("🎤 Microfone ativado. Pode falar!");
+            };
+
+            recognition.onresult = (event) => {
+                const last = event.results.length - 1;
+                const transcript = event.results[last][0].transcript.toLowerCase().trim();
+                
+                const teamA = document.getElementById('name-team-a').value.toLowerCase().trim();
+                const teamB = document.getElementById('name-team-b').value.toLowerCase().trim();
+
+                if (transcript.includes("ponto") || transcript.includes("marca")) {
+                    if (teamA && transcript.includes(teamA)) {
+                        window.updateScore('A', 1);
+                        showToast(`🎤 Ponto ouvido: ${teamA.toUpperCase()}`);
+                    } else if (teamB && transcript.includes(teamB)) {
+                        window.updateScore('B', 1);
+                        showToast(`🎤 Ponto ouvido: ${teamB.toUpperCase()}`);
+                    }
+                }
+            };
+
+            recognition.onerror = (event) => {
+                if (event.error === 'not-allowed') {
+                    showToast("Permita o uso do microfone no seu navegador.");
+                    stopListening();
+                }
+            };
+
+            recognition.onend = () => {
+                if (isListening) {
+                    try { recognition.start(); } catch(e) {}
+                }
+            };
+
+            btnVoice.addEventListener('click', () => {
+                if (isListening) stopListening();
+                else try { recognition.start(); } catch(e) {}
+            });
+
+            function stopListening() {
+                isListening = false;
+                recognition.stop();
+                btnVoice.classList.replace('bg-red-100', 'bg-white/80');
+                btnVoice.classList.replace('text-red-600', 'text-gray-700');
+                voiceIcon.classList.replace('text-red-500', 'text-gray-400');
+                btnVoice.classList.remove('animate-pulse', 'border-red-300');
+                voiceText.innerText = "Ativar Juiz de Voz";
+            }
+        } else {
+            btnVoice.style.display = 'none';
+        }
+        // --- FIM SISTEMA DE VOZ ---
+
         const showView = (view) => {
             viewLoading.style.display = 'none';
             viewCreate.style.display = 'none';
             viewEvent.style.display = 'none';
-            if (view === 'create') viewCreate.style.display = 'block';
-            if (view === 'event') viewEvent.style.display = 'block';
+            
+            if (view === 'create') {
+                viewCreate.style.display = 'block';
+                btnEditTitle.classList.add('hidden'); // Esconde o lápis na tela inicial
+            }
+            if (view === 'event') {
+                viewEvent.style.display = 'block';
+                btnEditTitle.classList.remove('hidden'); // Mostra o lápis na tela do jogo
+            }
             if (view === 'loading') viewLoading.style.display = 'block';
         };
 
@@ -464,7 +571,7 @@
 
             try {
                 const docRef = await addDoc(collection(db, 'volei_events'), {
-                    location: document.getElementById('input-location').value,
+                    location: document.getElementById('input-location').value, // Isso agora é o Título
                     address: document.getElementById('input-address').value,
                     datetime: document.getElementById('input-datetime').value,
                     totalCost: parseFloat(document.getElementById('input-total').value),
@@ -472,7 +579,7 @@
                     participants: [],
                     scoreA: 0, scoreB: 0, setsA: 0, setsB: 0,
                     maxScore: 25,
-                    teamNameA: "TIME A", teamNameB: "TIME B",
+                    teamNameA: "VERMELHO", teamNameB: "AZUL",
                     createdAt: new Date().toISOString()
                 });
                 window.location.href = `?id=${docRef.id}`;
@@ -486,14 +593,17 @@
             showView('loading');
             onSnapshot(doc(db, 'volei_events', eventId), (snap) => {
                 if (!snap.exists()) { showView('create'); return; }
-                localEventData = snap.data(); // Atualiza cache local para a lógica de pontos
+                localEventData = snap.data(); 
                 renderEvent(localEventData);
                 showView('event');
             });
         };
 
         const renderEvent = (data) => {
-            document.getElementById('display-location').textContent = data.location;
+            // O título dinâmico vai pro Header lá em cima
+            document.getElementById('main-title-text').innerText = data.location;
+            document.title = data.location;
+
             document.querySelector('#display-address-text span').textContent = data.address;
             
             const encodedAddr = encodeURIComponent(data.address);
@@ -534,7 +644,6 @@
             document.getElementById('join-form-area').classList.toggle('hidden', isFull);
             document.getElementById('full-area').classList.toggle('hidden', !isFull);
 
-            // Atualização da UI do Placar e Configurações
             document.getElementById('score-a').innerText = data.scoreA || 0;
             document.getElementById('score-b').innerText = data.scoreB || 0;
             document.getElementById('sets-a').innerText = data.setsA || 0;
@@ -544,10 +653,10 @@
                 document.getElementById('config-max-score').value = data.maxScore || 25;
             }
             if(document.activeElement.id !== 'name-team-a') {
-                document.getElementById('name-team-a').value = data.teamNameA || 'TIME A';
+                document.getElementById('name-team-a').value = data.teamNameA || 'VERMELHO';
             }
             if(document.activeElement.id !== 'name-team-b') {
-                document.getElementById('name-team-b').value = data.teamNameB || 'TIME B';
+                document.getElementById('name-team-b').value = data.teamNameB || 'AZUL';
             }
         };
 
