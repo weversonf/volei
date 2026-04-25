@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Cuida na Fuga v09.2</title>
+    <title>Cuida na Fuga v09.3</title>
     
     <meta name="theme-color" content="#FFD90F">
     <link rel="manifest" href="manifest.json">
@@ -22,23 +22,20 @@
         body { font-family: 'Poppins', sans-serif; background: #f1f5f9; min-height: 100vh; padding-bottom: 90px; }
         .bg-homer { background: linear-gradient(180deg, #FFD90F 0%, #fbbf24 100%); }
         .glass-card { background: white; border-radius: 28px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: 1px solid rgba(255,255,255,0.7); }
-        
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(15px); border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; padding: 12px 10px calc(12px + env(safe-area-inset-bottom)); z-index: 5000; }
         .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; transition: 0.3s; flex: 1; }
         .nav-item.active { color: #0094DA; }
         .nav-item i { font-size: 20px; }
         .nav-item span { font-size: 9px; font-weight: 900; text-transform: uppercase; }
-
-        .btn-homer { background: var(--homer-yellow); color: #1e3a8a; font-weight: 900; text-transform: uppercase; border-radius: 18px; transition: 0.2s; border-bottom: 4px solid #d97706; shadow: 0 4px 0 #92400e; }
+        .btn-homer { background: var(--homer-yellow); color: #1e3a8a; font-weight: 900; text-transform: uppercase; border-radius: 18px; border-bottom: 4px solid #d97706; }
         .btn-homer:active { transform: translateY(2px); border-bottom-width: 2px; }
-
         #view-login, #view-agenda, #view-event, #view-create, #view-users, #loading-screen { display: none; }
         .active-view { display: block !important; }
         .active-flex { display: flex !important; }
-        
         .animate-pop { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes popIn { 0% { transform: scale(0.95); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-
+        .toast { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: translateY(150%) translateX(-50%); opacity: 0; z-index: 6000; }
+        .toast.show { transform: translateY(0) translateX(-50%); opacity: 1; }
         @keyframes duffBounce { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-15px) scale(1.05); } }
         .animate-duff { animation: duffBounce 0.8s ease-in-out infinite; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -47,130 +44,75 @@
 <body>
 
     <div id="loading-screen" class="fixed inset-0 bg-homer z-[9000] flex flex-col items-center justify-center active-flex">
-        <div class="relative w-32 h-32 flex items-center justify-center animate-duff mb-2">
-            <span class="text-7xl absolute">🍺</span>
-            <div class="absolute -translate-x-1 translate-y-3 -rotate-12 bg-red-600 border-2 border-black rounded-lg px-2 py-0.5 shadow-lg">
-                <span class="text-[11px] text-white font-black tracking-widest uppercase">Duff</span>
-            </div>
-        </div>
+        <div class="relative w-32 h-32 flex items-center justify-center animate-duff mb-2"><span class="text-7xl absolute">🍺</span><div class="absolute -translate-x-1 translate-y-3 -rotate-12 bg-red-600 border-2 border-black rounded-lg px-2 py-0.5 shadow-lg"><span class="text-[11px] text-white font-black uppercase">Duff</span></div></div>
         <p class="font-900 uppercase tracking-widest italic text-lg text-white">Cuida na Fuga...</p>
     </div>
 
     <header id="main-header" class="bg-homer pt-12 pb-16 rounded-b-[45px] px-8 relative shadow-lg hidden">
         <div class="flex justify-between items-center">
             <div class="flex items-center gap-3 cursor-pointer active:scale-95 transition-all" onclick="window.goHome()">
-                <div class="w-12 h-12 rounded-full border-4 border-white shadow-lg bg-white flex items-center justify-center text-2xl overflow-hidden">
-                    <img id="user-photo" src="https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png" class="w-full h-full object-cover">
-                </div>
-                <div class="text-left">
-                    <p class="text-[10px] font-black text-blue-900 uppercase opacity-60 leading-none">Salve,</p>
-                    <p id="user-name-display" class="text-lg font-900 text-blue-900 leading-tight">Visitante</p>
-                </div>
+                <div class="w-12 h-12 rounded-full border-4 border-white shadow-lg bg-white flex items-center justify-center text-2xl overflow-hidden"><img id="user-photo" src="https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png" class="w-full h-full object-cover"></div>
+                <div class="text-left"><p class="text-[10px] font-black text-blue-900 uppercase opacity-60 leading-none">Salve,</p><p id="user-name-display" class="text-lg font-900 text-blue-900 leading-tight">Visitante</p></div>
             </div>
             <span id="user-role-badge" class="role-badge bg-white text-blue-900 shadow-sm hidden font-black">Diretoria</span>
         </div>
-        <div id="game-badge" class="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-6 py-2 rounded-2xl font-black text-xs shadow-xl border-2 border-white hidden whitespace-nowrap">
-            CÓDIGO: <span id="display-game-id" class="font-mono text-yellow-300">--</span>
-        </div>
+        <div id="game-badge" class="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-6 py-2 rounded-2xl font-black text-xs shadow-xl border-2 border-white hidden whitespace-nowrap">CÓDIGO: <span id="display-game-id" class="font-mono text-yellow-300">--</span></div>
     </header>
 
     <main class="max-w-md mx-auto px-5 -mt-8 relative z-20">
 
         <div id="view-login" class="text-center space-y-6 pt-10">
-            <div class="glass-card p-8 space-y-6 border-b-4 border-yellow-400 mt-12">
-                <div class="text-6xl mb-2">🍩</div>
-                <h2 class="text-3xl font-900 text-gray-800 uppercase italic leading-none">Bora fugir?</h2>
-                <form id="form-login" class="space-y-4">
-                    <input type="text" id="input-user" required class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none border-2 border-gray-100 text-center uppercase" placeholder="Usuário">
-                    <input type="password" id="input-pass" required class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none border-2 border-gray-100 text-center" placeholder="Senha">
-                    <button type="submit" class="w-full bg-blue-600 text-white font-900 py-4 rounded-2xl shadow-lg active:scale-95 uppercase tracking-widest">Entrar</button>
-                </form>
+            <div class="glass-card p-8 space-y-6 border-b-4 border-yellow-400 mt-12"><div class="text-6xl mb-2">🍩</div><h2 class="text-3xl font-900 text-gray-800 uppercase italic leading-none">Bora fugir?</h2>
+                <form id="form-login" class="space-y-4"><input type="text" id="input-user" required class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none border-2 border-gray-100 text-center uppercase" placeholder="Usuário"><input type="password" id="input-pass" required class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none border-2 border-gray-100 text-center" placeholder="Senha"><button type="submit" class="w-full bg-blue-600 text-white font-900 py-4 rounded-2xl shadow-lg active:scale-95 uppercase tracking-widest">Entrar</button></form>
             </div>
         </div>
 
         <div id="view-agenda" class="space-y-4 animate-pop">
-            <div class="glass-card p-5 border-blue-200 border-2 shadow-sm mb-4 flex gap-2">
-                <input type="text" id="input-search-id" class="flex-1 px-4 py-2 bg-gray-50 rounded-xl outline-none uppercase font-mono font-bold text-sm" placeholder="Código do Rolê">
-                <button id="btn-search-id" class="bg-blue-600 text-white font-black px-5 rounded-xl active:scale-95"><i class="fa-solid fa-arrow-right"></i></button>
-            </div>
+            <div class="glass-card p-5 border-blue-200 border-2 shadow-sm mb-4 flex gap-2"><input type="text" id="input-search-id" class="flex-1 px-4 py-2 bg-gray-50 rounded-xl outline-none uppercase font-mono font-bold text-sm" placeholder="Código do Rolê"><button id="btn-search-id" class="bg-blue-600 text-white font-black px-5 rounded-xl active:scale-95"><i class="fa-solid fa-arrow-right"></i></button></div>
             <h3 class="text-xs font-900 text-blue-900 uppercase ml-1"><i class="fa-solid fa-calendar-days mr-1"></i> Agenda da Galera</h3>
             <div id="agenda-list" class="space-y-3"></div>
         </div>
 
         <div id="view-users" class="space-y-6 animate-pop">
-            <div class="glass-card p-6 border-b-4 border-blue-600">
-                <h2 class="text-xl font-900 text-gray-800 mb-4 uppercase italic">Novo Parceiro</h2>
-                <form id="form-new-user" class="space-y-3">
-                    <input type="text" id="new-user-name" required placeholder="Nome" class="w-full px-4 py-3 bg-gray-50 rounded-xl font-bold outline-none border-2 border-gray-100 text-sm">
-                    <div class="flex gap-2">
-                        <input type="text" id="new-user-login" required placeholder="Login" class="flex-1 px-4 py-3 bg-gray-50 rounded-xl font-bold outline-none border-2 border-gray-100 lowercase text-sm">
-                        <input type="text" id="new-user-pass" required placeholder="Senha" class="flex-1 px-4 py-3 bg-gray-50 rounded-xl font-bold outline-none border-2 border-gray-100 text-sm">
-                    </div>
-                    <label class="flex items-center justify-between bg-blue-50 p-3 rounded-xl border border-blue-100 cursor-pointer">
-                        <span class="text-[10px] font-black text-blue-900 uppercase">Acesso Diretoria?</span>
-                        <input type="checkbox" id="new-user-role" class="w-6 h-6 rounded-lg accent-blue-600">
-                    </label>
-                    <button type="submit" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl shadow-md uppercase text-xs">Criar Conta</button>
-                </form>
+            <div class="glass-card p-6 border-b-4 border-blue-600"><h2 class="text-xl font-900 text-gray-800 mb-4 uppercase italic">Novo Parceiro</h2>
+                <form id="form-new-user" class="space-y-3"><input type="text" id="new-user-name" required placeholder="Nome" class="w-full px-4 py-3 bg-gray-50 rounded-xl font-bold outline-none border-2 border-gray-100 text-sm"><div class="flex gap-2"><input type="text" id="new-user-login" required placeholder="Login" class="flex-1 px-4 py-3 bg-gray-50 rounded-xl font-bold outline-none border-2 border-gray-100 lowercase text-sm"><input type="text" id="new-user-pass" required placeholder="Senha" class="flex-1 px-4 py-3 bg-gray-50 rounded-xl font-bold outline-none border-2 border-gray-100 text-sm"></div>
+                    <label class="flex items-center justify-between bg-blue-50 p-3 rounded-xl border border-blue-100 cursor-pointer"><span class="text-[10px] font-black text-blue-900 uppercase">Acesso Diretoria?</span><input type="checkbox" id="new-user-role" class="w-6 h-6 rounded-lg accent-blue-600"></label><button type="submit" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl shadow-md uppercase text-xs">Criar Conta</button></form>
             </div>
             <div class="glass-card p-6"><div id="users-list-container" class="space-y-2"></div></div>
         </div>
 
         <div id="view-create" class="animate-pop">
-            <div class="glass-card p-6">
-                <h2 class="text-xl font-900 text-gray-800 mb-6 uppercase italic border-b-2 border-yellow-400 pb-2">Marcar Rolê</h2>
+            <div class="glass-card p-6"><h2 class="text-xl font-900 text-gray-800 mb-6 uppercase italic border-b-2 border-yellow-400 pb-2">Marcar Rolê</h2>
                 <form id="form-new-event" class="space-y-4">
                     <select id="new-category" class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none cursor-pointer" onchange="window.checkType()">
-                        <option value="volei">🏐 Vôlei</option>
-                        <option value="churrasco">🔥 Churrasco</option>
-                        <option value="viagem">✈️ Viagem</option>
-                        <option value="passeio">🚗 Passeio / Bate e Volta</option>
-                        <option value="jogos">🎮 Noite de Games</option>
+                        <option value="volei">🏐 Vôlei</option><option value="churrasco">🔥 Churrasco</option><option value="viagem">✈️ Viagem</option><option value="passeio">🚗 Passeio / Bate e Volta</option><option value="jogos">🎮 Noite de Games</option>
                     </select>
-                    <input type="text" id="new-title" required class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none" placeholder="Nome do Evento">
-                    <input type="text" id="new-address" required class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none text-sm" placeholder="Onde? (Endereço)">
-                    
-                    <div id="planning-input-area" class="hidden">
-                        <textarea id="new-details" class="w-full px-4 py-4 bg-blue-50 rounded-2xl font-bold outline-none text-sm border-2 border-blue-100" placeholder="Roteiro: O que vai rolar?" rows="2"></textarea>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
-                        <input type="datetime-local" id="new-date" required class="px-4 py-4 bg-gray-50 rounded-2xl text-[10px] font-bold outline-none">
-                        <input type="number" id="new-total" required class="px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none" placeholder="Custo Fixo R$">
-                    </div>
-                    
-                    <label id="diretoria-only-area" class="hidden items-center justify-between px-4 py-4 bg-blue-50 rounded-2xl border border-blue-100 cursor-pointer">
-                        <div class="flex items-center gap-2"><i class="fa-solid fa-user-shield text-blue-600"></i><span class="text-xs font-black text-blue-900 uppercase">Só Diretoria?</span></div>
-                        <input type="checkbox" id="new-private" class="w-6 h-6 rounded-lg accent-blue-600">
-                    </label>
+                    <input type="text" id="new-title" required class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none" placeholder="Nome do Evento"><input type="text" id="new-address" required class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none text-sm" placeholder="Onde? (Endereço)">
+                    <div id="planning-input-area" class="hidden"><textarea id="new-details" class="w-full px-4 py-4 bg-blue-50 rounded-2xl font-bold outline-none text-sm border-2 border-blue-100" placeholder="Roteiro: O que vai rolar?" rows="2"></textarea></div>
+                    <div class="grid grid-cols-2 gap-3"><input type="datetime-local" id="new-date" required class="px-4 py-4 bg-gray-50 rounded-2xl text-[10px] font-bold outline-none"><input type="number" id="new-total" required class="px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none" placeholder="Custo Fixo R$"></div>
+                    <label id="diretoria-only-area" class="hidden items-center justify-between px-4 py-4 bg-blue-50 rounded-2xl border border-blue-100 cursor-pointer"><div class="flex items-center gap-2"><i class="fa-solid fa-user-shield text-blue-600"></i><span class="text-xs font-black text-blue-900 uppercase">Só Diretoria?</span></div><input type="checkbox" id="new-private" class="w-6 h-6 rounded-lg accent-blue-600"></label>
                     <button type="submit" class="w-full btn-homer py-5 mt-4 text-sm tracking-widest shadow-xl italic">Lançar a Braba 🚀</button>
                 </form>
             </div>
         </div>
 
         <div id="view-event" class="animate-pop space-y-5">
-            
             <div class="glass-card p-6 relative overflow-hidden">
                 <div class="absolute -top-4 -right-4 text-6xl opacity-10 rotate-12" id="bg-icon">😎</div>
                 <button id="btn-share-event" class="absolute top-5 right-5 bg-white text-blue-600 p-3 rounded-full shadow-md w-12 h-12 flex items-center justify-center z-10 active:scale-90"><i class="fa-solid fa-share-nodes"></i></button>
-                
                 <h2 id="display-title" class="text-xl font-black text-gray-800 pr-14 leading-tight uppercase italic mb-1">...</h2>
-                <p class="text-[11px] text-gray-500 mb-5 pr-16 font-bold flex items-start gap-1">
-                    <i class="fa-solid fa-location-dot text-red-500 mt-0.5"></i> <span id="display-address">...</span>
-                </p>
-
+                <p class="text-[11px] text-gray-500 mb-5 pr-16 font-bold flex items-start gap-1"><i class="fa-solid fa-location-dot text-red-500 mt-0.5"></i> <span id="display-address">...</span></p>
                 <div class="flex items-center gap-3 mb-6">
                     <a id="link-maps" target="_blank" class="flex-1 py-3 rounded-xl bg-gray-50 flex items-center justify-center gap-2 shadow-sm text-blue-600 font-black text-[10px] uppercase border border-gray-100"><i class="fa-solid fa-map-location-dot"></i> Maps</a>
                     <a id="link-waze" target="_blank" class="flex-1 py-3 rounded-xl bg-gray-50 flex items-center justify-center gap-2 shadow-sm text-cyan-500 font-black text-[10px] uppercase border border-gray-100"><i class="fa-brands fa-waze"></i> Waze</a>
                 </div>
-
-                <div class="bg-blue-600 rounded-2xl p-4 flex justify-between items-center shadow-inner border-b-4 border-blue-800">
-                    <div><p class="text-[9px] uppercase font-black text-blue-200">Total do Rolê</p><p class="font-black text-white text-lg" id="display-total-cost">R$ 0,00</p></div>
-                    <div class="text-right"><p class="text-[9px] uppercase font-black text-blue-200">Sua Cota</p><p class="font-black text-yellow-300 text-2xl" id="display-person-cost">R$ 0,00</p></div>
+                <div class="bg-blue-600 rounded-2xl p-4 flex justify-between items-center shadow-inner border-b-4 border-blue-800 text-white">
+                    <div><p class="text-[9px] uppercase font-black opacity-70">Total do Rolê</p><p class="font-black text-lg" id="display-total-cost">R$ 0,00</p></div>
+                    <div class="text-right"><p class="text-[9px] uppercase font-black opacity-70">Sua Cota</p><p class="font-black text-yellow-300 text-2xl" id="display-person-cost">R$ 0,00</p></div>
                 </div>
             </div>
 
-            <div id="event-tabs-bar" class="flex p-1 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-x-auto no-scrollbar">
+            <div id="event-tabs-bar" class="flex p-1 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-x-auto no-scrollbar hidden">
                 <button onclick="window.switchTab('players')" id="tab-btn-players" class="flex-1 py-3 rounded-xl text-[10px] font-black text-blue-600 bg-blue-50 uppercase min-w-[80px]">Galera</button>
                 <button onclick="window.switchTab('mercantil')" id="tab-btn-mercantil" class="flex-1 py-3 rounded-xl text-[10px] font-black text-gray-400 uppercase hidden min-w-[90px]">Mercantil</button>
                 <button onclick="window.switchTab('planning')" id="tab-btn-planning" class="flex-1 py-3 rounded-xl text-[10px] font-black text-gray-400 uppercase hidden min-w-[100px]">Roteiro</button>
@@ -180,56 +122,28 @@
             </div>
 
             <div id="tab-content-players" class="glass-card p-6 block animate-pop">
-                <div class="flex justify-between items-end mb-4"><h3 class="text-lg font-black text-gray-800 uppercase italic leading-none">Confirmados</h3><span id="display-count" class="bg-yellow-400 text-yellow-900 text-xs font-black px-3 py-1 rounded-xl">0</span></div>
+                <div class="flex justify-between items-end mb-4"><h3 class="text-lg font-black text-gray-800 uppercase italic">Confirmados</h3><span id="display-count" class="bg-yellow-400 text-yellow-900 text-xs font-black px-3 py-1 rounded-xl">0</span></div>
                 <ul id="participants-list" class="space-y-2 mb-6"></ul>
-                
                 <div id="drink-section" class="border-t-2 border-dashed border-gray-100 pt-5 space-y-4">
-                    <label class="flex items-center gap-3 bg-blue-50 p-4 rounded-2xl border border-blue-100 cursor-pointer">
-                        <input type="checkbox" id="check-drink" class="w-6 h-6 accent-blue-600 rounded">
-                        <div class="flex-1">
-                            <p class="text-xs font-black text-blue-900 uppercase">Cota de Bebida?</p>
-                            <p class="text-[9px] text-blue-400 font-bold uppercase">Entrar na divisão do álcool</p>
-                        </div>
-                        <span class="text-2xl">🍺</span>
-                    </label>
+                    <label class="flex items-center gap-3 bg-blue-50 p-4 rounded-2xl border border-blue-100 cursor-pointer"><input type="checkbox" id="check-drink" class="w-6 h-6 accent-blue-600 rounded"><div class="flex-1"><p class="text-xs font-black text-blue-900 uppercase">Cota de Bebida?</p><p class="text-[9px] text-blue-400 font-bold uppercase">Entrar na divisão do álcool</p></div><span class="text-2xl">🍺</span></label>
                     <button id="btn-join" class="w-full bg-green-500 text-white font-black py-4 rounded-2xl shadow-lg active:scale-95 uppercase tracking-widest italic">Cuida! Tô Dentro!</button>
                 </div>
             </div>
 
             <div id="tab-content-mercantil" class="glass-card p-6 hidden animate-pop">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-black text-gray-800 uppercase italic">Notas Fiscais</h3>
-                    <p class="text-xl font-900 text-green-600" id="display-mercantil-total">R$ 0,00</p>
-                </div>
+                <div class="flex justify-between items-center mb-6"><h3 class="text-lg font-black text-gray-800 uppercase italic">Notas Fiscais</h3><p class="text-xl font-900 text-green-600" id="display-mercantil-total">R$ 0,00</p></div>
                 <div id="mercantil-list" class="space-y-2 mb-6"></div>
-                <div class="flex gap-2">
-                    <button onclick="window.simulateScan()" class="flex-1 bg-gray-50 text-blue-600 font-black py-3 rounded-xl border border-blue-100 text-xs"><i class="fa-solid fa-qrcode mr-1"></i> Scan</button>
-                    <button onclick="document.getElementById('modal-add-note').classList.add('active-flex')" class="flex-1 bg-blue-600 text-white font-black py-3 rounded-xl shadow-md text-xs"><i class="fa-solid fa-plus mr-1"></i> Lançar Nota</button>
-                </div>
+                <div class="flex gap-2"><button onclick="window.simulateScan()" class="flex-1 bg-gray-50 text-blue-600 font-black py-3 rounded-xl border border-blue-100 text-xs"><i class="fa-solid fa-qrcode mr-1"></i> Scan</button><button onclick="document.getElementById('modal-add-note').classList.add('active-flex')" class="flex-1 bg-blue-600 text-white font-black py-3 rounded-xl shadow-md text-xs"><i class="fa-solid fa-plus mr-1"></i> Lançar Nota</button></div>
             </div>
 
-            <div id="tab-content-planning" class="glass-card p-6 hidden animate-pop">
-                <h3 class="text-lg font-black text-gray-800 mb-4 uppercase italic">Roteiro</h3>
-                <div class="bg-gray-50 p-5 rounded-2xl text-gray-700 text-sm font-medium whitespace-pre-wrap leading-relaxed border" id="display-planning-details">...</div>
-            </div>
-
-            <div id="tab-content-fuel" class="glass-card p-6 hidden animate-pop">
-                <h3 class="text-lg font-black text-gray-800 mb-4 uppercase italic">Calculadora Gasosa</h3>
-                <div class="space-y-4">
-                    <div class="grid grid-cols-2 gap-2">
-                        <input type="number" id="fuel-km" value="100" class="p-3 bg-gray-50 border rounded-xl font-bold outline-none" placeholder="KM">
-                        <input type="number" step="0.01" id="fuel-price" value="5.99" class="p-3 bg-gray-50 border rounded-xl font-bold outline-none" placeholder="Preço R$">
-                    </div>
-                    <input type="number" id="fuel-consumption" value="12" class="w-full p-3 bg-gray-50 border rounded-xl font-bold outline-none text-center" placeholder="Consumo (KM/L)">
-                    <div class="bg-blue-600 text-white p-5 rounded-2xl text-center shadow-lg"><p class="text-[9px] font-black uppercase opacity-70">Estimativa do Prejuízo</p><p class="text-3xl font-900" id="fuel-result">R$ 49,91</p></div>
-                </div>
+            <div id="tab-content-planning" class="glass-card p-6 hidden animate-pop"><h3 class="text-lg font-black text-gray-800 mb-4 uppercase italic">Roteiro</h3><div class="bg-gray-50 p-5 rounded-2xl text-gray-700 text-sm font-medium whitespace-pre-wrap leading-relaxed border" id="display-planning-details">...</div></div>
+            <div id="tab-content-fuel" class="glass-card p-6 hidden animate-pop"><h3 class="text-lg font-black text-gray-800 mb-4 uppercase italic">Calculadora Gasosa</h3>
+                <div class="space-y-4"><div class="grid grid-cols-2 gap-2"><input type="number" id="fuel-km" value="100" class="p-3 bg-gray-50 border rounded-xl font-bold outline-none" placeholder="KM"><input type="number" step="0.01" id="fuel-price" value="5.99" class="p-3 bg-gray-50 border rounded-xl font-bold outline-none" placeholder="Preço R$"></div><input type="number" id="fuel-consumption" value="12" class="w-full p-3 bg-gray-50 border rounded-xl font-bold outline-none text-center" placeholder="Consumo (KM/L)"><div class="bg-blue-600 text-white p-5 rounded-2xl text-center shadow-lg"><p class="text-[9px] font-black uppercase opacity-70">Estimativa do Prejuízo</p><p class="text-3xl font-900" id="fuel-result">R$ 49,91</p></div></div>
             </div>
 
             <div id="tab-content-teams" class="glass-card p-6 hidden animate-pop">
                 <h3 class="text-lg font-black text-gray-800 mb-4 uppercase italic">Sorteio</h3>
-                <select id="players-per-team" class="w-full bg-gray-50 p-3 rounded-xl font-bold outline-none border-2 border-gray-100 text-sm mb-4">
-                    <option value="2">2x2</option><option value="3">3x3</option><option value="4">4x4</option><option value="5">5x5</option><option value="6" selected>6x6</option><option value="colher">Colher de Chá (5x4)</option>
-                </select>
+                <select id="players-per-team" class="w-full bg-gray-50 p-3 rounded-xl font-bold outline-none border-2 border-gray-100 text-sm mb-4"><option value="2">2x2</option><option value="3">3x3</option><option value="4">4x4</option><option value="5">5x5</option><option value="6" selected>6x6</option><option value="colher">Colher de Chá (5x4)</option></select>
                 <button onclick="window.drawTeams()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl uppercase italic">Embaralhar!</button>
                 <div id="teams-result" class="space-y-3 mt-4"></div>
             </div>
@@ -237,18 +151,8 @@
             <div id="tab-content-score" class="glass-card p-6 hidden text-center animate-pop">
                 <div class="flex justify-between items-center mb-6 bg-gray-50 p-3 rounded-xl border"><span class="text-xs font-black text-gray-500 uppercase">Set Fecha:</span><select id="config-max-score" class="bg-white border-2 border-gray-100 rounded-xl px-2 py-1 text-sm font-black text-blue-600 outline-none"><option value="15">15</option><option value="21">21</option></select></div>
                 <div class="flex justify-between items-stretch gap-2 mb-8">
-                    <div class="flex-1 bg-gray-50 rounded-2xl p-4 border border-gray-100">
-                        <p class="text-[9px] font-black text-gray-400 uppercase">Sets: <span id="sets-a" class="text-blue-600">0</span></p>
-                        <input id="name-team-a" class="w-full text-center bg-transparent font-black text-[10px] border-b mb-3 uppercase outline-none" value="TIME A">
-                        <div class="text-6xl font-900 text-gray-800 mb-4" id="score-a">0</div>
-                        <button onclick="window.updateScore('A', 1)" class="w-full bg-green-500 text-white py-2 rounded-xl shadow-lg">+</button>
-                    </div>
-                    <div class="flex-1 bg-gray-50 rounded-2xl p-4 border border-gray-100">
-                        <p class="text-[9px] font-black text-gray-400 uppercase">Sets: <span id="sets-b" class="text-blue-600">0</span></p>
-                        <input id="name-team-b" class="w-full text-center bg-transparent font-black text-[10px] border-b mb-3 uppercase outline-none" value="TIME B">
-                        <div class="text-6xl font-900 text-gray-800 mb-4" id="score-b">0</div>
-                        <button onclick="window.updateScore('B', 1)" class="w-full bg-blue-600 text-white py-2 rounded-xl shadow-lg">+</button>
-                    </div>
+                    <div class="flex-1 bg-gray-50 rounded-2xl p-4 border border-gray-100"><p class="text-[9px] font-black text-gray-400 uppercase">Sets: <span id="sets-a" class="text-blue-600">0</span></p><input id="name-team-a" class="w-full text-center bg-transparent font-black text-[10px] border-b mb-3 uppercase outline-none" value="TIME A"><div class="text-6xl font-900 text-gray-800 mb-4" id="score-a">0</div><button onclick="window.updateScore('A', 1)" class="w-full bg-green-500 text-white py-2 rounded-xl shadow-lg">+</button></div>
+                    <div class="flex-1 bg-gray-50 rounded-2xl p-4 border border-gray-100"><p class="text-[9px] font-black text-gray-400 uppercase">Sets: <span id="sets-b" class="text-blue-600">0</span></p><input id="name-team-b" class="w-full text-center bg-transparent font-black text-[10px] border-b mb-3 uppercase outline-none" value="TIME B"><div class="text-6xl font-900 text-gray-800 mb-4" id="score-b">0</div><button onclick="window.updateScore('B', 1)" class="w-full bg-blue-600 text-white py-2 rounded-xl shadow-lg">+</button></div>
                 </div>
                 <button onclick="window.resetScore()" class="text-[10px] font-black text-gray-400 uppercase"><i class="fa-solid fa-rotate-left mr-1"></i> Zerar</button>
             </div>
@@ -260,14 +164,8 @@
             <h3 class="text-lg font-900 uppercase italic text-gray-800 border-b pb-2">Lançar Nota</h3>
             <input type="text" id="note-title" placeholder="Supermercado / Açougue" class="w-full p-4 bg-gray-50 rounded-xl font-bold outline-none border">
             <input type="number" step="0.01" id="note-value" placeholder="Valor Total R$" class="w-full p-4 bg-gray-50 rounded-xl font-bold outline-none border">
-            <label class="flex items-center gap-2 bg-yellow-50 p-3 rounded-xl border border-yellow-100 cursor-pointer">
-                <input type="checkbox" id="note-is-drink" class="w-5 h-5 accent-blue-600">
-                <span class="text-[10px] font-black text-gray-700 uppercase">ESTA NOTA É SÓ BEBIDA?</span>
-            </label>
-            <div class="flex gap-2 pt-2">
-                <button onclick="document.getElementById('modal-add-note').classList.remove('active-flex')" class="flex-1 font-black text-gray-400 uppercase text-[10px]">Cancelar</button>
-                <button onclick="window.saveNote()" class="flex-[2] bg-blue-600 text-white font-black py-4 rounded-xl shadow-lg uppercase text-xs">Salvar Nota</button>
-            </div>
+            <label class="flex items-center gap-2 bg-yellow-50 p-3 rounded-xl border border-yellow-100 cursor-pointer"><input type="checkbox" id="note-is-drink" class="w-5 h-5 accent-blue-600"><span class="text-[10px] font-black text-gray-700 uppercase">ESTA NOTA É SÓ BEBIDA?</span></label>
+            <div class="flex gap-2 pt-2"><button onclick="document.getElementById('modal-add-note').classList.remove('active-flex')" class="flex-1 font-black text-gray-400 uppercase text-[10px]">Cancelar</button><button onclick="window.saveNote()" class="flex-[2] bg-blue-600 text-white font-black py-4 rounded-xl shadow-lg uppercase text-xs">Salvar Nota</button></div>
         </div>
     </div>
 
@@ -296,7 +194,7 @@
         window.switchTab = (t) => {
             ['players', 'teams', 'score', 'planning', 'mercantil', 'fuel'].forEach(x => {
                 const content = document.getElementById(`tab-content-${x}`); if(content) content.classList.add('hidden');
-                const btn = document.getElementById(`tab-btn-${x}`); if(btn) btn.className = "flex-1 py-3 rounded-xl text-[10px] font-black text-gray-400 uppercase min-w-[80px]";
+                const btn = document.getElementById(`tab-btn-${x}`); if(btn) { btn.className = "flex-1 py-3 rounded-xl text-[10px] font-black text-gray-400 uppercase min-w-[80px]"; }
             });
             const activeC = document.getElementById(`tab-content-${t}`); if(activeC) activeC.classList.remove('hidden');
             const activeB = document.getElementById(`tab-btn-${t}`); if(activeB) activeB.className = "flex-1 py-3 rounded-xl text-[10px] font-black bg-blue-50 text-blue-600 uppercase min-w-[80px]";
@@ -304,23 +202,7 @@
 
         window.checkType = () => { document.getElementById('planning-input-area').classList.toggle('hidden', !['viagem', 'passeio'].includes(document.getElementById('new-category').value)); };
 
-        // --- GASOSA ---
-        const calcFuel = () => {
-            const km = parseFloat(document.getElementById('fuel-km').value) || 0, price = parseFloat(document.getElementById('fuel-price').value) || 0, cons = parseFloat(document.getElementById('fuel-consumption').value) || 1;
-            document.getElementById('fuel-result').innerText = `R$ ${((km / cons) * price).toFixed(2)}`;
-        };
-        ['fuel-km', 'fuel-price', 'fuel-consumption'].forEach(id => document.getElementById(id)?.addEventListener('input', calcFuel));
-
-        // --- NOTAS ---
-        window.saveNote = () => {
-            const title = document.getElementById('note-title').value.trim(), val = parseFloat(document.getElementById('note-value').value) || 0, isD = document.getElementById('note-is-drink').checked;
-            if(!title || val <= 0) return window.showToast("Preencha tudo!");
-            db.collection('volei_events').doc(currentEventId).update({ receipts: firebase.firestore.FieldValue.arrayUnion({ id: Date.now(), title, value: val, isDrink: isD, addedBy: userData.name }) })
-            .then(() => { document.getElementById('modal-add-note').classList.remove('active-flex'); document.getElementById('note-title').value = ''; document.getElementById('note-value').value = ''; window.showToast("Lançado! 🛒"); });
-        };
-        window.removeNote = (n) => { if(confirm("Apagar?")) db.collection('volei_events').doc(currentEventId).update({ receipts: firebase.firestore.FieldValue.arrayRemove(n) }); };
-        window.simulateScan = () => { window.showToast("Buscando Câmera..."); setTimeout(() => { document.getElementById('note-title').value = "Mercantil Scan"; document.getElementById('note-value').value = (Math.random()*80 + 20).toFixed(2); document.getElementById('modal-add-note').classList.add('active-flex'); }, 1200); };
-
+        // --- CORE ---
         const init = () => {
             try { db.enablePersistence(); } catch(e){}
             db.collection('app_users').doc('weverson').set({ name: "Weverson", username: "weverson", password: "023240", role: "Diretoria", photo: "https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png" }, {merge: true});
@@ -332,7 +214,7 @@
                     db.collection('app_users').doc(session).onSnapshot(s => {
                         document.getElementById('loading-screen').classList.remove('active-flex');
                         document.getElementById('main-header').classList.remove('hidden');
-                        if(s.exists) {
+                        if(s.exists()) {
                             userData = s.data(); userData.uid = s.id;
                             document.getElementById('user-name-display').innerText = userData.name.split(' ')[0];
                             document.getElementById('user-role-badge').classList.toggle('hidden', userData.role !== 'Diretoria');
@@ -346,9 +228,7 @@
 
             document.getElementById('form-login').onsubmit = (e) => {
                 e.preventDefault(); const u = document.getElementById('input-user').value.toLowerCase().trim(), p = document.getElementById('input-pass').value.trim();
-                db.collection('app_users').doc(u).get().then(s => {
-                    if(s.exists && s.data().password === p) { localStorage.setItem('cuida_session', u); auth.signInAnonymously(); } else window.showToast("Dados errados!");
-                });
+                db.collection('app_users').doc(u).get().then(s => { if(s.exists && s.data().password === p) { localStorage.setItem('cuida_session', u); auth.signInAnonymously(); } else window.showToast("Dados errados!"); });
             };
         };
 
@@ -367,8 +247,7 @@
                 snap.forEach(docSnap => {
                     const d = docSnap.data();
                     if(!d.isPrivate || userData.role === 'Diretoria') {
-                        const card = document.createElement('div');
-                        card.className = "glass-card p-4 flex items-center gap-4 active:scale-95 transition-all cursor-pointer mb-3";
+                        const card = document.createElement('div'); card.className = "glass-card p-4 flex items-center gap-4 active:scale-95 cursor-pointer mb-3";
                         card.onclick = () => { currentEventId = docSnap.id; window.history.pushState({}, '', `?id=${currentEventId}`); loadEventData(); };
                         const icons = { volei: '🏐', churrasco: '🔥', jogos: '🎮', viagem: '✈️', passeio: '🚗' };
                         card.innerHTML = `<div class="text-2xl bg-gray-50 w-14 h-14 flex items-center justify-center rounded-2xl border">${icons[d.category] || '😎'}</div><div class="flex-1"><h4 class="font-900 text-gray-800 uppercase text-sm truncate">${d.location}</h4><p class="text-[9px] font-bold text-gray-400 uppercase">${new Date(d.datetime).toLocaleDateString('pt-BR')}</p></div><i class="fa-solid fa-chevron-right text-gray-300 text-xs"></i>`;
@@ -385,21 +264,25 @@
             const icons = { volei: '🏐', churrasco: '🔥', jogos: '🎮', viagem: '✈️', passeio: '🚗' };
             document.getElementById('bg-icon').innerText = icons[d.category] || '😎';
             
-            // --- LOGICA DE ABAS RESTRITA ---
+            // --- LIMPEZA DE ABAS SPA (CORE FIX) ---
             const isVol = d.category === 'volei', isV = ['viagem', 'passeio'].includes(d.category), isC = d.category === 'churrasco';
             
-            document.getElementById('event-tabs-bar').classList.toggle('hidden', !(isVol || isV || isC));
-            document.getElementById('tab-btn-mercantil').classList.toggle('hidden', !(isV || isC));
-            document.getElementById('tab-btn-planning').classList.toggle('hidden', !isV);
-            document.getElementById('tab-btn-fuel').classList.toggle('hidden', !isV);
-            document.getElementById('tab-btn-teams').classList.toggle('hidden', !isVol);
-            document.getElementById('tab-btn-score').classList.toggle('hidden', !isVol);
+            // Esconde TUDO antes de mostrar o certo
+            document.querySelectorAll('#event-tabs-bar button').forEach(btn => btn.classList.add('hidden'));
             
-            if(isV) document.getElementById('display-planning-details').innerText = d.details || "Sem roteiro definido.";
+            // Mostra abas permitidas
+            document.getElementById('event-tabs-bar').classList.toggle('hidden', !(isVol || isV || isC));
+            document.getElementById('tab-btn-players').classList.remove('hidden'); // Galera sempre tem
+            
+            if(isVol) { document.getElementById('tab-btn-teams').classList.remove('hidden'); document.getElementById('tab-btn-score').classList.remove('hidden'); }
+            if(isV) { document.getElementById('tab-btn-mercantil').classList.remove('hidden'); document.getElementById('tab-btn-planning').classList.remove('hidden'); document.getElementById('tab-btn-fuel').classList.remove('hidden'); }
+            if(isC) { document.getElementById('tab-btn-mercantil').classList.remove('hidden'); }
+            
+            if(isV) document.getElementById('display-planning-details').innerText = d.details || "Sem roteiro.";
             window.switchTab('players');
 
             const enc = encodeURIComponent(d.address);
-            document.getElementById('link-maps').href = `https://www.google.com/maps/search/?api=1&query=$000{enc}`;
+            document.getElementById('link-maps').href = `http://googleusercontent.com/maps.google.com/6{enc}`;
             document.getElementById('link-waze').href = `https://waze.com/ul?q=${enc}`;
             
             const p = d.participants || [], receipts = d.receipts || [];
@@ -419,7 +302,7 @@
             const shareDrink = drinkPs > 0 ? (drinkTotal / drinkPs) : 0;
             document.getElementById('display-person-cost').innerText = `R$ ${(isDrinkP ? shareBase + shareDrink : shareBase).toFixed(2)}`;
 
-            document.getElementById('participants-list').innerHTML = p.map(u => `<li class="flex items-center justify-between p-3 bg-white rounded-xl border mb-1 shadow-sm"><div class="flex items-center gap-3"><img src="${u.photo || 'https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png'}" class="w-8 h-8 rounded-full object-cover"><div><p class="font-black text-gray-700 uppercase text-[10px]">${u.name}</p><p class="text-[8px] font-bold ${u.drinks ? 'text-blue-500' : 'text-gray-300'} uppercase">${u.drinks ? '🍺 Bebe' : '🥤 Não Bebe'}</p></div></div>${(userData.role === 'Diretoria') ? `<button onclick="window.removePlayer('${u.entryId}')" class="text-red-300 p-2"><i class="fa-solid fa-trash-can"></i></button>` : ''}</li>`).join('') || '<p class="text-center py-4 text-gray-400 italic text-xs">Vazio...</p>';
+            document.getElementById('participants-list').innerHTML = p.map(u => `<li class="flex items-center justify-between p-3 bg-white rounded-xl border mb-1"><div class="flex items-center gap-3"><img src="${u.photo || 'https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png'}" class="w-8 h-8 rounded-full object-cover"><div><p class="font-black text-gray-700 uppercase text-[10px]">${u.name}</p><p class="text-[8px] font-bold ${u.drinks ? 'text-blue-500' : 'text-gray-300'} uppercase">${u.drinks ? '🍺 Bebe' : '🥤 Não Bebe'}</p></div></div>${(userData.role === 'Diretoria') ? `<button onclick="window.removePlayer('${u.entryId}')" class="text-red-300 p-2"><i class="fa-solid fa-trash-can"></i></button>` : ''}</li>`).join('') || '<p class="text-center py-4 text-gray-400 italic text-xs">Vazio...</p>';
 
             document.getElementById('mercantil-list').innerHTML = receipts.map(r => `<div class="flex items-center justify-between p-3 bg-gray-50 border rounded-xl mb-1"><div><p class="text-[10px] font-black text-gray-800 uppercase">${r.title} ${r.isDrink ? '🍺' : '🛒'}</p><p class="text-[8px] font-bold text-gray-400 uppercase">Por ${r.addedBy}</p></div><div class="flex items-center gap-3"><span class="font-900 text-blue-600">R$ ${r.value.toFixed(2)}</span>${userData.role === 'Diretoria' ? `<button onclick='window.removeNote(${JSON.stringify(r)})' class="text-red-200"><i class="fa-solid fa-xmark"></i></button>` : ''}</div></div>`).join('') || '<p class="text-center py-4 text-gray-400 text-[10px] font-black uppercase">Nenhuma nota.</p>';
             
@@ -435,27 +318,28 @@
             if(p.length > 0) addT("Reservas", p, "gray");
         };
 
-        window.updateScore = (team, amt) => { const field = team === 'A' ? 'scoreA' : 'scoreB', setF = team === 'A' ? 'setsA' : 'setsB'; let cur = (localEventData[field] || 0) + amt, max = parseInt(document.getElementById('config-max-score').value); if(cur >= max) db.collection('volei_events').doc(currentEventId).update({ scoreA:0, scoreB:0, [setF]: firebase.firestore.FieldValue.increment(1) }); else db.collection('volei_events').doc(currentEventId).update({ [field]: Math.max(0, cur) }); };
+        window.updateScore = (team, amt) => { const field = team === 'A' ? 'scoreA' : 'scoreB', setF = team === 'A' ? 'setsA' : 'setsB', cur = (localEventData[field] || 0) + amt, max = parseInt(document.getElementById('config-max-score').value); if(cur >= max) db.collection('volei_events').doc(currentEventId).update({ scoreA:0, scoreB:0, [setF]: firebase.firestore.FieldValue.increment(1) }); else db.collection('volei_events').doc(currentEventId).update({ [field]: Math.max(0, cur) }); };
         window.resetScore = () => { if(confirm("Zerar?")) db.collection('volei_events').doc(currentEventId).update({ scoreA:0, scoreB:0, setsA:0, setsB:0 }); };
         window.removePlayer = (id) => { const p = localEventData.participants.find(x => x.entryId === id); if(p) db.collection('volei_events').doc(currentEventId).update({ participants: firebase.firestore.FieldValue.arrayRemove(p) }); };
         window.logout = () => { localStorage.removeItem('cuida_session'); auth.signOut().then(() => location.href = location.pathname); };
         
+        window.saveNote = () => {
+            const title = document.getElementById('note-title').value.trim(), val = parseFloat(document.getElementById('note-value').value) || 0, isD = document.getElementById('note-is-drink').checked;
+            if(!title || val <= 0) return window.showToast("Preencha tudo!");
+            db.collection('volei_events').doc(currentEventId).update({ receipts: firebase.firestore.FieldValue.arrayUnion({ id: Date.now(), title, value: val, isDrink: isD, addedBy: userData.name }) })
+            .then(() => { document.getElementById('modal-add-note').classList.remove('active-flex'); document.getElementById('note-title').value = ''; document.getElementById('note-value').value = ''; window.showToast("Lançado! 🛒"); });
+        };
+        window.removeNote = (n) => { if(confirm("Apagar?")) db.collection('volei_events').doc(currentEventId).update({ receipts: firebase.firestore.FieldValue.arrayRemove(n) }); };
+        window.simulateScan = () => { window.showToast("Buscando Câmera..."); setTimeout(() => { document.getElementById('note-title').value = "Mercantil Scan"; document.getElementById('note-value').value = (Math.random()*80 + 20).toFixed(2); document.getElementById('modal-add-note').classList.add('active-flex'); }, 1200); };
+
         document.getElementById('btn-join').onclick = () => {
             const drink = document.getElementById('check-drink').checked;
             db.collection('volei_events').doc(currentEventId).update({ participants: firebase.firestore.FieldValue.arrayUnion({ entryId: userData.uid, name: userData.name, photo: userData.photo, drinks: drink }) });
             window.showToast("Confirmado! ✅");
         };
 
-        document.getElementById('form-new-event').onsubmit = (e) => {
-            e.preventDefault(); const id = Math.random().toString(36).substr(2, 2).toUpperCase() + Math.floor(1000 + Math.random() * 9000);
-            db.collection('volei_events').doc(id).set({ location: document.getElementById('new-title').value, address: document.getElementById('new-address').value, category: document.getElementById('new-category').value, details: document.getElementById('new-details').value, datetime: document.getElementById('new-date').value, totalCost: parseFloat(document.getElementById('new-total').value) || 0, isPrivate: document.getElementById('new-private').checked, receipts: [], participants: [], scoreA: 0, scoreB: 0, setsA: 0, setsB: 0 }).then(() => { currentEventId = id; window.history.pushState({}, '', `?id=${id}`); loadEventData(); });
-        };
-
-        document.getElementById('form-new-user').onsubmit = (e) => {
-            e.preventDefault(); const l = document.getElementById('new-user-login').value.toLowerCase();
-            db.collection('app_users').doc(l).set({ name: document.getElementById('new-user-name').value, username: l, password: document.getElementById('new-user-pass').value, role: document.getElementById('new-user-role').checked ? 'Diretoria' : 'Geral', photo: "" }).then(() => { window.showToast("Criado!"); e.target.reset(); });
-        };
-
+        document.getElementById('form-new-event').onsubmit = (e) => { e.preventDefault(); const id = Math.random().toString(36).substr(2, 2).toUpperCase() + Math.floor(1000 + Math.random() * 9000); db.collection('volei_events').doc(id).set({ location: document.getElementById('new-title').value, address: document.getElementById('new-address').value, category: document.getElementById('new-category').value, details: document.getElementById('new-details').value, datetime: document.getElementById('new-date').value, totalCost: parseFloat(document.getElementById('new-total').value) || 0, isPrivate: document.getElementById('new-private').checked, receipts: [], participants: [], scoreA: 0, scoreB: 0, setsA: 0, setsB: 0 }).then(() => { currentEventId = id; window.history.pushState({}, '', `?id=${id}`); loadEventData(); }); };
+        document.getElementById('form-new-user').onsubmit = (e) => { e.preventDefault(); const l = document.getElementById('new-user-login').value.toLowerCase(); db.collection('app_users').doc(l).set({ name: document.getElementById('new-user-name').value, username: l, password: document.getElementById('new-user-pass').value, role: document.getElementById('new-user-role').checked ? 'Diretoria' : 'Geral', photo: "" }).then(() => { window.showToast("Criado!"); e.target.reset(); }); };
         function loadUsersList() { db.collection('app_users').onSnapshot(snap => { const list = document.getElementById('users-list-container'); list.innerHTML = ''; snap.forEach(dDoc => { const d = dDoc.data(), el = document.createElement('div'); el.className = "flex items-center justify-between p-3 bg-gray-50 border rounded-xl mb-2"; el.innerHTML = `<div><p class="font-black text-xs uppercase">${d.name} ${d.role === 'Diretoria' ? '⭐' : ''}</p><p class="text-[9px] font-bold text-gray-400">User: ${d.username}</p></div><button onclick="window.sendInvite('${d.name}', '${d.username}', '${d.password}')" class="bg-green-500 text-white p-2 rounded-lg text-xs"><i class="fa-brands fa-whatsapp"></i></button>`; list.appendChild(el); }); }); }
         window.sendInvite = (n,l,p) => { window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(`Fala ${n}! App Cuida na Fuga:\n👤 User: ${l}\n🔑 Senha: ${p}\n🚀 Link: ${window.location.href.split('?')[0]}`)}`); };
         document.getElementById('btn-share-event').onclick = () => { navigator.clipboard.writeText(location.href); window.showToast("Copiado!"); };
