@@ -3,16 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VoleiFlow v19</title>
+    <title>VoleiFlow v20</title>
     
+    <meta name="theme-color" content="#0ea5e9">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="volleyball.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <meta name="theme-color" content="#0ea5e9">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3569/3569300.png">
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -21,18 +19,33 @@
         .glass-card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); }
         .animate-pop { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        #create-view, #event-view, #loading-view, #edit-modal { display: none; }
+        #create-view, #event-view, #loading-view, #edit-modal, #install-banner { display: none; }
         .toast { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: translateY(150%) translateX(-50%); opacity: 0; z-index: 1000; }
         .toast.show { transform: translateY(0) translateX(-50%); opacity: 1; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
         body.is-offline #offline-indicator { display: flex; }
         #offline-indicator { display: none; }
     </style>
 </head>
 <body class="text-gray-800 pb-12 overflow-x-hidden relative">
 
+    <div id="install-banner" class="fixed top-0 left-0 w-full z-[3000] p-3 animate-pop">
+        <div class="bg-white/95 backdrop-blur-md border border-blue-200 rounded-2xl shadow-2xl p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <img src="volleyball.png" class="w-10 h-10 rounded-xl shadow-sm" alt="App Icon">
+                <div>
+                    <p class="text-xs font-bold text-gray-800 leading-tight">Instalar VoleiFlow</p>
+                    <p class="text-[10px] text-gray-500">Acesse mais rápido da tela inicial</p>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="hideInstallBanner()" class="text-gray-400 px-2 text-sm"><i class="fa-solid fa-xmark"></i></button>
+                <button id="btn-install-app" class="bg-blue-600 text-white text-[11px] font-bold px-4 py-2 rounded-xl shadow-lg active:scale-95 transition-all uppercase">Instalar</button>
+            </div>
+        </div>
+    </div>
+
     <div id="offline-indicator" class="fixed top-0 left-0 w-full bg-orange-600 text-white text-[10px] font-bold py-1 justify-center items-center gap-2 z-[2000] uppercase tracking-widest">
-        <i class="fa-solid fa-cloud-slash"></i> Offline - Sincronizando quando voltar
+        <i class="fa-solid fa-cloud-slash"></i> Você está Offline
     </div>
 
     <div class="fixed top-10 right-10 w-32 h-32 bg-yellow-300 rounded-full blur-2xl opacity-60 pointer-events-none"></div>
@@ -57,7 +70,7 @@
         </div>
 
         <div id="create-view" class="space-y-6">
-            <div class="glass-card rounded-3xl p-6 border-orange-200/50 border-2 shadow-lg animate-fade-in">
+            <div class="glass-card rounded-3xl p-6 border-orange-200/50 border-2 shadow-lg">
                 <h3 class="text-xs font-bold text-orange-600 uppercase tracking-widest mb-3 flex items-center gap-2">
                     <i class="fa-solid fa-magnifying-glass"></i> Código do Jogo
                 </h3>
@@ -72,17 +85,17 @@
                 <form id="create-form" class="space-y-4">
                     <input type="text" id="input-location" required class="w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Nome do Jogo">
                     <input type="text" id="input-address" required class="w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Endereço">
-                    <input type="text" id="input-group-link" class="w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-green-500 outline-none" placeholder="Link do Grupo de WhatsApp">
+                    <input type="text" id="input-group-link" class="w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-green-500 outline-none" placeholder="Link do Grupo de Zap">
                     <div class="grid grid-cols-2 gap-3">
                         <input type="datetime-local" id="input-datetime" required class="w-full px-4 py-3 border rounded-2xl text-sm focus:outline-none">
-                        <input type="number" step="0.01" id="input-total" required class="w-full px-4 py-3 border rounded-2xl focus:outline-none" placeholder="Valor Total R$">
+                        <input type="number" step="0.01" id="input-total" required class="w-full px-4 py-3 border rounded-2xl focus:outline-none" placeholder="Total R$">
                     </div>
                     <div class="flex items-center justify-between px-1">
                         <label class="text-sm font-semibold text-gray-700">Limite de Pessoas</label>
-                        <input type="checkbox" id="check-unlimited" checked class="w-6 h-6 text-orange-500 rounded-lg">
+                        <input type="checkbox" id="check-unlimited" checked class="w-6 h-6 text-orange-500 rounded-lg cursor-pointer">
                     </div>
                     <input type="number" min="2" id="input-limit" class="w-full px-4 py-3 bg-gray-100 border rounded-2xl opacity-60" placeholder="Máximo" disabled>
-                    <button type="submit" class="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold py-4 rounded-2xl shadow-lg mt-4 uppercase">Criar Jogo</button>
+                    <button type="submit" class="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold py-4 rounded-2xl shadow-lg mt-4 uppercase">Criar Partida</button>
                 </form>
             </div>
         </div>
@@ -111,9 +124,9 @@
             </div>
 
             <div class="flex p-1 bg-white/30 backdrop-blur-lg rounded-2xl border border-white/40 shadow-sm">
-                <button id="tab-btn-players" class="flex-1 py-2.5 rounded-xl text-[10px] font-bold bg-white text-orange-600 shadow-sm uppercase">Jogadores</button>
-                <button id="tab-btn-teams" class="flex-1 py-2.5 rounded-xl text-[10px] font-bold text-white uppercase">Sortear</button>
-                <button id="tab-btn-score" class="flex-1 py-2.5 rounded-xl text-[10px] font-bold text-white uppercase">Placar</button>
+                <button id="tab-btn-players" class="flex-1 py-2.5 rounded-xl text-[10px] font-bold bg-white text-orange-600 shadow-sm uppercase transition-all">Jogadores</button>
+                <button id="tab-btn-teams" class="flex-1 py-2.5 rounded-xl text-[10px] font-bold text-white uppercase transition-all">Sortear</button>
+                <button id="tab-btn-score" class="flex-1 py-2.5 rounded-xl text-[10px] font-bold text-white uppercase transition-all">Placar</button>
             </div>
 
             <div id="tab-content-players" class="glass-card rounded-3xl p-6 block animate-pop">
@@ -122,7 +135,7 @@
                 <ul id="participants-list" class="space-y-2 mb-6 max-h-[300px] overflow-y-auto pr-1"></ul>
                 <div id="action-area" class="border-t pt-5">
                     <div class="flex gap-2">
-                        <input type="text" id="input-name" class="flex-1 px-4 py-3 bg-white border-0 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none shadow-inner" placeholder="Nome do jogador...">
+                        <input type="text" id="input-name" class="flex-1 px-4 py-3 bg-white border-0 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none shadow-inner" placeholder="Seu Nome...">
                         <button id="btn-join" class="bg-green-500 text-white font-bold px-6 rounded-2xl shadow-lg active:scale-95 transition-transform"><i class="fa-solid fa-plus"></i></button>
                     </div>
                     <a id="btn-join-group" target="_blank" class="hidden w-full mt-4 bg-green-500 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-xl hover:brightness-110 transition-all border-b-4 border-green-700 uppercase text-[10px] tracking-widest"><i class="fa-brands fa-whatsapp text-xl"></i> Grupo do Vôlei</a>
@@ -130,40 +143,29 @@
             </div>
 
             <div id="tab-content-teams" class="glass-card rounded-3xl p-6 hidden animate-pop">
-                <h3 class="text-xl font-bold text-gray-800 mb-1">Montar Times</h3>
-                <p class="text-[9px] text-gray-400 uppercase font-bold tracking-widest mb-4">Embaralhar jogadores confirmados</p>
-                
+                <h3 class="text-xl font-bold text-gray-800 mb-4 tracking-tight">Sortear Times</h3>
                 <div class="space-y-4 mb-6">
                     <div class="flex gap-2">
                         <input type="text" id="input-name-teams" class="flex-1 px-4 py-3 bg-white border-0 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none shadow-inner" placeholder="Adicionar avulso...">
-                        <button onclick="window.addPlayerFromTeams()" class="bg-orange-500 text-white font-bold px-5 rounded-2xl shadow-md active:scale-95"><i class="fa-solid fa-user-plus"></i></button>
+                        <button onclick="window.addPlayerFromTeams()" class="bg-orange-500 text-white font-bold px-5 rounded-2xl shadow-md active:scale-95 transition-transform"><i class="fa-solid fa-user-plus"></i></button>
                     </div>
-
                     <div class="bg-white/50 p-3 rounded-2xl border border-white space-y-3">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-gray-600">Formato do Jogo:</span>
+                            <span class="text-xs font-bold text-gray-600 uppercase tracking-tighter">Jogadores por Time:</span>
                             <select id="players-per-team" class="bg-white border rounded-xl px-2 py-1 font-bold text-orange-600 outline-none text-sm cursor-pointer">
-                                <option value="2">2x2</option>
-                                <option value="3">3x3</option>
-                                <option value="4">4x4</option>
-                                <option value="5">5x5</option>
-                                <option value="6" selected>6x6</option>
-                                <option value="colher">Colher de Chá (5x4)</option>
+                                <option value="2">2x2</option><option value="3">3x3</option><option value="4">4x4</option><option value="5">5x5</option><option value="6" selected>6x6</option><option value="colher">Colher de Chá (5x4)</option>
                             </select>
                         </div>
                     </div>
-
-                    <button onclick="window.drawTeams()" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold py-4 rounded-2xl shadow-lg uppercase tracking-widest active:scale-95 transition-all">
-                        <i class="fa-solid fa-shuffle mr-2"></i> Sortear Times
-                    </button>
+                    <button onclick="window.drawTeams()" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold py-4 rounded-2xl shadow-lg uppercase tracking-widest active:scale-95 transition-all"><i class="fa-solid fa-shuffle mr-2"></i> Sortear Agora</button>
                 </div>
-                <div id="teams-result" class="space-y-4"></div>
+                <div id="teams-result" class="space-y-3"></div>
             </div>
 
             <div id="tab-content-score" class="glass-card rounded-3xl p-6 hidden text-center animate-pop">
                 <div class="flex flex-col gap-3 mb-6">
-                    <div class="flex justify-between items-center bg-white/60 p-3 rounded-2xl border border-white/50"><span class="text-xs font-bold text-gray-600 uppercase">Set Fecha em:</span><select id="config-max-score" class="bg-white border rounded-xl px-2 py-1 text-sm font-black text-orange-600 focus:outline-none"><option value="15">15 pts</option><option value="21">21 pts</option><option value="25">25 pts</option></select></div>
-                    <button id="btn-voice" class="w-full bg-white/80 text-gray-700 font-bold py-3 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-center gap-2 transition-all"><i class="fa-solid fa-microphone-lines text-gray-400"></i><span>Ativar Juiz de Voz</span></button>
+                    <div class="flex justify-between items-center bg-white/60 p-3 rounded-2xl border border-white/50"><span class="text-xs font-bold text-gray-600 uppercase tracking-widest">Set Fecha em:</span><select id="config-max-score" class="bg-white border rounded-xl px-2 py-1 text-sm font-black text-orange-600 focus:outline-none"><option value="15">15 pts</option><option value="21">21 pts</option><option value="25">25 pts</option></select></div>
+                    <button id="btn-voice" class="w-full bg-white/80 text-gray-700 font-bold py-3 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95"><i class="fa-solid fa-microphone-lines text-gray-400"></i><span>Ativar Juiz de Voz</span></button>
                 </div>
                 <div class="flex justify-between items-stretch gap-3">
                     <div class="flex-1 bg-white/60 rounded-2xl p-4 shadow-sm border border-white/40"><div class="text-[10px] font-bold text-gray-400 mb-2 uppercase">Sets: <span id="sets-a" class="text-orange-600 text-sm">0</span></div><input type="text" id="name-team-a" class="w-full text-center bg-transparent font-bold text-xs border-b mb-3 focus:outline-none uppercase" value="TIME A"><div class="text-6xl font-black text-gray-800 my-4" id="score-a">0</div><div class="flex gap-2"><button onclick="updateScore('A', -1)" class="flex-1 bg-red-100 text-red-600 py-3 rounded-xl">-</button><button onclick="updateScore('A', 1)" class="flex-[2] bg-green-500 text-white py-3 rounded-xl font-bold shadow-md active:scale-95 transition-all">+</button></div></div>
@@ -177,7 +179,7 @@
 
     <div id="edit-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4" style="background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);">
         <div class="glass-card w-full max-w-sm rounded-3xl p-6 relative animate-pop shadow-2xl">
-            <h3 class="text-xl font-bold mb-4 flex items-center gap-2"><i class="fa-solid fa-gear text-orange-500"></i> Ajustar Jogo</h3>
+            <h3 class="text-xl font-bold mb-4 flex items-center gap-2"><i class="fa-solid fa-gear text-orange-500"></i> Ajustar Detalhes</h3>
             <div class="space-y-3">
                 <input type="text" id="modal-edit-title" class="w-full px-4 py-3 border rounded-2xl focus:outline-none" placeholder="Nome do Jogo">
                 <input type="text" id="modal-edit-address" class="w-full px-4 py-3 border rounded-2xl focus:outline-none" placeholder="Endereço">
@@ -195,7 +197,7 @@
         import { getFirestore, doc, collection, setDoc, getDoc, updateDoc, onSnapshot, arrayUnion, arrayRemove, increment, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyA3RQucgd5vMeJzZgZnC4Zim9hkFVVWXnw", authDomain: "volei-3f30d.firebaseapp.com", projectId: "volei-3f30d", storageBucket: "volei-3f30d.firebasestorage.app", messagingSenderId: "969073040869", appId: "1:969073040869:web:c0f6005d98fae4144de30c" };
-        let db, auth, currentUser, currentEventId, localEventData;
+        let db, auth, currentUser, currentEventId, localEventData, deferredPrompt;
         const urlParams = new URLSearchParams(window.location.search);
         const rawId = urlParams.get('id');
         if (rawId) { currentEventId = (rawId.length === 6) ? rawId.toUpperCase() : rawId; }
@@ -206,59 +208,29 @@
         const toastEl = document.getElementById('toast');
         const toastMsg = document.getElementById('toast-msg');
 
-        // --- LÓGICA DE SORTEIO ---
-        window.drawTeams = () => {
-            if (!localEventData || !localEventData.participants.length) return showToast("Sem jogadores na lista!");
-            
-            const mode = document.getElementById('players-per-team').value;
-            let players = [...localEventData.participants].map(p => p.name);
-            
-            // Embaralhar
-            for (let i = players.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [players[i], players[j]] = [players[j], players[i]];
+        // --- LÓGICA DE INSTALAÇÃO ---
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // Só mostra o banner se não estiver rodando no modo standalone
+            if (!window.matchMedia('(display-mode: standalone)').matches) {
+                document.getElementById('install-banner').style.display = 'block';
             }
+        });
 
-            const resultDiv = document.getElementById('teams-result');
-            resultDiv.innerHTML = '';
-
-            const createTeamCard = (num, members, color) => {
-                const card = document.createElement('div');
-                card.className = "bg-white/70 p-4 rounded-2xl border border-white animate-pop shadow-sm";
-                card.innerHTML = `<p class="text-[10px] font-black text-${color}-500 uppercase tracking-widest mb-2">Time ${num}</p><div class="space-y-1">${members.map(n => `<p class="font-bold text-gray-700 uppercase text-xs">• ${n}</p>`).join('')}</div>`;
-                resultDiv.appendChild(card);
-            };
-
-            if (mode === 'colher') {
-                if (players.length < 9) return showToast("Precisa de pelo menos 9 jogadores!");
-                createTeamCard("A (Vantagem)", players.splice(0, 5), "orange");
-                createTeamCard("B", players.splice(0, 4), "blue");
-            } else {
-                const n = parseInt(mode);
-                let tCount = 1;
-                while(players.length >= n) {
-                    createTeamCard(tCount, players.splice(0, n), "indigo");
-                    tCount++;
+        document.getElementById('btn-install-app').onclick = async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    hideInstallBanner();
                 }
+                deferredPrompt = null;
             }
-            
-            if (players.length > 0) {
-                const next = document.createElement('div');
-                next.className = "bg-gray-100/50 p-4 rounded-2xl border border-dashed border-gray-300";
-                next.innerHTML = `<p class="text-[10px] font-bold text-gray-400 uppercase mb-2">Próximos / Reserva</p><div class="space-y-1">${players.map(n => `<p class="text-gray-500 uppercase text-xs">• ${n}</p>`).join('')}</div>`;
-                resultDiv.appendChild(next);
-            }
-            showToast("Times formados!");
         };
 
-        window.addPlayerFromTeams = async () => {
-            const input = document.getElementById('input-name-teams');
-            const name = input.value.trim();
-            if(!name) return;
-            const entryId = Math.random().toString(36).substr(2, 9);
-            await updateDoc(doc(db, 'volei_events', currentEventId), { participants: arrayUnion({ entryId, name }) });
-            input.value = '';
-            showToast("Jogador adicionado!");
+        window.hideInstallBanner = () => {
+            document.getElementById('install-banner').style.display = 'none';
         };
 
         // --- MONITOR OFFLINE ---
@@ -268,10 +240,8 @@
         // --- FIREBASE INIT ---
         const init = async () => {
             const app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
+            auth = getAuth(app); db = getFirestore(app);
             try { await enableIndexedDbPersistence(db); } catch (err) {}
-
             await signInAnonymously(auth);
             onAuthStateChanged(auth, (u) => {
                 if(!u) return; currentUser = u;
@@ -286,26 +256,41 @@
             });
         };
 
-        const renderEvent = (d) => {
-            document.getElementById('main-title-text').innerText = d.location;
-            document.querySelector('#display-address-text span').innerText = d.address;
-            document.getElementById('display-game-id').innerText = currentEventId;
-            const enc = encodeURIComponent(d.address);
-            document.getElementById('link-maps').href = `https://www.google.com/maps/search/?api=1&query=$0{enc}`;
-            document.getElementById('link-waze').href = `https://waze.com/ul?q=${enc}`;
-            if(d.groupLink) { document.getElementById('btn-join-group').href = d.groupLink; document.getElementById('btn-join-group').classList.remove('hidden'); }
-            
-            document.getElementById('display-total-cost').innerText = `R$ ${d.totalCost.toFixed(2)}`;
-            const p = d.participants || [];
-            document.getElementById('display-person-cost').innerText = `R$ ${(d.totalCost / Math.max(1, p.length)).toFixed(2)}`;
-            document.getElementById('display-count').innerText = d.playerLimit ? `${p.length}/${d.playerLimit}` : p.length;
-            if(d.playerLimit) { document.getElementById('progress-container').classList.remove('hidden'); document.getElementById('progress-bar').style.width = Math.min(100, (p.length/d.playerLimit*100)) + '%'; }
-            document.getElementById('participants-list').innerHTML = p.map(u => `<li class="flex items-center justify-between p-3 bg-white/80 rounded-2xl shadow-sm border border-white/50 animate-pop"><span class="font-bold text-gray-700 uppercase text-xs ml-2">${u.name}</span><button onclick="removePlayer('${u.entryId}')" class="text-red-300 p-2"><i class="fa-solid fa-trash-can"></i></button></li>`).join('');
-            document.getElementById('score-a').innerText = d.scoreA || 0; document.getElementById('score-b').innerText = d.scoreB || 0;
-            document.getElementById('sets-a').innerText = d.setsA || 0; document.getElementById('sets-b').innerText = d.setsB || 0;
+        // --- SORTEIO ---
+        window.drawTeams = () => {
+            if (!localEventData || !localEventData.participants.length) return showToast("Sem jogadores na lista!");
+            const mode = document.getElementById('players-per-team').value;
+            let players = [...localEventData.participants].map(p => p.name);
+            for (let i = players.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [players[i], players[j]] = [players[j], players[i]]; }
+            const res = document.getElementById('teams-result'); res.innerHTML = '';
+            const createTeamCard = (num, members, color) => {
+                const card = document.createElement('div'); card.className = "bg-white/70 p-4 rounded-2xl border border-white animate-pop shadow-sm";
+                card.innerHTML = `<p class="text-[10px] font-black text-${color}-500 uppercase tracking-widest mb-2">Time ${num}</p><div class="space-y-1">${members.map(n => `<p class="font-bold text-gray-700 uppercase text-xs">• ${n}</p>`).join('')}</div>`;
+                res.appendChild(card);
+            };
+            if (mode === 'colher') {
+                if (players.length < 9) return showToast("Mínimo 9 jogadores para 5x4!");
+                createTeamCard("A (Vantagem)", players.splice(0, 5), "orange"); createTeamCard("B", players.splice(0, 4), "blue");
+            } else {
+                const n = parseInt(mode); let tCount = 1;
+                while(players.length >= n) { createTeamCard(tCount, players.splice(0, n), "indigo"); tCount++; }
+            }
+            if (players.length > 0) {
+                const next = document.createElement('div'); next.className = "bg-gray-100/50 p-4 rounded-2xl border border-dashed border-gray-300";
+                next.innerHTML = `<p class="text-[10px] font-bold text-gray-400 uppercase mb-2">Reserva / Próximos</p><div class="space-y-1">${players.map(n => `<p class="text-gray-500 uppercase text-xs">• ${n}</p>`).join('')}</div>`;
+                res.appendChild(next);
+            }
+            showToast("Times embaralhados!");
         };
 
-        // --- UI ACTIONS ---
+        window.addPlayerFromTeams = async () => {
+            const i = document.getElementById('input-name-teams'); const name = i.value.trim();
+            if(!name) return;
+            const entryId = Math.random().toString(36).substr(2, 9);
+            await updateDoc(doc(db, 'volei_events', currentEventId), { participants: arrayUnion({ entryId, name }) });
+            i.value = '';
+        };
+
         window.updateScore = async (team, amt) => {
             if(!currentEventId || !localEventData) return;
             const field = team === 'A' ? 'scoreA' : 'scoreB';
@@ -316,15 +301,27 @@
             if(cur >= max && (cur - other) >= 2) { await updateDoc(doc(db, 'volei_events', currentEventId), { scoreA:0, scoreB:0, [setField]: increment(1) }); }
             else { await updateDoc(doc(db, 'volei_events', currentEventId), { [field]: Math.max(0, cur) }); }
         };
+
         window.resetScore = async () => { if(confirm("Zerar partida?")) await updateDoc(doc(db, 'volei_events', currentEventId), { scoreA:0, scoreB:0, setsA:0, setsB:0 }); };
         window.removePlayer = async (id) => { const p = localEventData.participants.find(x => x.entryId === id); await updateDoc(doc(db, 'volei_events', currentEventId), { participants: arrayRemove(p) }); };
-        document.getElementById('btn-open-edit').onclick = () => { document.getElementById('modal-edit-title').value = localEventData.location; document.getElementById('modal-edit-address').value = localEventData.address; document.getElementById('modal-edit-group').value = localEventData.groupLink || ''; document.getElementById('edit-modal').style.display = 'flex'; };
-        document.getElementById('modal-cancel').onclick = () => document.getElementById('edit-modal').style.display = 'none';
-        document.getElementById('modal-save').onclick = async () => { await updateDoc(doc(db, 'volei_events', currentEventId), { location: document.getElementById('modal-edit-title').value, address: document.getElementById('modal-edit-address').value, groupLink: document.getElementById('modal-edit-group').value }); document.getElementById('edit-modal').style.display = 'none'; };
-        document.getElementById('btn-join').onclick = async () => { const n = document.getElementById('input-name').value.trim(); if(n) { const entryId = Math.random().toString(36).substr(2, 9); await updateDoc(doc(db, 'volei_events', currentEventId), { participants: arrayUnion({ entryId, name: n }) }); document.getElementById('input-name').value = ''; showToast("Confirmado! 🏐"); } };
-        document.getElementById('btn-search-id').onclick = () => { const id = document.getElementById('input-search-id').value.trim().toUpperCase(); if(id) window.location.href = `?id=${id}`; };
-        document.getElementById('btn-share').onclick = () => { navigator.clipboard.writeText(window.location.href); showToast("Link Copiado! 🏐"); };
-        document.getElementById('btn-calendar').onclick = () => { if(!localEventData) return; const startStr = localEventData.datetime.replace(/-/g, '').replace(/:/g, '') + '00'; const googleUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(localEventData.location)}&dates=${startStr}/${startStr}&details=${encodeURIComponent('Link: '+window.location.href)}&location=${encodeURIComponent(localEventData.address)}`; window.open(googleUrl, '_blank'); };
+
+        const renderEvent = (d) => {
+            document.getElementById('main-title-text').innerText = d.location;
+            document.querySelector('#display-address-text span').innerText = d.address;
+            document.getElementById('display-game-id').innerText = currentEventId;
+            const enc = encodeURIComponent(d.address);
+            document.getElementById('link-maps').href = `https://www.google.com/maps/search/?api=1&query=$00{enc}`;
+            document.getElementById('link-waze').href = `https://waze.com/ul?q=${enc}`;
+            if(d.groupLink) { document.getElementById('btn-join-group').href = d.groupLink; document.getElementById('btn-join-group').classList.remove('hidden'); }
+            document.getElementById('display-total-cost').innerText = `R$ ${d.totalCost.toFixed(2)}`;
+            const p = d.participants || [];
+            document.getElementById('display-person-cost').innerText = `R$ ${(d.totalCost / Math.max(1, p.length)).toFixed(2)}`;
+            document.getElementById('display-count').innerText = d.playerLimit ? `${p.length}/${d.playerLimit}` : p.length;
+            if(d.playerLimit) { document.getElementById('progress-container').classList.remove('hidden'); document.getElementById('progress-bar').style.width = Math.min(100, (p.length/d.playerLimit*100)) + '%'; }
+            document.getElementById('participants-list').innerHTML = p.map(u => `<li class="flex items-center justify-between p-3 bg-white/80 rounded-2xl shadow-sm border border-white/50 animate-pop"><span class="font-bold text-gray-700 uppercase text-xs ml-2">${u.name}</span><button onclick="removePlayer('${u.entryId}')" class="text-red-300 p-2 hover:bg-red-50 rounded-full transition-all"><i class="fa-solid fa-trash-can"></i></button></li>`).join('');
+            document.getElementById('score-a').innerText = d.scoreA || 0; document.getElementById('score-b').innerText = d.scoreB || 0;
+            document.getElementById('sets-a').innerText = d.setsA || 0; document.getElementById('sets-b').innerText = d.setsB || 0;
+        };
 
         const switchTab = (tab) => {
             ['players', 'teams', 'score'].forEach(t => document.getElementById(`tab-content-${t}`).classList.add('hidden'));
@@ -337,14 +334,42 @@
         document.getElementById('tab-btn-teams').onclick = () => switchTab('teams');
         document.getElementById('tab-btn-score').onclick = () => switchTab('score');
 
+        // --- VOZ ---
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if(SpeechRecognition) {
+            const rec = new SpeechRecognition(); rec.lang = 'pt-BR'; rec.continuous = true;
+            rec.onresult = (e) => {
+                const text = e.results[e.results.length - 1][0].transcript.toLowerCase();
+                const teamA = document.getElementById('name-team-a').value.toLowerCase();
+                const teamB = document.getElementById('name-team-b').value.toLowerCase();
+                if(text.includes('ponto') || text.includes('marca')) {
+                    if(text.includes(teamA)) window.updateScore('A', 1);
+                    else if(text.includes(teamB)) window.updateScore('B', 1);
+                }
+            };
+            document.getElementById('btn-voice').onclick = () => {
+                const btn = document.getElementById('btn-voice');
+                if(btn.classList.contains('listening')) { rec.stop(); btn.classList.remove('listening', 'bg-red-100', 'animate-pulse'); btn.querySelector('span').innerText = "Ativar Juiz de Voz"; }
+                else { rec.start(); btn.classList.add('listening', 'bg-red-100', 'animate-pulse'); btn.querySelector('span').innerText = "Ouvindo..."; }
+            };
+        }
+
         document.getElementById('create-form').onsubmit = async (e) => {
             e.preventDefault(); const btn = e.target.querySelector('button'); btn.disabled = true;
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; const shortId = chars[Math.floor(Math.random() * 26)] + chars[Math.floor(Math.random() * 26)] + Math.floor(1000 + Math.random() * 9000);
             try { await setDoc(doc(db, 'volei_events', shortId), { location: document.getElementById('input-location').value, address: document.getElementById('input-address').value, groupLink: document.getElementById('input-group-link').value, totalCost: parseFloat(document.getElementById('input-total').value), playerLimit: document.getElementById('check-unlimited').checked ? 0 : parseInt(document.getElementById('input-limit').value), participants: [], scoreA:0, scoreB:0, setsA:0, setsB:0, maxScore: 21, datetime: document.getElementById('input-datetime').value }); window.location.href = `?id=${shortId}`; } catch(err) { showToast("Erro ao criar."); btn.disabled = false; }
         };
 
+        document.getElementById('btn-share').onclick = () => { navigator.clipboard.writeText(window.location.href); showToast("Link Copiado! 🏐"); };
+        document.getElementById('btn-search-id').onclick = () => { const id = document.getElementById('input-search-id').value.trim().toUpperCase(); if(id) window.location.href = `?id=${id}`; };
         const showToast = (m) => { toastMsg.innerText = m; toastEl.classList.add('show'); setTimeout(() => toastEl.classList.remove('show'), 3000); };
+        
         init();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(err => console.log("SW error:", err)); });
+        }
     </script>
 </body>
 </html>
