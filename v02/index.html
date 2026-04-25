@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Cuida na Fuga v07.1</title>
+    <title>Cuida na Fuga v08</title>
     
     <meta name="theme-color" content="#FFD90F">
     <link rel="manifest" href="manifest.json">
@@ -31,7 +31,7 @@
             display: flex; justify-content: space-around; padding: 12px 10px calc(12px + env(safe-area-inset-bottom));
             z-index: 5000;
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; transition: 0.3s; flex-1; width: 100%; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; transition: 0.3s; flex: 1; }
         .nav-item.active { color: #0094DA; }
         .nav-item i { font-size: 20px; }
         .nav-item span { font-size: 9px; font-weight: 900; text-transform: uppercase; }
@@ -39,7 +39,7 @@
         .btn-homer { background: var(--homer-yellow); color: #1e3a8a; font-weight: 900; text-transform: uppercase; border-radius: 18px; transition: 0.2s; border-bottom: 4px solid #d97706; }
         .btn-homer:active { transform: translateY(2px); border-bottom-width: 2px; }
 
-        #view-login, #view-agenda, #view-event, #view-create, #view-users, #loading-screen, #install-banner { display: none; }
+        #view-login, #view-agenda, #view-event, #view-create, #view-users, #loading-screen { display: none; }
         .active-view { display: block !important; }
         .active-flex { display: flex !important; }
         
@@ -51,43 +51,28 @@
         
         .toast { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: translateY(150%) translateX(-50%); opacity: 0; z-index: 6000; }
         .toast.show { transform: translateY(0) translateX(-50%); opacity: 1; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-
+        
         @keyframes duffBounce { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-15px) scale(1.05); } }
         .animate-duff { animation: duffBounce 0.8s ease-in-out infinite; }
     </style>
 </head>
 <body>
 
-    <div id="install-banner" class="fixed top-0 left-0 w-full z-[8000] p-3 animate-pop">
-        <div class="bg-white rounded-2xl shadow-2xl p-4 flex items-center justify-between border-2 border-yellow-400">
-            <div class="flex items-center gap-3">
-                <span class="text-3xl">🍺</span>
-                <div>
-                    <p class="text-xs font-black text-gray-800 leading-tight uppercase">Cuida na Fuga App</p>
-                    <p class="text-[10px] text-gray-500">Instala aí na tela inicial!</p>
-                </div>
-            </div>
-            <button id="btn-install-app" class="bg-blue-600 text-white text-[10px] font-black px-4 py-2 rounded-xl uppercase shadow-lg">Instalar</button>
-        </div>
-    </div>
-
-    <div id="loading-screen" class="fixed inset-0 bg-homer z-[9000] flex-col items-center justify-center text-blue-900 active-flex">
+    <div id="loading-screen" class="fixed inset-0 bg-homer z-[9000] flex flex-col items-center justify-center active-flex">
         <div class="relative w-32 h-32 flex items-center justify-center animate-duff mb-2">
             <span class="text-7xl absolute">🍺</span>
             <div class="absolute -translate-x-1 translate-y-3 -rotate-12 bg-red-600 border-2 border-black rounded-lg px-2 py-0.5 shadow-lg">
                 <span class="text-[11px] text-white font-black tracking-widest uppercase">Duff</span>
             </div>
         </div>
-        <p class="font-900 uppercase tracking-widest italic text-lg shadow-black drop-shadow-md text-white">Cuida na Fuga...</p>
+        <p class="font-900 uppercase tracking-widest italic text-lg text-white drop-shadow-md">Cuida na Fuga...</p>
     </div>
 
     <header id="main-header" class="bg-homer pt-12 pb-16 rounded-b-[45px] px-8 relative shadow-lg hidden">
         <div class="flex justify-between items-center">
             <div class="flex items-center gap-3 cursor-pointer active:scale-95 transition-all" onclick="window.goHome()">
-                <div class="w-12 h-12 rounded-full border-4 border-white shadow-lg bg-white flex items-center justify-center text-2xl overflow-hidden" id="user-photo-container">
-                    <img id="user-photo" src="" class="w-full h-full object-cover hidden">
-                    <span id="user-emoji" class="hidden">😎</span>
+                <div class="w-12 h-12 rounded-full border-4 border-white shadow-lg bg-white flex items-center justify-center text-2xl overflow-hidden">
+                    <img id="user-photo" src="https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png" class="w-full h-full object-cover">
                 </div>
                 <div class="text-left">
                     <p class="text-[10px] font-black text-blue-900 uppercase opacity-60 leading-none">Salve,</p>
@@ -106,97 +91,85 @@
     <main class="max-w-md mx-auto px-5 -mt-8 relative z-20">
 
         <div id="view-login" class="text-center space-y-6 pt-10">
-            <div class="glass-card p-8 space-y-6 border-b-4 border-yellow-400 shadow-xl mt-12">
+            <div class="glass-card p-8 space-y-6 border-b-4 border-yellow-400 mt-12">
                 <div class="text-6xl mb-2">🍩</div>
                 <h2 class="text-3xl font-900 text-gray-800 uppercase italic leading-none">Bora fugir?</h2>
-                <p class="text-xs text-gray-500 font-medium">Faça login para organizar e ver os rolês da turma.</p>
-                
                 <form id="form-login" class="space-y-4">
-                    <input type="text" id="input-user" required class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none border-2 border-gray-100 focus:border-blue-400 transition-all text-center lowercase" placeholder="Usuário">
-                    <input type="password" id="input-pass" required class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none border-2 border-gray-100 focus:border-blue-400 transition-all text-center" placeholder="Senha">
-                    <button type="submit" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg active:scale-95 transition-all uppercase tracking-widest mt-2">
-                        Entrar na Área
-                    </button>
+                    <input type="text" id="input-user" required class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none border-2 border-gray-100 text-center uppercase" placeholder="Usuário">
+                    <input type="password" id="input-pass" required class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none border-2 border-gray-100 text-center" placeholder="Senha">
+                    <button type="submit" class="w-full bg-blue-600 text-white font-900 py-4 rounded-2xl shadow-lg active:scale-95 uppercase tracking-widest">Entrar na Área</button>
                 </form>
             </div>
         </div>
 
         <div id="view-agenda" class="space-y-4 animate-pop">
             <div class="glass-card p-5 border-blue-200 border-2 shadow-sm mb-4 flex gap-2">
-                <input type="text" id="input-search-id" class="flex-1 px-4 py-2 bg-gray-50 rounded-xl outline-none uppercase font-mono font-bold text-sm" placeholder="Tem código? Cola aqui">
-                <button id="btn-search-id" class="bg-blue-600 text-white font-black px-5 rounded-xl active:scale-95 shadow-md"><i class="fa-solid fa-arrow-right"></i></button>
+                <input type="text" id="input-search-id" class="flex-1 px-4 py-2 bg-gray-50 rounded-xl outline-none uppercase font-mono font-bold text-sm" placeholder="Tem código?">
+                <button id="btn-search-id" class="bg-blue-600 text-white font-black px-5 rounded-xl active:scale-95"><i class="fa-solid fa-arrow-right"></i></button>
             </div>
-
-            <h3 class="text-xs font-900 text-blue-900 uppercase tracking-widest flex items-center gap-2 mb-2 ml-1">
-                <i class="fa-solid fa-calendar-days"></i> Próximas Fugas
-            </h3>
-            <div id="agenda-list" class="space-y-3">
-                </div>
+            <h3 class="text-xs font-900 text-blue-900 uppercase ml-1"><i class="fa-solid fa-calendar-days mr-1"></i> Próximas Fugas</h3>
+            <div id="agenda-list" class="space-y-3"></div>
         </div>
 
         <div id="view-users" class="space-y-6 animate-pop">
             <div class="glass-card p-6 border-b-4 border-blue-600">
-                <h2 class="text-xl font-900 text-gray-800 mb-4 uppercase italic">Cadastrar Parceiro</h2>
+                <h2 class="text-xl font-900 text-gray-800 mb-4 uppercase italic">Novo Parceiro</h2>
                 <form id="form-new-user" class="space-y-3">
-                    <input type="text" id="new-user-name" required placeholder="Nome do Jogador (Ex: João)" class="w-full px-4 py-3 bg-gray-50 rounded-xl font-bold outline-none border-2 border-gray-100 focus:border-blue-400 text-sm">
+                    <input type="text" id="new-user-name" required placeholder="Nome" class="w-full px-4 py-3 bg-gray-50 rounded-xl font-bold outline-none border-2 border-gray-100 text-sm">
                     <div class="flex gap-2">
-                        <input type="text" id="new-user-login" required placeholder="Login" class="flex-[2] px-4 py-3 bg-gray-50 rounded-xl font-bold outline-none border-2 border-gray-100 focus:border-blue-400 lowercase text-sm">
-                        <input type="text" id="new-user-pass" required placeholder="Senha" class="flex-1 px-4 py-3 bg-gray-50 rounded-xl font-bold outline-none border-2 border-gray-100 focus:border-blue-400 text-sm">
+                        <input type="text" id="new-user-login" required placeholder="Login" class="flex-[2] px-4 py-3 bg-gray-50 rounded-xl font-bold outline-none border-2 border-gray-100 lowercase text-sm">
+                        <input type="text" id="new-user-pass" required placeholder="Senha" class="flex-1 px-4 py-3 bg-gray-50 rounded-xl font-bold outline-none border-2 border-gray-100 text-sm">
                     </div>
-                    <div class="flex items-center justify-between bg-blue-50 p-3 rounded-xl border border-blue-100">
-                        <span class="text-[10px] font-black text-blue-900 uppercase">Cargo de Diretoria?</span>
+                    <label class="flex items-center justify-between bg-blue-50 p-3 rounded-xl border border-blue-100 cursor-pointer">
+                        <span class="text-[10px] font-black text-blue-900 uppercase">É Diretoria?</span>
                         <input type="checkbox" id="new-user-role" class="w-6 h-6 rounded-lg accent-blue-600">
-                    </div>
-                    <button type="submit" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl shadow-md uppercase text-xs tracking-widest mt-2 active:scale-95"><i class="fa-solid fa-user-plus mr-2"></i> Criar Conta</button>
+                    </label>
+                    <button type="submit" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl shadow-md uppercase text-xs">Criar Conta</button>
                 </form>
             </div>
-
-            <div class="glass-card p-6">
-                <h3 class="text-sm font-900 text-gray-800 mb-4 uppercase italic">Turma Cadastrada</h3>
-                <div id="users-list-container" class="space-y-2">
-                    </div>
-            </div>
+            <div class="glass-card p-6"><div id="users-list-container" class="space-y-2"></div></div>
         </div>
 
         <div id="view-create" class="animate-pop">
             <div class="glass-card p-6">
                 <h2 class="text-xl font-900 text-gray-800 mb-6 uppercase italic border-b-2 border-yellow-400 pb-2">Marcar Rolê</h2>
                 <form id="form-new-event" class="space-y-4">
-                    <select id="new-category" class="w-full px-4 py-4 bg-gray-50 border-none rounded-2xl font-bold outline-none cursor-pointer">
-                        <option value="volei">🏐 Vôlei</option><option value="churrasco">🔥 Churrasco</option><option value="jogos">🎮 Games</option><option value="viagem">✈️ Viagem / Passeio</option>
+                    <select id="new-category" class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none" onchange="window.toggleViagemFields()">
+                        <option value="volei">🏐 Vôlei</option>
+                        <option value="viagem">✈️ Viagem / Passeio</option>
+                        <option value="churrasco">🔥 Churrasco</option>
+                        <option value="jogos">🎮 Games</option>
                     </select>
-                    <input type="text" id="new-title" required class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none" placeholder="Nome do Rolê">
-                    <input type="text" id="new-address" required class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none text-sm" placeholder="Onde vai ser? (Endereço)">
+                    <input type="text" id="new-title" required class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none" placeholder="Nome do Evento">
+                    <input type="text" id="new-address" required class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none text-sm" placeholder="Onde? (Endereço)">
+                    
+                    <div id="viagem-fields" class="hidden space-y-4">
+                        <textarea id="new-details" class="w-full px-4 py-4 bg-blue-50 rounded-2xl font-bold outline-none text-sm border-2 border-blue-100" placeholder="Detalhes: o que levar, quem leva o carro, etc." rows="3"></textarea>
+                    </div>
+
                     <div class="grid grid-cols-2 gap-3">
                         <input type="datetime-local" id="new-date" required class="px-4 py-4 bg-gray-50 rounded-2xl text-[10px] font-bold outline-none">
                         <input type="number" id="new-total" required class="px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none" placeholder="Valor Total R$">
                     </div>
-                    
-                    <div id="diretoria-only-area" class="hidden items-center justify-between px-4 py-4 bg-blue-50 rounded-2xl border border-blue-100">
+                    <label id="diretoria-only-area" class="hidden items-center justify-between px-4 py-4 bg-blue-50 rounded-2xl border border-blue-100 cursor-pointer">
                         <div class="flex items-center gap-2"><i class="fa-solid fa-user-shield text-blue-600"></i><span class="text-xs font-black text-blue-900 uppercase">Só Diretoria?</span></div>
-                        <input type="checkbox" id="new-private" class="w-6 h-6 rounded-lg accent-blue-600 cursor-pointer">
-                    </div>
-
-                    <button type="submit" class="w-full btn-homer py-5 mt-4 text-sm tracking-widest shadow-xl">Lançar a Braba 🚀</button>
+                        <input type="checkbox" id="new-private" class="w-6 h-6 rounded-lg accent-blue-600">
+                    </label>
+                    <button type="submit" class="w-full btn-homer py-5 mt-4 text-sm tracking-widest shadow-xl">Cuida na Fuga! 🚀</button>
                 </form>
             </div>
         </div>
 
         <div id="view-event" class="animate-pop space-y-5">
-            
             <div class="glass-card p-6 relative overflow-hidden">
                 <div class="absolute -top-4 -right-4 text-6xl opacity-10 rotate-12" id="bg-icon">😎</div>
-                <button id="btn-share" class="absolute top-5 right-5 bg-white text-blue-600 p-3 rounded-full shadow-md w-12 h-12 flex items-center justify-center z-10 active:scale-90"><i class="fa-solid fa-share-nodes"></i></button>
-                
+                <button id="btn-share-event" class="absolute top-5 right-5 bg-white text-blue-600 p-3 rounded-full shadow-md w-12 h-12 flex items-center justify-center z-10 active:scale-90"><i class="fa-solid fa-share-nodes"></i></button>
                 <h2 id="display-title" class="text-xl font-black text-gray-800 pr-14 leading-tight uppercase italic mb-1">...</h2>
-                <p class="text-[11px] text-gray-500 mb-5 pr-16 font-bold flex items-start gap-1">
-                    <i class="fa-solid fa-location-dot text-red-500 mt-0.5"></i> <span id="display-address">...</span>
-                </p>
-
+                <p class="text-[11px] text-gray-500 mb-5 pr-16 font-bold flex items-start gap-1"><i class="fa-solid fa-location-dot text-red-500 mt-0.5"></i> <span id="display-address">...</span></p>
+                
                 <div class="flex items-center gap-3 mb-6">
-                    <a id="link-maps" target="_blank" class="flex-1 py-3 rounded-xl bg-gray-50 flex items-center justify-center gap-2 shadow-sm text-blue-600 active:scale-95 font-black text-[10px] uppercase border border-gray-100"><i class="fa-solid fa-map-location-dot text-lg"></i> Maps</a>
-                    <a id="link-waze" target="_blank" class="flex-1 py-3 rounded-xl bg-gray-50 flex items-center justify-center gap-2 shadow-sm text-cyan-500 active:scale-95 font-black text-[10px] uppercase border border-gray-100"><i class="fa-brands fa-waze text-lg"></i> Waze</a>
-                    <button id="btn-calendar" class="w-12 h-11 rounded-xl bg-gray-50 flex items-center justify-center shadow-sm text-orange-500 active:scale-95 border border-gray-100"><i class="fa-regular fa-calendar-plus text-lg"></i></button>
+                    <a id="link-maps" target="_blank" class="flex-1 py-3 rounded-xl bg-gray-50 flex items-center justify-center gap-2 shadow-sm text-blue-600 font-black text-[10px] uppercase border border-gray-100"><i class="fa-solid fa-map-location-dot"></i> Maps</a>
+                    <a id="link-waze" target="_blank" class="flex-1 py-3 rounded-xl bg-gray-50 flex items-center justify-center gap-2 shadow-sm text-cyan-500 font-black text-[10px] uppercase border border-gray-100"><i class="fa-brands fa-waze"></i> Waze</a>
                 </div>
 
                 <div class="bg-blue-600 rounded-2xl p-4 flex justify-between items-center shadow-inner border-b-4 border-blue-800">
@@ -205,356 +178,154 @@
                 </div>
             </div>
 
-            <div id="event-tabs" class="flex p-1 bg-white rounded-2xl border border-gray-100 shadow-sm">
-                <button onclick="window.switchTab('players')" id="tab-btn-players" class="flex-1 py-3 rounded-xl text-[10px] font-black bg-blue-50 text-blue-600 uppercase transition-all">Galera</button>
-                <button onclick="window.switchTab('teams')" id="tab-btn-teams" class="flex-1 py-3 rounded-xl text-[10px] font-black text-gray-400 uppercase transition-all hidden">Times</button>
-                <button onclick="window.switchTab('score')" id="tab-btn-score" class="flex-1 py-3 rounded-xl text-[10px] font-black text-gray-400 uppercase transition-all hidden">Placar</button>
+            <div id="event-tabs" class="flex p-1 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-x-auto no-scrollbar">
+                <button onclick="window.switchTab('players')" id="tab-btn-players" class="flex-1 py-3 rounded-xl text-[10px] font-black text-blue-600 bg-blue-50 uppercase min-w-[80px]">Galera</button>
+                <button onclick="window.switchTab('planning')" id="tab-btn-planning" class="flex-1 py-3 rounded-xl text-[10px] font-black text-gray-400 uppercase hidden min-w-[100px]">Viagem</button>
+                <button onclick="window.switchTab('teams')" id="tab-btn-teams" class="flex-1 py-3 rounded-xl text-[10px] font-black text-gray-400 uppercase hidden min-w-[80px]">Times</button>
+                <button onclick="window.switchTab('score')" id="tab-btn-score" class="flex-1 py-3 rounded-xl text-[10px] font-black text-gray-400 uppercase hidden min-w-[80px]">Placar</button>
             </div>
 
             <div id="tab-content-players" class="glass-card p-6 block animate-pop">
-                <div class="flex justify-between items-end mb-4"><h3 class="text-lg font-black text-gray-800 uppercase italic">Confirmados</h3><span id="display-count" class="bg-yellow-400 text-yellow-900 text-xs font-black px-3 py-1 rounded-xl shadow-sm">0</span></div>
-                <ul id="participants-list" class="space-y-2 mb-6 max-h-[350px] overflow-y-auto pr-1"></ul>
+                <div class="flex justify-between items-end mb-4"><h3 class="text-lg font-black text-gray-800 uppercase italic">Confirmados</h3><span id="display-count" class="bg-yellow-400 text-yellow-900 text-xs font-black px-3 py-1 rounded-xl">0</span></div>
+                <ul id="participants-list" class="space-y-2 mb-6 max-h-[350px] overflow-y-auto"></ul>
                 <div class="border-t-2 border-dashed border-gray-100 pt-5">
-                    <button id="btn-join" class="w-full bg-green-500 text-white font-black py-4 rounded-2xl shadow-lg active:scale-95 transition-transform uppercase tracking-widest"><i class="fa-solid fa-check mr-2"></i> Tô Dentro!</button>
+                    <button id="btn-join" class="w-full bg-green-500 text-white font-black py-4 rounded-2xl shadow-lg active:scale-95 uppercase tracking-widest"><i class="fa-solid fa-check mr-2"></i> Tô Dentro!</button>
+                </div>
+            </div>
+
+            <div id="tab-content-planning" class="glass-card p-6 hidden animate-pop">
+                <h3 class="text-lg font-black text-gray-800 mb-4 uppercase italic">Roteiro e Detalhes</h3>
+                <div class="bg-blue-50 border-2 border-blue-100 p-4 rounded-2xl text-blue-900 text-sm font-medium whitespace-pre-wrap leading-relaxed" id="display-planning-details">
+                    Nenhum detalhe cadastrado.
                 </div>
             </div>
 
             <div id="tab-content-teams" class="glass-card p-6 hidden animate-pop">
-                <h3 class="text-lg font-black text-gray-800 mb-4 uppercase italic">Dividir Times</h3>
-                <div class="space-y-4 mb-6">
-                    <div class="bg-gray-50 p-3 rounded-2xl border-2 border-gray-100 flex items-center justify-between">
-                        <span class="text-xs font-black text-gray-500 uppercase">Formato:</span>
-                        <select id="players-per-team" class="bg-white border-2 border-gray-100 rounded-xl px-2 py-2 font-black text-blue-600 outline-none text-sm cursor-pointer">
-                            <option value="2">2x2</option><option value="3">3x3</option><option value="4">4x4</option><option value="5">5x5</option><option value="6" selected>6x6</option><option value="colher">Colher de Chá (5x4)</option>
-                        </select>
-                    </div>
-                    <button onclick="window.drawTeams()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg uppercase tracking-widest active:scale-95 italic"><i class="fa-solid fa-shuffle mr-2"></i> Sortear Agora</button>
+                <h3 class="text-lg font-black text-gray-800 mb-4 uppercase italic">Sorteio</h3>
+                <div class="space-y-4">
+                    <select id="players-per-team" class="w-full bg-gray-50 p-3 rounded-xl font-bold outline-none border-2 border-gray-100 text-sm">
+                        <option value="2">2x2</option><option value="3">3x3</option><option value="4">4x4</option><option value="5">5x5</option><option value="6" selected>6x6</option><option value="colher">Colher de Chá (5x4)</option>
+                    </select>
+                    <button onclick="window.drawTeams()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl uppercase tracking-widest active:scale-95 italic">Embaralhar!</button>
+                    <div id="teams-result" class="space-y-3 mt-4"></div>
                 </div>
-                <div id="teams-result" class="space-y-3"></div>
             </div>
 
             <div id="tab-content-score" class="glass-card p-6 hidden text-center animate-pop">
-                <div class="flex flex-col gap-3 mb-6">
-                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-2xl border-2 border-gray-100"><span class="text-xs font-black text-gray-500 uppercase">Set Fecha:</span><select id="config-max-score" class="bg-white border-2 border-gray-100 rounded-xl px-2 py-1 text-sm font-black text-blue-600 outline-none"><option value="15">15 pts</option><option value="21">21 pts</option><option value="25">25 pts</option></select></div>
-                    <button id="btn-voice" class="w-full bg-white text-gray-700 font-black py-4 rounded-2xl border-2 border-gray-100 shadow-sm flex items-center justify-center gap-2 active:scale-95 transition-all"><i class="fa-solid fa-microphone text-blue-400 text-lg"></i><span>Ativar Juiz de Voz</span></button>
-                </div>
-                <div class="flex justify-between items-stretch gap-3">
-                    <div class="flex-1 bg-gray-50 rounded-2xl p-4 shadow-inner border-2 border-gray-100">
-                        <div class="text-[9px] font-black text-gray-400 mb-2 uppercase">Sets: <span id="sets-a" class="text-blue-600 text-sm">0</span></div>
-                        <input type="text" id="name-team-a" class="w-full text-center bg-transparent font-black text-[10px] border-b-2 border-gray-300 mb-3 uppercase focus:outline-none" value="TIME A">
-                        <div class="text-6xl font-black text-gray-800 my-4" id="score-a">0</div>
-                        <div class="flex gap-2"><button onclick="window.updateScore('A', -1)" class="flex-1 bg-red-100 text-red-600 py-3 rounded-xl font-black">-</button><button onclick="window.updateScore('A', 1)" class="flex-[2] bg-green-500 text-white py-3 rounded-xl font-black shadow-lg">+</button></div>
+                <div class="flex justify-between items-center mb-6 bg-gray-50 p-3 rounded-xl border border-gray-100"><span class="text-xs font-black text-gray-500 uppercase">Fecha em:</span><select id="config-max-score" class="bg-white border-2 border-gray-100 rounded-xl px-2 py-1 text-sm font-black text-blue-600 outline-none"><option value="15">15</option><option value="21">21</option></select></div>
+                <div class="flex justify-between items-stretch gap-3 mb-8">
+                    <div class="flex-1 bg-gray-50 rounded-2xl p-4 border-2 border-gray-100">
+                        <p class="text-[9px] font-black text-gray-400 uppercase">Sets: <span id="sets-a" class="text-blue-600">0</span></p>
+                        <input id="name-team-a" class="w-full text-center bg-transparent font-black text-[10px] border-b-2 border-gray-300 mb-3 uppercase outline-none" value="TIME A">
+                        <div class="text-6xl font-900 text-gray-800 mb-4" id="score-a">0</div>
+                        <div class="flex gap-2"><button onclick="window.updateScore('A', -1)" class="flex-1 bg-white text-gray-400 py-3 rounded-xl border">-</button><button onclick="window.updateScore('A', 1)" class="flex-[2] bg-green-500 text-white py-3 rounded-xl font-black shadow-lg">+</button></div>
                     </div>
-                    <div class="flex items-center text-gray-300 font-black italic">VS</div>
-                    <div class="flex-1 bg-gray-50 rounded-2xl p-4 shadow-inner border-2 border-gray-100">
-                        <div class="text-[9px] font-black text-gray-400 mb-2 uppercase">Sets: <span id="sets-b" class="text-blue-600 text-sm">0</span></div>
-                        <input type="text" id="name-team-b" class="w-full text-center bg-transparent font-black text-[10px] border-b-2 border-gray-300 mb-3 uppercase focus:outline-none" value="TIME B">
-                        <div class="text-6xl font-black text-gray-800 my-4" id="score-b">0</div>
-                        <div class="flex gap-2"><button onclick="window.updateScore('B', -1)" class="flex-1 bg-red-100 text-red-600 py-3 rounded-xl font-black">-</button><button onclick="window.updateScore('B', 1)" class="flex-[2] bg-blue-500 text-white py-3 rounded-xl font-black shadow-lg">+</button></div>
+                    <div class="flex-1 bg-gray-50 rounded-2xl p-4 border-2 border-gray-100">
+                        <p class="text-[9px] font-black text-gray-400 uppercase">Sets: <span id="sets-b" class="text-blue-600">0</span></p>
+                        <input id="name-team-b" class="w-full text-center bg-transparent font-black text-[10px] border-b-2 border-gray-300 mb-3 uppercase outline-none" value="TIME B">
+                        <div class="text-6xl font-900 text-gray-800 mb-4" id="score-b">0</div>
+                        <div class="flex gap-2"><button onclick="window.updateScore('B', -1)" class="flex-1 bg-white text-gray-400 py-3 rounded-xl border">-</button><button onclick="window.updateScore('B', 1)" class="flex-[2] bg-blue-500 text-white py-3 rounded-xl font-black shadow-lg">+</button></div>
                     </div>
                 </div>
-                <div class="mt-6"><button onclick="window.resetScore()" class="text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-red-500 transition-colors"><i class="fa-solid fa-rotate-left mr-1"></i> Zerar Partida</button></div>
+                <button onclick="window.resetScore()" class="text-[10px] font-black text-gray-400 uppercase tracking-widest"><i class="fa-solid fa-rotate-left mr-1"></i> Zerar Partida</button>
             </div>
         </div>
-
     </main>
 
     <nav id="bottom-nav" class="bottom-nav hidden">
-        <button onclick="window.goHome()" class="nav-item active" id="nav-agenda">
-            <i class="fa-solid fa-house"></i><span>Início</span>
-        </button>
-        <button onclick="window.changeView('create')" class="nav-item" id="nav-create">
-            <i class="fa-solid fa-calendar-plus"></i><span>Novo</span>
-        </button>
-        <button onclick="window.changeView('users')" class="nav-item hidden" id="nav-users">
-            <i class="fa-solid fa-users-gear"></i><span>Turma</span>
-        </button>
-        <button onclick="window.logout()" class="nav-item text-red-400" id="nav-logout">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i><span>Sair</span>
-        </button>
+        <button onclick="window.goHome()" class="nav-item active" id="nav-agenda"><i class="fa-solid fa-house"></i><span>Início</span></button>
+        <button onclick="window.changeView('create')" class="nav-item" id="nav-create"><i class="fa-solid fa-calendar-plus"></i><span>Novo</span></button>
+        <button onclick="window.changeView('users')" class="nav-item hidden" id="nav-users"><i class="fa-solid fa-users-gear"></i><span>Turma</span></button>
+        <button onclick="window.logout()" class="nav-item text-red-400"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Sair</span></button>
     </nav>
 
-    <div id="toast" class="toast fixed bottom-24 left-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-2xl text-xs font-black uppercase tracking-widest whitespace-nowrap flex items-center justify-center">
-        <span id="toast-msg">Mensagem</span>
-    </div>
+    <div id="toast" class="toast fixed bottom-24 left-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-2xl text-xs font-black uppercase flex items-center justify-center"><span id="toast-msg">Mensagem</span></div>
 
     <script>
-        const firebaseConfig = { 
-            apiKey: "AIzaSyA3RQucgd5vMeJzZgZnC4Zim9hkFVVWXnw", 
-            authDomain: "volei-3f30d.firebaseapp.com", 
-            projectId: "volei-3f30d", 
-            storageBucket: "volei-3f30d.firebasestorage.app", 
-            messagingSenderId: "969073040869", 
-            appId: "1:969073040869:web:c0f6005d98fae4144de30c" 
-        };
-        
+        const firebaseConfig = { apiKey: "AIzaSyA3RQucgd5vMeJzZgZnC4Zim9hkFVVWXnw", authDomain: "volei-3f30d.firebaseapp.com", projectId: "volei-3f30d", storageBucket: "volei-3f30d.firebasestorage.app", messagingSenderId: "969073040869", appId: "1:969073040869:web:c0f6005d98fae4144de30c" };
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+        const auth = firebase.auth(); const db = firebase.firestore();
 
-        let userData = null;
-        let currentEventId = null;
-        let localEventData = null;
-
+        let userData = null, currentEventId = null, localEventData = null;
         const urlParams = new URLSearchParams(window.location.search);
         const rawId = urlParams.get('id');
-        if (rawId) { currentEventId = (rawId.length === 6) ? rawId.toUpperCase() : rawId; }
+        if (rawId) { currentEventId = rawId.toUpperCase(); }
 
-        // --- PWA INSTALL ---
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault(); deferredPrompt = e;
-            if (!window.matchMedia('(display-mode: standalone)').matches) document.getElementById('install-banner').style.display = 'block';
-        });
-        document.getElementById('btn-install-app').onclick = async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') document.getElementById('install-banner').style.display = 'none';
-                deferredPrompt = null;
-            }
-        };
-
-        // --- UTILITÁRIOS ---
-        window.showToast = (m) => { 
-            const t = document.getElementById('toast'); 
-            document.getElementById('toast-msg').innerText = m; 
-            t.classList.add('show'); 
-            setTimeout(() => t.classList.remove('show'), 3000); 
-        };
-
-        window.changeView = (viewId) => {
-            document.querySelectorAll('main > div').forEach(v => v.classList.remove('active-view'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active', 'text-blue-600'));
-            
-            const view = document.getElementById(`view-${viewId}`);
-            if(view) view.classList.add('active-view');
-            
-            const nav = document.getElementById(`nav-${viewId}`);
-            if(nav && viewId !== 'event') nav.classList.add('active', 'text-blue-600');
+        window.showToast = (m) => { const t = document.getElementById('toast'); document.getElementById('toast-msg').innerText = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); };
+        window.changeView = (v) => {
+            document.querySelectorAll('main > div').forEach(x => x.classList.remove('active-view'));
+            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+            const view = document.getElementById(`view-${v}`); if(view) view.classList.add('active-view');
+            const nav = document.getElementById(`nav-${v}`); if(nav && v !== 'event') nav.classList.add('active');
             window.scrollTo(0,0);
         };
-
-        window.goHome = () => {
-            currentEventId = null;
-            window.history.pushState({}, '', window.location.pathname);
-            document.getElementById('game-badge').classList.add('hidden');
-            window.changeView('agenda');
-        };
-
+        window.goHome = () => { currentEventId = null; window.history.pushState({}, '', window.location.pathname); document.getElementById('game-badge').classList.add('hidden'); window.changeView('agenda'); };
         window.switchTab = (t) => {
-            ['players', 'teams', 'score'].forEach(x => {
-                document.getElementById(`tab-content-${x}`).classList.add('hidden');
-                document.getElementById(`tab-btn-${x}`).className = "flex-1 py-3 rounded-xl text-[10px] font-black text-gray-400 uppercase transition-all";
+            ['players', 'teams', 'score', 'planning'].forEach(x => {
+                const content = document.getElementById(`tab-content-${x}`); if(content) content.classList.add('hidden');
+                const btn = document.getElementById(`tab-btn-${x}`); if(btn) btn.className = "flex-1 py-3 rounded-xl text-[10px] font-black text-gray-400 uppercase min-w-[80px]";
             });
             document.getElementById(`tab-content-${t}`).classList.remove('hidden');
-            document.getElementById(`tab-btn-${t}`).className = "flex-1 py-3 rounded-xl text-[10px] font-black bg-blue-50 text-blue-600 uppercase transition-all";
+            document.getElementById(`tab-btn-${t}`).className = "flex-1 py-3 rounded-xl text-[10px] font-black bg-blue-50 text-blue-600 uppercase min-w-[80px]";
         };
+        window.toggleViagemFields = () => { document.getElementById('viagem-fields').classList.toggle('hidden', document.getElementById('new-category').value !== 'viagem'); };
 
-        window.logout = () => { 
-            localStorage.removeItem('cuida_session');
-            auth.signOut().then(() => {
-                currentEventId = null;
-                window.history.pushState({}, '', window.location.pathname);
-                document.getElementById('main-header').classList.add('hidden');
-                document.getElementById('bottom-nav').classList.add('hidden');
-                window.changeView('login'); 
-            });
-        };
-
-        // --- INICIALIZAÇÃO ---
         const init = () => {
             try { db.enablePersistence(); } catch(e){}
+            
+            // Auto-create Admin
+            db.collection('app_users').doc('weverson').set({ name: "Weverson", username: "weverson", password: "023240", role: "Diretoria", photo: "https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png" }, {merge: true});
 
-            db.collection('app_users').doc('weverson').get().then(doc => {
-                if(!doc.exists) {
-                    db.collection('app_users').doc('weverson').set({
-                        name: "Weverson", username: "weverson", password: "023240",
-                        role: "Diretoria", photo: "https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png"
-                    });
-                }
-            });
-
-            auth.onAuthStateChanged((user) => {
-                const localSession = localStorage.getItem('cuida_session');
-                
-                if (localSession) {
-                    // Garante que o firebase está rodando anônimo pra não travar leitura
-                    if(!user) { auth.signInAnonymously(); return; }
-
-                    db.collection('app_users').doc(localSession).onSnapshot(docSnap => {
+            auth.onAuthStateChanged((u) => {
+                const session = localStorage.getItem('cuida_session');
+                if (session) {
+                    if(!u) { auth.signInAnonymously(); return; }
+                    db.collection('app_users').doc(session).onSnapshot(s => {
                         document.getElementById('loading-screen').classList.remove('active-flex');
                         document.getElementById('main-header').classList.remove('hidden');
-                        
-                        if(docSnap.exists) {
-                            userData = docSnap.data();
-                            userData.uid = docSnap.id; 
-
+                        if(s.exists) {
+                            userData = s.data(); userData.uid = s.id;
                             document.getElementById('user-name-display').innerText = userData.name.split(' ')[0];
-                            if(userData.photo) {
-                                document.getElementById('user-photo').src = userData.photo;
-                                document.getElementById('user-photo').classList.remove('hidden');
-                                document.getElementById('user-emoji').classList.add('hidden');
-                            } else {
-                                document.getElementById('user-photo').classList.add('hidden');
-                                document.getElementById('user-emoji').classList.remove('hidden');
-                            }
-                            
-                            if(userData.role === 'Diretoria') {
-                                document.getElementById('user-role-badge').classList.remove('hidden');
-                                document.getElementById('diretoria-only-area').classList.remove('hidden');
-                                document.getElementById('diretoria-only-area').classList.add('flex');
-                                document.getElementById('nav-users').classList.remove('hidden');
-                                loadUsersList(); 
-                            } else {
-                                document.getElementById('nav-users').classList.add('hidden');
-                            }
-                            
-                            if(currentEventId) { 
-                                loadEventData(); 
-                            } else { 
-                                loadAgenda(); 
-                                window.changeView('agenda'); 
-                                document.getElementById('bottom-nav').classList.remove('hidden'); 
-                            }
-                        } else {
-                            window.logout();
-                        }
+                            document.getElementById('user-role-badge').classList.toggle('hidden', userData.role !== 'Diretoria');
+                            document.getElementById('diretoria-only-area').classList.toggle('hidden', userData.role !== 'Diretoria');
+                            document.getElementById('nav-users').classList.toggle('hidden', userData.role !== 'Diretoria');
+                            if(userData.role === 'Diretoria') loadUsersList();
+                            if(currentEventId) loadEventData(); else { loadAgenda(); window.changeView('agenda'); document.getElementById('bottom-nav').classList.remove('hidden'); }
+                        } else window.logout();
                     });
-                } else {
-                    document.getElementById('loading-screen').classList.remove('active-flex');
-                    document.getElementById('main-header').classList.add('hidden');
-                    window.changeView('login');
-                    document.getElementById('bottom-nav').classList.add('hidden');
-                }
+                } else { document.getElementById('loading-screen').classList.remove('active-flex'); document.getElementById('main-header').classList.add('hidden'); window.changeView('login'); document.getElementById('bottom-nav').classList.add('hidden'); }
             });
 
             document.getElementById('form-login').onsubmit = (e) => {
-                e.preventDefault();
-                const userVal = document.getElementById('input-user').value.toLowerCase().trim();
-                const passVal = document.getElementById('input-pass').value.trim();
-
-                document.getElementById('loading-screen').classList.add('active-flex');
-                
-                db.collection('app_users').doc(userVal).get().then(docSnap => {
-                    if(docSnap.exists && docSnap.data().password === passVal) {
-                        localStorage.setItem('cuida_session', userVal);
-                        auth.signInAnonymously().catch(console.error);
-                    } else {
-                        document.getElementById('loading-screen').classList.remove('active-flex');
-                        window.showToast("Login ou Senha incorretos!");
-                    }
+                e.preventDefault(); const uVal = document.getElementById('input-user').value.toLowerCase().trim(), pVal = document.getElementById('input-pass').value.trim();
+                db.collection('app_users').doc(uVal).get().then(snap => {
+                    if(snap.exists && snap.data().password === pVal) { localStorage.setItem('cuida_session', uVal); auth.signInAnonymously(); } else window.showToast("Erro nas credenciais!");
                 });
             };
         };
 
-        // --- GESTÃO DE USUÁRIOS ---
-        document.getElementById('form-new-user').onsubmit = (e) => {
-            e.preventDefault();
-            const btn = e.target.querySelector('button'); btn.disabled = true;
-            
-            const name = document.getElementById('new-user-name').value.trim();
-            const login = document.getElementById('new-user-login').value.toLowerCase().trim();
-            const pass = document.getElementById('new-user-pass').value.trim();
-            const role = document.getElementById('new-user-role').checked ? 'Diretoria' : 'Geral';
-
-            db.collection('app_users').doc(login).get().then(doc => {
-                if(doc.exists) {
-                    window.showToast("Esse login já existe!"); btn.disabled = false;
-                } else {
-                    db.collection('app_users').doc(login).set({
-                        name: name, username: login, password: pass, role: role, photo: ""
-                    }).then(() => {
-                        window.showToast("Usuário criado!");
-                        document.getElementById('form-new-user').reset();
-                        btn.disabled = false;
-                        
-                        const text = `Fala ${name}! Baixe o app Cuida na Fuga e acesse com seu login.\n\n👤 Usuário: ${login}\n🔑 Senha: ${pass}\n\nLink: ${window.location.href.split('?')[0]}`;
-                        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-                    });
-                }
-            });
-        };
-
-        function loadUsersList() {
-            db.collection('app_users').onSnapshot(snap => {
-                const list = document.getElementById('users-list-container');
-                list.innerHTML = '';
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    const el = document.createElement('div');
-                    el.className = "flex items-center justify-between p-3 bg-gray-50 border border-gray-100 rounded-xl mb-2 shadow-sm";
-                    el.innerHTML = `
-                        <div>
-                            <p class="font-black text-xs text-gray-800 uppercase">${d.name} ${d.role === 'Diretoria' ? '<i class="fa-solid fa-star text-yellow-500 ml-1"></i>' : ''}</p>
-                            <p class="text-[9px] font-bold text-gray-400">Login: ${d.username}</p>
-                        </div>
-                        <button onclick="window.sendInvite('${d.name}', '${d.username}', '${d.password}')" class="bg-green-500 text-white p-2 rounded-lg text-xs shadow-md active:scale-95"><i class="fa-brands fa-whatsapp"></i></button>
-                    `;
-                    list.appendChild(el);
-                });
-            });
-        }
-
-        window.sendInvite = (name, login, pass) => {
-            const text = `Fala ${name}! Baixe o app Cuida na Fuga e acesse com seu login.\n\n👤 Usuário: ${login}\n🔑 Senha: ${pass}\n\nLink: ${window.location.href.split('?')[0]}`;
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-        };
-
-        // --- EVENTOS E AGENDA (SPA) ---
         function loadEventData() {
-            document.getElementById('loading-screen').classList.add('active-flex');
-            db.collection('volei_events').doc(currentEventId).onSnapshot((s) => {
-                document.getElementById('loading-screen').classList.remove('active-flex');
-                if(!s.exists) { window.showToast("Rolê não existe!"); setTimeout(() => window.goHome(), 2000); return; }
-                
-                localEventData = s.data(); 
-                renderEvent(localEventData);
-                document.getElementById('bottom-nav').classList.remove('hidden');
-                document.getElementById('game-badge').classList.remove('hidden');
-                
-                if(!document.querySelector('.active-view') || document.querySelector('.active-view').id !== 'view-event') {
-                    window.changeView('event');
-                }
+            db.collection('volei_events').doc(currentEventId).onSnapshot(s => {
+                if(!s.exists) { window.showToast("Rolê sumiu!"); return window.goHome(); }
+                localEventData = s.data(); renderEvent(localEventData);
+                document.getElementById('bottom-nav').classList.remove('hidden'); document.getElementById('game-badge').classList.remove('hidden');
+                if(document.querySelector('.active-view')?.id !== 'view-event') window.changeView('event');
             });
         }
 
         function loadAgenda() {
             let q = db.collection('volei_events');
-            if(userData.role !== 'Diretoria') {
-                q = q.where('isPrivate', '==', false);
-            }
-
-            q.onSnapshot((snap) => {
-                const list = document.getElementById('agenda-list');
-                list.innerHTML = '';
+            if(userData.role !== 'Diretoria') q = q.where('isPrivate', '==', false);
+            q.onSnapshot(snap => {
+                const list = document.getElementById('agenda-list'); list.innerHTML = '';
                 snap.forEach(docSnap => {
-                    const d = docSnap.data();
-                    const card = document.createElement('div');
+                    const d = docSnap.data(), card = document.createElement('div');
                     card.className = "glass-card p-4 flex items-center gap-4 active:scale-95 transition-all cursor-pointer mb-3";
-                    
-                    // NAVEGAÇÃO SPA (Sem recarregar a página)
-                    card.onclick = () => {
-                        currentEventId = docSnap.id;
-                        window.history.pushState({}, '', `?id=${currentEventId}`);
-                        loadEventData();
-                    };
-                    
+                    card.onclick = () => { currentEventId = docSnap.id; window.history.pushState({}, '', `?id=${currentEventId}`); loadEventData(); };
                     const icons = { volei: '🏐', churrasco: '🔥', jogos: '🎮', viagem: '✈️' };
-                    card.innerHTML = `
-                        <div class="text-2xl bg-gray-50 w-14 h-14 flex items-center justify-center rounded-2xl shadow-inner border border-gray-100 shrink-0">
-                            ${icons[d.category] || '😎'}
-                        </div>
-                        <div class="flex-1 overflow-hidden">
-                            <h4 class="font-900 text-gray-800 uppercase italic text-sm truncate">${d.location}</h4>
-                            <p class="text-[9px] font-bold text-gray-400 uppercase">${new Date(d.datetime).toLocaleDateString('pt-BR')} às ${new Date(d.datetime).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}</p>
-                            ${d.isPrivate ? '<span class="role-badge diretoria-bg mt-1 inline-block">Privado</span>' : ''}
-                        </div>
-                        <i class="fa-solid fa-chevron-right text-gray-300 text-xs shrink-0"></i>
-                    `;
+                    card.innerHTML = `<div class="text-2xl bg-gray-50 w-14 h-14 flex items-center justify-center rounded-2xl shrink-0 border border-gray-100">${icons[d.category] || '😎'}</div><div class="flex-1 overflow-hidden"><h4 class="font-900 text-gray-800 uppercase italic text-sm truncate">${d.location}</h4><p class="text-[9px] font-bold text-gray-400 uppercase">${new Date(d.datetime).toLocaleDateString('pt-BR')}</p>${d.isPrivate ? '<span class="role-badge diretoria-bg mt-1 inline-block">Privado</span>' : ''}</div><i class="fa-solid fa-chevron-right text-gray-300 text-xs"></i>`;
                     list.appendChild(card);
                 });
-                if (snap.empty) list.innerHTML = '<p class="text-center text-gray-400 font-bold italic py-6">Nenhuma fuga marcada... cuida em criar uma!</p>';
             });
         }
 
@@ -562,157 +333,87 @@
             document.getElementById('display-title').innerText = d.location;
             document.getElementById('display-game-id').innerText = currentEventId;
             document.getElementById('display-address').innerText = d.address;
-            
             const icons = { volei: '🏐', churrasco: '🔥', jogos: '🎮', viagem: '✈️' };
             document.getElementById('bg-icon').innerText = icons[d.category] || '😎';
             
-            const isVolei = d.category === 'volei';
+            // Abas Inteligentes
+            const isVolei = d.category === 'volei', isViagem = d.category === 'viagem';
             document.getElementById('tab-btn-teams').classList.toggle('hidden', !isVolei);
             document.getElementById('tab-btn-score').classList.toggle('hidden', !isVolei);
+            document.getElementById('tab-btn-planning').classList.toggle('hidden', !isViagem);
+            if(isViagem) document.getElementById('display-planning-details').innerText = d.details || "Sem detalhes definidos.";
 
             const enc = encodeURIComponent(d.address);
-            document.getElementById('link-maps').href = `https://www.google.com/maps/search/?api=1&query=$0{enc}`;
+            document.getElementById('link-maps').href = `https://www.google.com/maps/search/?api=1&query=${enc}`;
             document.getElementById('link-waze').href = `https://waze.com/ul?q=${enc}`;
-            
             const p = d.participants || [];
             document.getElementById('display-total-cost').innerText = `R$ ${d.totalCost.toFixed(2)}`;
             document.getElementById('display-person-cost').innerText = `R$ ${(d.totalCost / Math.max(1, p.length)).toFixed(2)}`;
             document.getElementById('display-count').innerText = p.length;
             
-            const isParticipant = p.some(u => u.entryId === userData.uid);
-            const btnJoin = document.getElementById('btn-join');
-            if(isParticipant) {
-                btnJoin.className = "w-full bg-red-50 text-red-500 font-black py-4 rounded-2xl shadow-sm active:scale-95 uppercase tracking-widest border border-red-100";
-                btnJoin.innerHTML = `<i class="fa-solid fa-xmark mr-2"></i> Tirar meu nome`;
-                btnJoin.onclick = () => window.removePlayer(userData.uid);
-            } else {
-                btnJoin.className = "w-full bg-green-500 text-white font-black py-4 rounded-2xl shadow-lg active:scale-95 transition-transform uppercase tracking-widest";
-                btnJoin.innerHTML = `<i class="fa-solid fa-check mr-2"></i> Tô Dentro!`;
-                btnJoin.onclick = () => {
-                    db.collection('volei_events').doc(currentEventId).update({
-                        participants: firebase.firestore.FieldValue.arrayUnion({ entryId: userData.uid, name: userData.name, photo: userData.photo })
-                    });
-                    window.showToast("Confirmado! ✅");
-                };
-            }
+            const isP = p.some(u => u.entryId === userData.uid), btnJ = document.getElementById('btn-join');
+            if(isP) { btnJ.className = "w-full bg-red-50 text-red-500 font-black py-4 rounded-2xl uppercase tracking-widest border border-red-100"; btnJ.innerHTML = `<i class="fa-solid fa-xmark mr-2"></i> Retirar Nome`; btnJ.onclick = () => window.removePlayer(userData.uid); }
+            else { btnJ.className = "w-full bg-green-500 text-white font-black py-4 rounded-2xl uppercase tracking-widest"; btnJ.innerHTML = `<i class="fa-solid fa-check mr-2"></i> Tô Dentro!`; btnJ.onclick = () => db.collection('volei_events').doc(currentEventId).update({ participants: firebase.firestore.FieldValue.arrayUnion({ entryId: userData.uid, name: userData.name, photo: userData.photo }) }); }
             
-            document.getElementById('participants-list').innerHTML = p.map(u => `
-                <li class="flex items-center justify-between p-3 bg-white rounded-xl border border-gray-100 shadow-sm mb-2">
-                    <div class="flex items-center gap-3">
-                        <img src="${u.photo || 'https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png'}" class="w-8 h-8 rounded-full border border-gray-200 object-cover">
-                        <span class="font-black text-gray-700 uppercase text-xs">${u.name}</span>
-                    </div>
-                    ${(userData.role === 'Diretoria') ? `<button onclick="window.removePlayer('${u.entryId}')" class="text-red-300 p-2"><i class="fa-solid fa-trash-can"></i></button>` : ''}
-                </li>
-            `).join('') || '<p class="text-center text-gray-400 font-bold italic py-4">Zero confirmados. Cuida!</p>';
-
+            document.getElementById('participants-list').innerHTML = p.map(u => `<li class="flex items-center justify-between p-3 bg-white rounded-xl border border-gray-100 shadow-sm mb-2"><div class="flex items-center gap-3"><img src="${u.photo || 'https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png'}" class="w-8 h-8 rounded-full object-cover"><span class="font-black text-gray-700 uppercase text-xs">${u.name}</span></div>${(userData.role === 'Diretoria') ? `<button onclick="window.removePlayer('${u.entryId}')" class="text-red-300 p-2"><i class="fa-solid fa-trash-can"></i></button>` : ''}</li>`).join('') || '<p class="text-center text-gray-400 font-bold italic py-4">Vazio ainda...</p>';
             document.getElementById('score-a').innerText = d.scoreA || 0; document.getElementById('score-b').innerText = d.scoreB || 0;
             document.getElementById('sets-a').innerText = d.setsA || 0; document.getElementById('sets-b').innerText = d.setsB || 0;
         };
 
-        // --- SORTEIO & PLACAR ---
         window.drawTeams = () => {
-            if (!localEventData || !localEventData.participants.length) return window.showToast("Cadê o povo?");
-            const mode = document.getElementById('players-per-team').value;
-            let p = [...localEventData.participants].map(x => x.name);
-            p.sort(() => Math.random() - 0.5);
-            const res = document.getElementById('teams-result'); res.innerHTML = '';
-            
+            if (!localEventData || !localEventData.participants.length) return window.showToast("Sem gente!");
+            const mode = document.getElementById('players-per-team').value; let p = [...localEventData.participants].map(x => x.name);
+            p.sort(() => Math.random() - 0.5); const res = document.getElementById('teams-result'); res.innerHTML = '';
             const addTeam = (name, members, color) => {
-                const div = document.createElement('div');
-                div.className = `bg-white p-4 rounded-xl border-l-8 border-${color}-500 shadow-sm animate-pop`;
+                const div = document.createElement('div'); div.className = `bg-white p-4 rounded-xl border-l-8 border-${color}-500 shadow-sm animate-pop mb-2`;
                 div.innerHTML = `<p class="text-[10px] font-black text-${color}-600 uppercase mb-2">${name}</p><div class="space-y-1">${members.map(m => `<p class="font-bold text-xs uppercase text-gray-700">• ${m}</p>`).join('')}</div>`;
                 res.appendChild(div);
             };
-
-            if(mode === 'colher') {
-                if(p.length < 9) return window.showToast("Precisa de 9 hum!");
-                addTeam("Time A (Vantagem)", p.splice(0, 5), "yellow"); addTeam("Time B", p.splice(0, 4), "blue");
-            } else {
-                const n = parseInt(mode); let count = 1;
-                while(p.length >= n) { addTeam(`Time ${count}`, p.splice(0, n), count % 2 === 0 ? "blue" : "yellow"); count++; }
-            }
-            if(p.length > 0) addTeam("Reserva / Próximos", p, "gray");
+            if(mode === 'colher') { if(p.length < 9) return window.showToast("9 hum!"); addTeam("Time A (Vantagem)", p.splice(0, 5), "yellow"); addTeam("Time B", p.splice(0, 4), "blue"); }
+            else { const n = parseInt(mode); let c = 1; while(p.length >= n) { addTeam(`Time ${c}`, p.splice(0, n), c % 2 === 0 ? "blue" : "yellow"); c++; } }
+            if(p.length > 0) addTeam("Reservas", p, "gray");
         };
 
         window.updateScore = (team, amt) => {
-            if(!currentEventId || !localEventData) return;
-            const field = team === 'A' ? 'scoreA' : 'scoreB';
-            const setField = team === 'A' ? 'setsA' : 'setsB';
-            let cur = (localEventData[field] || 0) + amt;
-            const max = parseInt(document.getElementById('config-max-score').value);
-            const other = team === 'A' ? (localEventData.scoreB || 0) : (localEventData.scoreA || 0);
-            
-            if(cur >= max && (cur - other) >= 2) { 
-                db.collection('volei_events').doc(currentEventId).update({ scoreA:0, scoreB:0, [setField]: firebase.firestore.FieldValue.increment(1) }); 
-                window.showToast("Fim de Set! 🏐"); 
-            } else { db.collection('volei_events').doc(currentEventId).update({ [field]: Math.max(0, cur) }); }
+            const field = team === 'A' ? 'scoreA' : 'scoreB', setF = team === 'A' ? 'setsA' : 'setsB';
+            let cur = (localEventData[field] || 0) + amt, max = parseInt(document.getElementById('config-max-score').value);
+            if(cur >= max) { db.collection('volei_events').doc(currentEventId).update({ scoreA:0, scoreB:0, [setF]: firebase.firestore.FieldValue.increment(1) }); window.showToast("Set! 🏐"); }
+            else { db.collection('volei_events').doc(currentEventId).update({ [field]: Math.max(0, cur) }); }
         };
 
-        window.resetScore = () => { if(confirm("Zerar placar?")) db.collection('volei_events').doc(currentEventId).update({ scoreA:0, scoreB:0, setsA:0, setsB:0 }); };
+        window.resetScore = () => { if(confirm("Zerar?")) db.collection('volei_events').doc(currentEventId).update({ scoreA:0, scoreB:0, setsA:0, setsB:0 }); };
         window.removePlayer = (id) => { const p = localEventData.participants.find(x => x.entryId === id); if(p) db.collection('volei_events').doc(currentEventId).update({ participants: firebase.firestore.FieldValue.arrayRemove(p) }); };
+        window.logout = () => { localStorage.removeItem('cuida_session'); auth.signOut().then(() => { currentEventId = null; window.history.pushState({}, '', window.location.pathname); document.getElementById('main-header').classList.add('hidden'); document.getElementById('bottom-nav').classList.add('hidden'); window.changeView('login'); }); };
 
-        // --- FORMULÁRIOS & NAVEGAÇÃO SPA ---
         document.getElementById('form-new-event').onsubmit = (e) => {
-            e.preventDefault();
-            const btn = e.target.querySelector('button'); btn.disabled = true;
-            const id = Math.random().toString(36).substr(2, 2).toUpperCase() + Math.floor(1000 + Math.random() * 9000);
-            const isPrivate = document.getElementById('new-private') ? document.getElementById('new-private').checked : false;
-            
+            e.preventDefault(); const id = Math.random().toString(36).substr(2, 2).toUpperCase() + Math.floor(1000 + Math.random() * 9000);
             db.collection('volei_events').doc(id).set({
                 location: document.getElementById('new-title').value, address: document.getElementById('new-address').value, category: document.getElementById('new-category').value,
-                datetime: document.getElementById('new-date').value, totalCost: parseFloat(document.getElementById('new-total').value),
-                isPrivate: isPrivate, createdBy: userData.uid, participants: [], scoreA: 0, scoreB: 0, setsA: 0, setsB: 0
-            }).then(() => {
-                currentEventId = id;
-                window.history.pushState({}, '', `?id=${id}`);
-                loadEventData();
-                document.getElementById('form-new-event').reset();
-                btn.disabled = false;
-            }).catch(err => {
-                window.showToast("Erro ao criar."); btn.disabled = false;
+                details: document.getElementById('new-details').value, datetime: document.getElementById('new-date').value, totalCost: parseFloat(document.getElementById('new-total').value),
+                isPrivate: document.getElementById('new-private').checked, createdBy: userData.uid, participants: [], scoreA: 0, scoreB: 0, setsA: 0, setsB: 0
+            }).then(() => { currentEventId = id; window.history.pushState({}, '', `?id=${id}`); loadEventData(); e.target.reset(); });
+        };
+
+        document.getElementById('form-new-user').onsubmit = (e) => {
+            e.preventDefault(); const n = document.getElementById('new-user-name').value, l = document.getElementById('new-user-login').value.toLowerCase(), p = document.getElementById('new-user-pass').value, r = document.getElementById('new-user-role').checked ? 'Diretoria' : 'Geral';
+            db.collection('app_users').doc(l).set({ name: n, username: l, password: p, role: r, photo: "" }).then(() => { window.showToast("Criado!"); e.target.reset(); const text = `Fala ${n}! Acesso liberado: \n👤 User: ${l}\n🔑 Senha: ${p}\n🚀 App: ${window.location.href.split('?')[0]}`; window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`); });
+        };
+
+        function loadUsersList() {
+            db.collection('app_users').onSnapshot(snap => {
+                const list = document.getElementById('users-list-container'); list.innerHTML = '';
+                snap.forEach(dDoc => {
+                    const d = dDoc.data(), el = document.createElement('div');
+                    el.className = "flex items-center justify-between p-3 bg-gray-50 border border-gray-100 rounded-xl mb-2";
+                    el.innerHTML = `<div><p class="font-black text-xs text-gray-800 uppercase">${d.name} ${d.role === 'Diretoria' ? '⭐' : ''}</p><p class="text-[9px] font-bold text-gray-400">Login: ${d.username}</p></div><button onclick="window.sendInvite('${d.name}', '${d.username}', '${d.password}')" class="bg-green-500 text-white p-2 rounded-lg text-xs"><i class="fa-brands fa-whatsapp"></i></button>`;
+                    list.appendChild(el);
+                });
             });
-        };
-
-        document.getElementById('btn-share').onclick = () => { navigator.clipboard.writeText(window.location.href); window.showToast("Link Copiado! 🚀"); };
-        
-        document.getElementById('btn-search-id').onclick = () => { 
-            const id = document.getElementById('input-search-id').value.trim().toUpperCase(); 
-            if(id) {
-                currentEventId = id;
-                window.history.pushState({}, '', `?id=${id}`);
-                loadEventData();
-            }
-        };
-
-        document.getElementById('btn-calendar').onclick = () => {
-            if(!localEventData) return;
-            const startStr = localEventData.datetime.replace(/-/g, '').replace(/:/g, '') + '00';
-            const googleUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(localEventData.location)}&dates=${startStr}/${startStr}&details=${encodeURIComponent('Link: '+window.location.href)}&location=${encodeURIComponent(localEventData.address)}`;
-            window.open(googleUrl, '_blank');
-        };
-
-        // --- VOZ ---
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if(SpeechRecognition) {
-            const rec = new SpeechRecognition(); rec.lang = 'pt-BR'; rec.continuous = true;
-            rec.onresult = (e) => {
-                const text = e.results[e.results.length - 1][0].transcript.toLowerCase();
-                const teamA = document.getElementById('name-team-a').value.toLowerCase();
-                const teamB = document.getElementById('name-team-b').value.toLowerCase();
-                if(text.includes('ponto') || text.includes('marca')) {
-                    if(text.includes(teamA)) window.updateScore('A', 1);
-                    else if(text.includes(teamB)) window.updateScore('B', 1);
-                }
-            };
-            document.getElementById('btn-voice').onclick = () => {
-                const btn = document.getElementById('btn-voice');
-                if(btn.classList.contains('listening')) { rec.stop(); btn.classList.remove('listening', 'bg-red-100', 'animate-pulse'); btn.querySelector('span').innerText = "Ativar Juiz de Voz"; }
-                else { rec.start(); btn.classList.add('listening', 'bg-red-100', 'animate-pulse'); btn.querySelector('span').innerText = "Ouvindo..."; }
-            };
         }
-
-        // START
+        window.sendInvite = (n,l,p) => { const text = `Fala ${n}! Acesso Cuida na Fuga:\n👤 User: ${l}\n🔑 Senha: ${p}\n🚀 App: ${window.location.href.split('?')[0]}`; window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`); };
+        document.getElementById('btn-share-event').onclick = () => { navigator.clipboard.writeText(window.location.href); window.showToast("Link na mão!"); };
+        document.getElementById('btn-search-id').onclick = () => { const id = document.getElementById('input-search-id').value.trim().toUpperCase(); if(id) { currentEventId = id; window.history.pushState({}, '', `?id=${id}`); loadEventData(); } };
+        
         init();
     </script>
 </body>
