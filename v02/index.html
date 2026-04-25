@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Cuida na Fuga v06</title>
+    <title>Cuida na Fuga v07</title>
     
     <meta name="theme-color" content="#FFD90F">
     <link rel="manifest" href="manifest.json">
@@ -31,7 +31,7 @@
             display: flex; justify-content: space-around; padding: 12px 10px calc(12px + env(safe-area-inset-bottom));
             z-index: 5000;
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; transition: 0.3s; width: 20%; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; transition: 0.3s; flex-1; width: 100%; }
         .nav-item.active { color: #0094DA; }
         .nav-item i { font-size: 20px; }
         .nav-item span { font-size: 9px; font-weight: 900; text-transform: uppercase; }
@@ -39,8 +39,10 @@
         .btn-homer { background: var(--homer-yellow); color: #1e3a8a; font-weight: 900; text-transform: uppercase; border-radius: 18px; transition: 0.2s; border-bottom: 4px solid #d97706; }
         .btn-homer:active { transform: translateY(2px); border-bottom-width: 2px; }
 
-        #view-login, #view-agenda, #view-event, #view-create, #loading-screen, #install-banner { display: none; }
+        /* Esconder views por padrão */
+        #view-login, #view-agenda, #view-event, #view-create, #view-users, #loading-screen, #install-banner { display: none; }
         .active-view { display: block !important; }
+        .active-flex { display: flex !important; }
         
         .animate-pop { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes popIn { 0% { transform: scale(0.95); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
@@ -52,7 +54,6 @@
         .toast.show { transform: translateY(0) translateX(-50%); opacity: 1; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
 
-        /* Animação exclusiva da Duff Beer */
         @keyframes duffBounce { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-15px) scale(1.05); } }
         .animate-duff { animation: duffBounce 0.8s ease-in-out infinite; }
     </style>
@@ -72,7 +73,7 @@
         </div>
     </div>
 
-    <div id="loading-screen" class="fixed inset-0 bg-homer z-[9000] flex flex-col items-center justify-center text-blue-900 active-view">
+    <div id="loading-screen" class="fixed inset-0 bg-homer z-[9000] flex-col items-center justify-center text-blue-900 active-flex">
         <div class="relative w-32 h-32 flex items-center justify-center animate-duff mb-2">
             <span class="text-7xl absolute">🍺</span>
             <div class="absolute -translate-x-1 translate-y-3 -rotate-12 bg-red-600 border-2 border-black rounded-lg px-2 py-0.5 shadow-lg">
@@ -82,10 +83,13 @@
         <p class="font-900 uppercase tracking-widest italic text-lg shadow-black drop-shadow-md text-white">Cuida na Fuga...</p>
     </div>
 
-    <header class="bg-homer pt-12 pb-16 rounded-b-[45px] px-8 relative shadow-lg">
+    <header id="main-header" class="bg-homer pt-12 pb-16 rounded-b-[45px] px-8 relative shadow-lg hidden">
         <div class="flex justify-between items-center">
             <div class="flex items-center gap-3 cursor-pointer active:scale-95 transition-all" onclick="window.location.href=window.location.pathname">
-                <img id="user-photo" src="https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png" class="w-12 h-12 rounded-full border-4 border-white shadow-lg bg-white p-1 object-cover">
+                <div class="w-12 h-12 rounded-full border-4 border-white shadow-lg bg-white flex items-center justify-center text-2xl overflow-hidden" id="user-photo-container">
+                    <img id="user-photo" src="" class="w-full h-full object-cover hidden">
+                    <span id="user-emoji" class="hidden">😎</span>
+                </div>
                 <div class="text-left">
                     <p class="text-[10px] font-black text-blue-900 uppercase opacity-60 leading-none">Salve,</p>
                     <p id="user-name-display" class="text-lg font-900 text-blue-900 leading-tight">Visitante</p>
@@ -103,12 +107,13 @@
     <main class="max-w-md mx-auto px-5 -mt-8 relative z-20">
 
         <div id="view-login" class="text-center space-y-6 pt-10">
-            <div class="glass-card p-8 space-y-6 border-b-4 border-yellow-400">
+            <div class="glass-card p-8 space-y-6 border-b-4 border-yellow-400 shadow-xl mt-12">
+                <div class="text-6xl mb-2">🍩</div>
                 <h2 class="text-3xl font-900 text-gray-800 uppercase italic leading-none">Bora fugir?</h2>
-                <p class="text-xs text-gray-500 font-medium">Faça login para organizar os rolês da turma.</p>
+                <p class="text-xs text-gray-500 font-medium">Faça login para organizar e ver os rolês da turma.</p>
                 
                 <form id="form-login" class="space-y-4">
-                    <input type="text" id="input-user" required class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none border-2 border-gray-100 focus:border-blue-400 transition-all text-center uppercase" placeholder="Usuário">
+                    <input type="text" id="input-user" required class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none border-2 border-gray-100 focus:border-blue-400 transition-all text-center lowercase" placeholder="Usuário">
                     <input type="password" id="input-pass" required class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none border-2 border-gray-100 focus:border-blue-400 transition-all text-center" placeholder="Senha">
                     <button type="submit" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg active:scale-95 transition-all uppercase tracking-widest mt-2">
                         Entrar na Área
@@ -130,15 +135,36 @@
                 </div>
         </div>
 
+        <div id="view-users" class="space-y-6 animate-pop">
+            <div class="glass-card p-6 border-b-4 border-blue-600">
+                <h2 class="text-xl font-900 text-gray-800 mb-4 uppercase italic">Cadastrar Parceiro</h2>
+                <form id="form-new-user" class="space-y-3">
+                    <input type="text" id="new-user-name" required placeholder="Nome do Jogador (Ex: João)" class="w-full px-4 py-3 bg-gray-50 rounded-xl font-bold outline-none border-2 border-gray-100 focus:border-blue-400 text-sm">
+                    <div class="flex gap-2">
+                        <input type="text" id="new-user-login" required placeholder="Login" class="flex-[2] px-4 py-3 bg-gray-50 rounded-xl font-bold outline-none border-2 border-gray-100 focus:border-blue-400 lowercase text-sm">
+                        <input type="text" id="new-user-pass" required placeholder="Senha" class="flex-1 px-4 py-3 bg-gray-50 rounded-xl font-bold outline-none border-2 border-gray-100 focus:border-blue-400 text-sm">
+                    </div>
+                    <div class="flex items-center justify-between bg-blue-50 p-3 rounded-xl border border-blue-100">
+                        <span class="text-[10px] font-black text-blue-900 uppercase">Cargo de Diretoria?</span>
+                        <input type="checkbox" id="new-user-role" class="w-6 h-6 rounded-lg accent-blue-600">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl shadow-md uppercase text-xs tracking-widest mt-2 active:scale-95"><i class="fa-solid fa-user-plus mr-2"></i> Criar Conta</button>
+                </form>
+            </div>
+
+            <div class="glass-card p-6">
+                <h3 class="text-sm font-900 text-gray-800 mb-4 uppercase italic">Turma Cadastrada</h3>
+                <div id="users-list-container" class="space-y-2">
+                    </div>
+            </div>
+        </div>
+
         <div id="view-create" class="animate-pop">
             <div class="glass-card p-6">
                 <h2 class="text-xl font-900 text-gray-800 mb-6 uppercase italic border-b-2 border-yellow-400 pb-2">Marcar Rolê</h2>
                 <form id="form-new-event" class="space-y-4">
                     <select id="new-category" class="w-full px-4 py-4 bg-gray-50 border-none rounded-2xl font-bold outline-none cursor-pointer">
-                        <option value="volei">🏐 Vôlei</option>
-                        <option value="churrasco">🔥 Churrasco</option>
-                        <option value="jogos">🎮 Games</option>
-                        <option value="viagem">✈️ Viagem / Passeio</option>
+                        <option value="volei">🏐 Vôlei</option><option value="churrasco">🔥 Churrasco</option><option value="jogos">🎮 Games</option><option value="viagem">✈️ Viagem / Passeio</option>
                     </select>
                     <input type="text" id="new-title" required class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none" placeholder="Nome do Rolê">
                     <input type="text" id="new-address" required class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none text-sm" placeholder="Onde vai ser? (Endereço)">
@@ -147,11 +173,8 @@
                         <input type="number" id="new-total" required class="px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none" placeholder="Valor Total R$">
                     </div>
                     
-                    <div id="diretoria-only-area" class="hidden flex items-center justify-between px-4 py-4 bg-blue-50 rounded-2xl border border-blue-100">
-                        <div class="flex items-center gap-2">
-                            <i class="fa-solid fa-user-shield text-blue-600"></i>
-                            <span class="text-xs font-black text-blue-900 uppercase">Só Diretoria?</span>
-                        </div>
+                    <div id="diretoria-only-area" class="hidden items-center justify-between px-4 py-4 bg-blue-50 rounded-2xl border border-blue-100">
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-user-shield text-blue-600"></i><span class="text-xs font-black text-blue-900 uppercase">Só Diretoria?</span></div>
                         <input type="checkbox" id="new-private" class="w-6 h-6 rounded-lg accent-blue-600 cursor-pointer">
                     </div>
 
@@ -161,7 +184,6 @@
         </div>
 
         <div id="view-event" class="animate-pop space-y-5">
-            
             <div class="glass-card p-6 relative overflow-hidden">
                 <div class="absolute -top-4 -right-4 text-6xl opacity-10 rotate-12" id="bg-icon">😎</div>
                 <button id="btn-share" class="absolute top-5 right-5 bg-white text-blue-600 p-3 rounded-full shadow-md w-12 h-12 flex items-center justify-center z-10 active:scale-90"><i class="fa-solid fa-share-nodes"></i></button>
@@ -238,11 +260,14 @@
     </main>
 
     <nav id="bottom-nav" class="bottom-nav hidden">
-        <button onclick="window.changeView('agenda')" class="nav-item active" id="nav-agenda">
+        <button onclick="window.changeView('agenda')" class="nav-item" id="nav-agenda">
             <i class="fa-solid fa-house"></i><span>Início</span>
         </button>
         <button onclick="window.changeView('create')" class="nav-item" id="nav-create">
             <i class="fa-solid fa-calendar-plus"></i><span>Novo</span>
+        </button>
+        <button onclick="window.changeView('users')" class="nav-item hidden" id="nav-users">
+            <i class="fa-solid fa-users-gear"></i><span>Turma</span>
         </button>
         <button onclick="window.logout()" class="nav-item text-red-400" id="nav-logout">
             <i class="fa-solid fa-arrow-right-from-bracket"></i><span>Sair</span>
@@ -254,7 +279,6 @@
     </div>
 
     <script>
-        // *** IMPORTANTE: COLOQUE SUAS CHAVES DO FIREBASE AQUI ***
         const firebaseConfig = { 
             apiKey: "AIzaSyA3RQucgd5vMeJzZgZnC4Zim9hkFVVWXnw", 
             authDomain: "volei-3f30d.firebaseapp.com", 
@@ -271,13 +295,13 @@
         let userData = null;
         let currentEventId = null;
         let localEventData = null;
-        let deferredPrompt;
 
         const urlParams = new URLSearchParams(window.location.search);
         const rawId = urlParams.get('id');
         if (rawId) { currentEventId = (rawId.length === 6) ? rawId.toUpperCase() : rawId; }
 
         // --- PWA INSTALL ---
+        let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault(); deferredPrompt = e;
             if (!window.matchMedia('(display-mode: standalone)').matches) document.getElementById('install-banner').style.display = 'block';
@@ -291,7 +315,7 @@
             }
         };
 
-        // --- UTILITÁRIOS GLOBAIS ---
+        // --- UTILITÁRIOS ---
         window.showToast = (m) => { 
             const t = document.getElementById('toast'); 
             document.getElementById('toast-msg').innerText = m; 
@@ -301,13 +325,13 @@
 
         window.changeView = (viewId) => {
             document.querySelectorAll('main > div').forEach(v => v.classList.remove('active-view'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active', 'text-blue-600'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             
             const view = document.getElementById(`view-${viewId}`);
             if(view) view.classList.add('active-view');
             
             const nav = document.getElementById(`nav-${viewId}`);
-            if(nav && viewId !== 'event') nav.classList.add('active', 'text-blue-600');
+            if(nav && viewId !== 'event') nav.classList.add('active');
             
             if(viewId === 'agenda' && !currentEventId) { document.getElementById('game-badge').classList.add('hidden'); }
             window.scrollTo(0,0);
@@ -327,66 +351,151 @@
             auth.signOut().then(() => window.location.href = window.location.pathname); 
         };
 
-        // --- INICIALIZAÇÃO E LOGIN FIXO ---
+        // --- INICIALIZAÇÃO ---
         const init = () => {
             try { db.enablePersistence(); } catch(e){}
 
+            // Bootstrap Weverson Master Admin
+            db.collection('app_users').doc('weverson').get().then(doc => {
+                if(!doc.exists) {
+                    db.collection('app_users').doc('weverson').set({
+                        name: "Weverson", username: "weverson", password: "023240",
+                        role: "Diretoria", photo: "https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png"
+                    });
+                }
+            });
+
             auth.onAuthStateChanged((user) => {
-                document.getElementById('loading-screen').classList.remove('active-view');
                 const localSession = localStorage.getItem('cuida_session');
                 
-                if (user && localSession === 'weverson') {
-                    // Perfil fixo injetado
-                    userData = { 
-                        uid: user.uid, 
-                        name: "Weverson", 
-                        role: "Diretoria", 
-                        photo: "https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png" 
-                    };
-                    
-                    document.getElementById('user-name-display').innerText = userData.name;
-                    document.getElementById('user-photo').src = userData.photo;
-                    document.getElementById('user-role-badge').classList.remove('hidden');
-                    document.getElementById('diretoria-only-area').classList.remove('hidden');
-                    document.getElementById('diretoria-only-area').classList.add('flex');
-                    
-                    if(currentEventId) { 
-                        loadEventData(); 
-                    } else { 
-                        loadAgenda(); 
-                        window.changeView('agenda'); 
-                        document.getElementById('bottom-nav').classList.remove('hidden'); 
-                    }
+                if (user && localSession) {
+                    // Pega dados reais do Firestore baseado na sessão salva
+                    db.collection('app_users').doc(localSession).onSnapshot(docSnap => {
+                        document.getElementById('loading-screen').classList.remove('active-flex');
+                        document.getElementById('main-header').classList.remove('hidden');
+                        
+                        if(docSnap.exists) {
+                            userData = docSnap.data();
+                            userData.uid = docSnap.id; 
+
+                            document.getElementById('user-name-display').innerText = userData.name.split(' ')[0];
+                            if(userData.photo) {
+                                document.getElementById('user-photo').src = userData.photo;
+                                document.getElementById('user-photo').classList.remove('hidden');
+                                document.getElementById('user-emoji').classList.add('hidden');
+                            } else {
+                                document.getElementById('user-photo').classList.add('hidden');
+                                document.getElementById('user-emoji').classList.remove('hidden');
+                            }
+                            
+                            if(userData.role === 'Diretoria') {
+                                document.getElementById('user-role-badge').classList.remove('hidden');
+                                document.getElementById('diretoria-only-area').classList.remove('hidden');
+                                document.getElementById('diretoria-only-area').classList.add('flex');
+                                document.getElementById('nav-users').classList.remove('hidden');
+                                loadUsersList(); // Carrega lista de usuários pra gerenciar
+                            } else {
+                                document.getElementById('nav-users').classList.add('hidden');
+                            }
+                            
+                            if(currentEventId) { 
+                                loadEventData(); 
+                            } else { 
+                                loadAgenda(); 
+                                window.changeView('agenda'); 
+                                document.getElementById('bottom-nav').classList.remove('hidden'); 
+                            }
+                        } else {
+                            window.logout();
+                        }
+                    });
                 } else {
+                    document.getElementById('loading-screen').classList.remove('active-flex');
+                    document.getElementById('main-header').classList.add('hidden');
                     window.changeView('login');
                     document.getElementById('bottom-nav').classList.add('hidden');
                 }
             });
 
-            // Lógica do Login Manual Fixo
+            // Lógica de Login
             document.getElementById('form-login').onsubmit = (e) => {
                 e.preventDefault();
                 const userVal = document.getElementById('input-user').value.toLowerCase().trim();
                 const passVal = document.getElementById('input-pass').value.trim();
 
-                if (userVal === 'weverson' && passVal === '023240') {
-                    document.getElementById('loading-screen').classList.add('active-view');
-                    localStorage.setItem('cuida_session', 'weverson');
-                    auth.signInAnonymously().catch(err => {
-                        document.getElementById('loading-screen').classList.remove('active-view');
-                        window.showToast("Erro no banco de dados.");
-                    });
-                } else {
-                    window.showToast("Senha errada, mofio!");
-                }
+                document.getElementById('loading-screen').classList.add('active-flex');
+                
+                db.collection('app_users').doc(userVal).get().then(docSnap => {
+                    if(docSnap.exists && docSnap.data().password === passVal) {
+                        localStorage.setItem('cuida_session', userVal);
+                        auth.signInAnonymously().catch(console.error);
+                    } else {
+                        document.getElementById('loading-screen').classList.remove('active-flex');
+                        window.showToast("Login ou Senha incorretos!");
+                    }
+                });
             };
         };
 
-        // --- CARREGAR DADOS ---
+        // --- GESTÃO DE USUÁRIOS (SÓ DIRETORIA) ---
+        document.getElementById('form-new-user').onsubmit = (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button'); btn.disabled = true;
+            
+            const name = document.getElementById('new-user-name').value.trim();
+            const login = document.getElementById('new-user-login').value.toLowerCase().trim();
+            const pass = document.getElementById('new-user-pass').value.trim();
+            const role = document.getElementById('new-user-role').checked ? 'Diretoria' : 'Geral';
+
+            db.collection('app_users').doc(login).get().then(doc => {
+                if(doc.exists) {
+                    window.showToast("Esse login já existe!"); btn.disabled = false;
+                } else {
+                    db.collection('app_users').doc(login).set({
+                        name: name, username: login, password: pass, role: role, photo: ""
+                    }).then(() => {
+                        window.showToast("Usuário criado!");
+                        document.getElementById('form-new-user').reset();
+                        btn.disabled = false;
+                        
+                        // Gerar Link do Zap
+                        const text = `Fala ${name}! Baixe o app Cuida na Fuga e acesse com seu login.\n\n👤 Usuário: ${login}\n🔑 Senha: ${pass}\n\nLink: ${window.location.href.split('?')[0]}`;
+                        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+                    });
+                }
+            });
+        };
+
+        function loadUsersList() {
+            db.collection('app_users').onSnapshot(snap => {
+                const list = document.getElementById('users-list-container');
+                list.innerHTML = '';
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    const el = document.createElement('div');
+                    el.className = "flex items-center justify-between p-3 bg-gray-50 border border-gray-100 rounded-xl mb-2 shadow-sm";
+                    el.innerHTML = `
+                        <div>
+                            <p class="font-black text-xs text-gray-800 uppercase">${d.name} ${d.role === 'Diretoria' ? '<i class="fa-solid fa-star text-yellow-500 ml-1"></i>' : ''}</p>
+                            <p class="text-[9px] font-bold text-gray-400">Login: ${d.username}</p>
+                        </div>
+                        <button onclick="window.sendInvite('${d.name}', '${d.username}', '${d.password}')" class="bg-green-500 text-white p-2 rounded-lg text-xs shadow-md active:scale-95"><i class="fa-brands fa-whatsapp"></i></button>
+                    `;
+                    list.appendChild(el);
+                });
+            });
+        }
+
+        window.sendInvite = (name, login, pass) => {
+            const text = `Fala ${name}! Baixe o app Cuida na Fuga e acesse com seu login.\n\n👤 Usuário: ${login}\n🔑 Senha: ${pass}\n\nLink: ${window.location.href.split('?')[0]}`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+        };
+
+        // --- DADOS DO EVENTO E AGENDA ---
         function loadEventData() {
-            document.getElementById('loading-screen').classList.add('active-view');
+            document.getElementById('loading-screen').classList.add('active-flex');
             db.collection('volei_events').doc(currentEventId).onSnapshot((s) => {
-                document.getElementById('loading-screen').classList.remove('active-view');
+                document.getElementById('loading-screen').classList.remove('active-flex');
                 if(!s.exists) { window.showToast("Rolê não existe!"); setTimeout(() => window.location.href = window.location.pathname, 2000); return; }
                 
                 localEventData = s.data(); 
@@ -402,9 +511,7 @@
 
         function loadAgenda() {
             let q = db.collection('volei_events');
-            if(userData.role !== 'Diretoria') {
-                q = q.where('isPrivate', '==', false);
-            }
+            if(userData.role !== 'Diretoria') { q = q.where('isPrivate', '==', false); }
 
             q.onSnapshot((snap) => {
                 const list = document.getElementById('agenda-list');
@@ -465,7 +572,7 @@
                 btnJoin.innerHTML = `<i class="fa-solid fa-check mr-2"></i> Tô Dentro!`;
                 btnJoin.onclick = () => {
                     db.collection('volei_events').doc(currentEventId).update({
-                        participants: firebase.firestore.FieldValue.arrayUnion({ entryId: userData.uid, name: userData.name, photo: userData.photo })
+                        participants: firebase.firestore.FieldValue.arrayUnion({ entryId: userData.uid, name: userData.name, photo: userData.photo || '' })
                     });
                     window.showToast("Confirmado! ✅");
                 };
@@ -474,7 +581,9 @@
             document.getElementById('participants-list').innerHTML = p.map(u => `
                 <li class="flex items-center justify-between p-3 bg-white rounded-xl border border-gray-100 shadow-sm mb-2">
                     <div class="flex items-center gap-3">
-                        <img src="${u.photo || 'https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png'}" class="w-8 h-8 rounded-full border border-gray-200 object-cover">
+                        <div class="w-8 h-8 rounded-full border border-gray-200 bg-gray-100 flex items-center justify-center overflow-hidden">
+                            ${u.photo ? `<img src="${u.photo}" class="w-full h-full object-cover">` : `<span class="text-sm">😎</span>`}
+                        </div>
                         <span class="font-black text-gray-700 uppercase text-xs">${u.name}</span>
                     </div>
                     ${(userData.role === 'Diretoria') ? `<button onclick="window.removePlayer('${u.entryId}')" class="text-red-300 p-2"><i class="fa-solid fa-trash-can"></i></button>` : ''}
@@ -485,7 +594,7 @@
             document.getElementById('sets-a').innerText = d.setsA || 0; document.getElementById('sets-b').innerText = d.setsB || 0;
         };
 
-        // --- SORTEIO & PLACAR ---
+        // --- SORTEIO, PLACAR E CRIAÇÃO ---
         window.drawTeams = () => {
             if (!localEventData || !localEventData.participants.length) return window.showToast("Cadê o povo?");
             const mode = document.getElementById('players-per-team').value;
@@ -494,8 +603,7 @@
             const res = document.getElementById('teams-result'); res.innerHTML = '';
             
             const addTeam = (name, members, color) => {
-                const div = document.createElement('div');
-                div.className = `bg-white p-4 rounded-xl border-l-8 border-${color}-500 shadow-sm animate-pop`;
+                const div = document.createElement('div'); div.className = `bg-white p-4 rounded-xl border-l-8 border-${color}-500 shadow-sm animate-pop`;
                 div.innerHTML = `<p class="text-[10px] font-black text-${color}-600 uppercase mb-2">${name}</p><div class="space-y-1">${members.map(m => `<p class="font-bold text-xs uppercase text-gray-700">• ${m}</p>`).join('')}</div>`;
                 res.appendChild(div);
             };
@@ -519,28 +627,16 @@
             const other = team === 'A' ? (localEventData.scoreB || 0) : (localEventData.scoreA || 0);
             
             if(cur >= max && (cur - other) >= 2) { 
-                db.collection('volei_events').doc(currentEventId).update({ 
-                    scoreA:0, scoreB:0, [setField]: firebase.firestore.FieldValue.increment(1) 
-                }); 
+                db.collection('volei_events').doc(currentEventId).update({ scoreA:0, scoreB:0, [setField]: firebase.firestore.FieldValue.increment(1) }); 
                 window.showToast("Fim de Set! 🏐"); 
-            } else { 
-                db.collection('volei_events').doc(currentEventId).update({ [field]: Math.max(0, cur) }); 
-            }
+            } else { db.collection('volei_events').doc(currentEventId).update({ [field]: Math.max(0, cur) }); }
         };
 
-        window.resetScore = () => { 
-            if(confirm("Zerar placar?")) db.collection('volei_events').doc(currentEventId).update({ scoreA:0, scoreB:0, setsA:0, setsB:0 }); 
-        };
-        
-        window.removePlayer = (id) => { 
-            const p = localEventData.participants.find(x => x.entryId === id); 
-            if(p) db.collection('volei_events').doc(currentEventId).update({ participants: firebase.firestore.FieldValue.arrayRemove(p) }); 
-        };
+        window.resetScore = () => { if(confirm("Zerar placar?")) db.collection('volei_events').doc(currentEventId).update({ scoreA:0, scoreB:0, setsA:0, setsB:0 }); };
+        window.removePlayer = (id) => { const p = localEventData.participants.find(x => x.entryId === id); if(p) db.collection('volei_events').doc(currentEventId).update({ participants: firebase.firestore.FieldValue.arrayRemove(p) }); };
 
-        // --- FORMULÁRIOS & BOTÕES ---
         document.getElementById('form-new-event').onsubmit = (e) => {
-            e.preventDefault();
-            const btn = e.target.querySelector('button'); btn.disabled = true;
+            e.preventDefault(); const btn = e.target.querySelector('button'); btn.disabled = true;
             const id = Math.random().toString(36).substr(2, 2).toUpperCase() + Math.floor(1000 + Math.random() * 9000);
             const isPrivate = document.getElementById('new-private') ? document.getElementById('new-private').checked : false;
             
@@ -548,11 +644,7 @@
                 location: document.getElementById('new-title').value, address: document.getElementById('new-address').value, category: document.getElementById('new-category').value,
                 datetime: document.getElementById('new-date').value, totalCost: parseFloat(document.getElementById('new-total').value),
                 isPrivate: isPrivate, createdBy: userData.uid, participants: [], scoreA: 0, scoreB: 0, setsA: 0, setsB: 0
-            }).then(() => {
-                window.location.href = `?id=${id}`;
-            }).catch(err => {
-                window.showToast("Erro ao criar."); btn.disabled = false;
-            });
+            }).then(() => { window.location.href = `?id=${id}`; }).catch(err => { window.showToast("Erro ao criar."); btn.disabled = false; });
         };
 
         document.getElementById('btn-share').onclick = () => { navigator.clipboard.writeText(window.location.href); window.showToast("Link Copiado! 🚀"); };
@@ -573,8 +665,7 @@
                 const teamA = document.getElementById('name-team-a').value.toLowerCase();
                 const teamB = document.getElementById('name-team-b').value.toLowerCase();
                 if(text.includes('ponto') || text.includes('marca')) {
-                    if(text.includes(teamA)) window.updateScore('A', 1);
-                    else if(text.includes(teamB)) window.updateScore('B', 1);
+                    if(text.includes(teamA)) window.updateScore('A', 1); else if(text.includes(teamB)) window.updateScore('B', 1);
                 }
             };
             document.getElementById('btn-voice').onclick = () => {
