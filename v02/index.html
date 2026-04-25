@@ -2,8 +2,8 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cuida na Fuga v01</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Cuida na Fuga</title>
     
     <meta name="theme-color" content="#FFD90F">
     <link rel="manifest" href="manifest.json">
@@ -16,374 +16,301 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap');
         
-        :root {
-            --homer-yellow: #FFD90F;
-            --homer-blue: #0094DA;
-        }
-
+        :root { --homer-yellow: #FFD90F; --homer-blue: #0094DA; }
         body { 
             font-family: 'Poppins', sans-serif; 
-            background: linear-gradient(170deg, #FFD90F 0%, #fbbf24 40%, #0094DA 100%); 
-            background-attachment: fixed; 
-            min-height: 100vh; 
+            background: #f8fafc; 
+            min-height: 100vh;
+            padding-bottom: 80px; /* Espaço para a barra de baixo */
         }
 
-        .glass-card { 
-            background: rgba(255, 255, 255, 0.9); 
-            backdrop-filter: blur(10px); 
-            border: 1px solid rgba(255, 255, 255, 0.4); 
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1); 
-        }
-
-        .animate-pop { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .bg-homer { background: linear-gradient(180deg, #FFD90F 0%, #fbbf24 100%); }
+        .glass-card { background: white; border-radius: 24px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; }
         
-        #create-view, #event-view, #loading-view, #edit-modal, #install-banner { display: none; }
-        .toast { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: translateY(150%) translateX(-50%); opacity: 0; z-index: 5000; }
-        .toast.show { transform: translateY(0) translateX(-50%); opacity: 1; }
+        /* Barra de Navegação Inferior */
+        .bottom-nav {
+            fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-lg border-t border-gray-100 
+            flex justify-around items-center py-3 px-6 z-[4000] pb-safe;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
+        }
+
+        .nav-item { flex flex-col items-center gap-1 text-gray-400 transition-all active:scale-90; }
+        .nav-item.active { text-blue-600; }
+        .nav-item i { text-xl; }
+        .nav-item span { text-[10px] font-black uppercase tracking-tighter; }
+
+        .animate-pop { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes popIn { 0% { transform: scale(0.95); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        
+        #create-view, #section-players, #section-teams, #section-score, #section-info, #loading-view { display: none; }
+        .active-section { display: block !important; }
         
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .homer-shadow { filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); }
+        .safe-pb { padding-bottom: env(safe-area-inset-bottom); }
     </style>
 </head>
-<body class="text-gray-800 pb-12 overflow-x-hidden relative">
+<body class="text-gray-800">
 
-    <div id="install-banner" class="fixed top-0 left-0 w-full z-[4000] p-3 animate-pop">
-        <div class="bg-white rounded-2xl shadow-2xl p-4 flex items-center justify-between border-2 border-yellow-400">
-            <div class="flex items-center gap-3">
-                <span class="text-3xl">🍩</span>
-                <div>
-                    <p class="text-xs font-black text-gray-800 leading-tight uppercase">Cuida na Fuga App</p>
-                    <p class="text-[10px] text-gray-500">Instala aí, ô mofio!</p>
-                </div>
-            </div>
-            <button id="btn-install-app" class="bg-blue-600 text-white text-[10px] font-black px-4 py-2 rounded-xl uppercase shadow-lg">Instalar</button>
+    <header class="bg-homer pt-12 pb-20 rounded-b-[40px] px-6 text-center relative shadow-lg">
+        <div class="bg-white p-2 rounded-full w-16 h-16 mx-auto mb-3 shadow-xl border-4 border-yellow-200 active:scale-90 transition-transform cursor-pointer" onclick="window.location.href=window.location.pathname">
+            <img src="https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png" class="w-full h-full object-contain">
         </div>
-    </div>
-
-    <header class="pt-8 pb-6 text-center relative z-10">
-        <div class="flex flex-col items-center justify-center gap-1">
-            <div class="bg-white p-3 rounded-full mb-2 shadow-xl border-4 border-yellow-400 homer-shadow active:scale-90 transition-transform cursor-pointer" onclick="window.location.href=window.location.pathname">
-                <img src="https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png" class="w-12 h-12 object-contain" alt="Homer">
-            </div>
-            <h1 class="text-3xl font-black text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)] italic tracking-tighter uppercase">
-                Cuida na Fuga
-            </h1>
-            <p class="text-[10px] font-bold text-blue-900 bg-yellow-300 px-3 py-0.5 rounded-full uppercase tracking-widest">O app oficial do racha</p>
+        <h1 class="text-2xl font-900 text-blue-900 uppercase italic tracking-tighter" id="header-title">Cuida na Fuga</h1>
+        <div id="game-badge" class="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-6 py-2 rounded-2xl font-black text-xs shadow-xl border-2 border-white hidden">
+            CÓDIGO: <span id="display-game-id" class="font-mono">--</span>
         </div>
     </header>
 
-    <main class="max-w-md mx-auto px-4 relative z-10">
+    <main class="max-w-md mx-auto px-5 -mt-10 relative z-20">
         
         <div id="loading-view" class="text-center py-20">
-            <div class="text-5xl animate-bounce mb-4">🍩</div>
-            <p class="text-white font-black uppercase tracking-widest text-sm">Cuida... tá carregando!</p>
+            <div class="text-5xl animate-bounce">🍩</div>
         </div>
 
-        <div id="create-view" class="space-y-6">
-            <div class="glass-card rounded-3xl p-6 border-blue-400/30 border-2 shadow-lg animate-fade-in">
-                <h3 class="text-xs font-black text-blue-700 uppercase tracking-widest mb-3 flex items-center gap-2">
-                    <i class="fa-solid fa-key"></i> Já tem o código?
-                </h3>
+        <div id="create-view" class="space-y-4 animate-pop">
+            <div class="glass-card p-6 border-b-4 border-blue-100">
+                <p class="text-[10px] font-black text-gray-400 mb-3 uppercase tracking-widest">Já tem o código?</p>
                 <div class="flex gap-2">
-                    <input type="text" id="input-search-id" class="flex-1 px-4 py-3 border-2 border-gray-100 rounded-2xl focus:border-blue-400 outline-none uppercase font-mono font-bold text-sm tracking-widest" placeholder="EX: AB1234">
-                    <button id="btn-search-id" class="bg-blue-600 text-white font-black px-6 rounded-2xl shadow-md active:scale-95 transition-all">IR</button>
+                    <input type="text" id="input-search-id" class="flex-1 px-4 py-3 bg-gray-50 rounded-2xl outline-none font-mono font-bold uppercase" placeholder="AB1234">
+                    <button id="btn-search-id" class="bg-blue-600 text-white font-black px-6 rounded-2xl shadow-lg active:scale-95">IR</button>
                 </div>
             </div>
 
-            <div class="glass-card rounded-3xl p-7 animate-fade-in">
-                <h2 class="text-2xl font-black text-gray-800 mb-6 border-b-4 border-yellow-400 pb-2 uppercase italic">Novo Rolê</h2>
+            <div class="glass-card p-6">
+                <h2 class="text-xl font-900 text-gray-800 mb-5 uppercase italic">Novo Rolê</h2>
                 <form id="create-form" class="space-y-4">
-                    <div class="space-y-1">
-                        <label class="text-[10px] font-black text-gray-400 uppercase ml-2">O que vai ser?</label>
-                        <select id="input-category" class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-yellow-400 outline-none font-bold text-sm">
-                            <option value="volei">🏐 Vôlei</option>
-                            <option value="churrasco">🔥 Churrasco</option>
-                            <option value="jogos">🎮 Noite de Jogos</option>
-                            <option value="viagem">✈️ Viagem / Bate e Volta</option>
-                            <option value="outro">😎 Outro Rolê</option>
-                        </select>
-                    </div>
-                    
-                    <input type="text" id="input-location" required class="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl focus:border-yellow-400 outline-none font-bold" placeholder="Nome do Evento">
-                    <input type="text" id="input-address" required class="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl focus:border-yellow-400 outline-none font-bold text-sm" placeholder="Onde vai ser? (Endereço)">
-                    
+                    <select id="input-category" class="w-full px-4 py-4 bg-gray-50 border-none rounded-2xl font-bold text-sm outline-none">
+                        <option value="volei">🏐 Vôlei do Racha</option>
+                        <option value="churrasco">🔥 Churrascão</option>
+                        <option value="jogos">🎮 Noite de Games</option>
+                        <option value="viagem">✈️ Partiu Viagem</option>
+                    </select>
+                    <input type="text" id="input-location" required class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold outline-none" placeholder="Nome do Evento">
+                    <input type="text" id="input-address" required class="w-full px-4 py-4 bg-gray-50 rounded-2xl font-bold text-sm outline-none" placeholder="Endereço">
                     <div class="grid grid-cols-2 gap-3">
-                        <input type="datetime-local" id="input-datetime" required class="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl text-xs font-bold focus:outline-none">
-                        <input type="number" step="0.01" id="input-total" required class="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl focus:outline-none font-bold text-sm" placeholder="Valor Total R$">
+                        <input type="datetime-local" id="input-datetime" required class="px-4 py-4 bg-gray-50 rounded-2xl text-[10px] font-bold outline-none">
+                        <input type="number" step="0.01" id="input-total" required class="px-4 py-4 bg-gray-50 rounded-2xl font-bold text-sm outline-none" placeholder="Total R$">
                     </div>
-
-                    <button type="submit" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-xl uppercase tracking-widest mt-4 hover:bg-blue-700 active:scale-95 transition-all italic">Lançar a Braba 🚀</button>
+                    <button type="submit" class="w-full bg-yellow-400 text-blue-900 font-900 py-5 rounded-3xl shadow-xl uppercase tracking-widest mt-4 active:scale-95 transition-all">Cuida na Fuga! 🚀</button>
                 </form>
             </div>
         </div>
 
-        <div id="event-view" class="space-y-5">
-            <div class="glass-card rounded-3xl p-6 relative overflow-hidden">
-                <div class="absolute -top-4 -right-4 text-6xl opacity-10 rotate-12" id="bg-icon">🏐</div>
-                
-                <button id="btn-share" class="absolute top-5 right-5 bg-white text-blue-600 p-3 rounded-full shadow-md w-12 h-12 flex items-center justify-center z-10 active:scale-90"><i class="fa-solid fa-share-nodes"></i></button>
-                
-                <h2 id="display-title" class="text-xl font-black text-gray-800 pr-14 leading-tight uppercase italic mb-1">Carregando...</h2>
-                <p class="text-[11px] text-gray-500 mb-5 pr-16 font-bold flex items-start gap-1" id="display-address-text">
-                    <i class="fa-solid fa-location-dot text-red-500 mt-0.5"></i> <span>Endereço...</span>
-                </p>
-
-                <div class="flex items-center gap-3 mb-6 no-scrollbar overflow-x-auto">
-                    <div class="h-11 px-4 bg-yellow-400 rounded-2xl flex flex-col items-center justify-center shrink-0 shadow-md border-b-4 border-yellow-600">
-                        <span class="text-[8px] uppercase font-black text-yellow-800 leading-none">CÓDIGO</span>
-                        <span class="text-xs font-mono font-black text-yellow-900" id="display-game-id">--0000</span>
-                    </div>
-                    <a id="link-maps" target="_blank" class="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-md text-blue-600 active:scale-90 shrink-0"><i class="fa-solid fa-map-location-dot text-lg"></i></a>
-                    <a id="link-waze" target="_blank" class="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-md text-cyan-500 active:scale-90 shrink-0"><i class="fa-brands fa-waze text-xl"></i></a>
-                    <button id="btn-calendar" class="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-md text-orange-500 active:scale-90 shrink-0"><i class="fa-regular fa-calendar-plus text-lg"></i></button>
-                </div>
-
-                <div class="bg-blue-600 rounded-2xl p-4 flex justify-between items-center shadow-inner border-b-4 border-blue-800">
-                    <div><p class="text-[9px] uppercase font-black text-blue-200">Total do Rolê</p><p class="font-black text-white text-lg" id="display-total-cost">R$ 0,00</p></div>
-                    <div class="text-right"><p class="text-[9px] uppercase font-black text-blue-200">Cada Hum</p><p class="font-black text-yellow-300 text-2xl" id="display-person-cost">R$ 0,00</p></div>
-                </div>
+        <div id="section-players" class="animate-pop space-y-4">
+            <div class="glass-card p-5 flex justify-between items-center bg-blue-600 text-white border-none">
+                <div><p class="text-[9px] font-black uppercase opacity-70">Por Cabeça</p><p class="text-3xl font-900" id="display-person-cost">R$ 0,00</p></div>
+                <div class="text-right"><p class="text-[9px] font-black uppercase opacity-70">Confirmados</p><p class="text-xl font-900" id="display-count">0</p></div>
             </div>
-
-            <div id="event-tabs" class="flex p-1 bg-blue-900/20 backdrop-blur-lg rounded-2xl border border-white/30 shadow-sm">
-                <button id="tab-btn-players" class="flex-1 py-2.5 rounded-xl text-[10px] font-black bg-white text-blue-600 shadow-md uppercase">Galera</button>
-                <button id="tab-btn-teams" class="flex-1 py-2.5 rounded-xl text-[10px] font-black text-white uppercase hidden">Times</button>
-                <button id="tab-btn-score" class="flex-1 py-2.5 rounded-xl text-[10px] font-black text-white uppercase hidden">Placar</button>
-            </div>
-
-            <div id="tab-content-players" class="glass-card rounded-3xl p-6 block animate-pop">
-                <div class="flex justify-between items-end mb-4"><h3 class="text-lg font-black text-gray-800 uppercase italic">Confirmados</h3><span id="display-count" class="bg-yellow-400 text-yellow-900 text-xs font-black px-3 py-1 rounded-xl shadow-sm">0</span></div>
-                <ul id="participants-list" class="space-y-2 mb-6 max-h-[350px] overflow-y-auto pr-1"></ul>
-                <div class="border-t-2 border-dashed border-gray-200 pt-5">
-                    <div class="flex gap-2">
-                        <input type="text" id="input-name" class="flex-1 px-4 py-3 bg-white border-2 border-gray-100 rounded-2xl focus:border-blue-400 outline-none font-bold shadow-inner" placeholder="Teu nome...">
-                        <button id="btn-join" class="bg-green-500 text-white font-black px-6 rounded-2xl shadow-lg active:scale-95 transition-transform"><i class="fa-solid fa-check"></i></button>
-                    </div>
+            
+            <div class="glass-card p-6">
+                <ul id="participants-list" class="space-y-3 mb-6"></ul>
+                <div class="flex gap-2 border-t pt-5">
+                    <input type="text" id="input-name" class="flex-1 px-4 py-3 bg-gray-100 rounded-xl outline-none font-bold" placeholder="Teu nome...">
+                    <button id="btn-join" class="bg-green-500 text-white font-black px-5 rounded-xl shadow-md"><i class="fa-solid fa-plus"></i></button>
                 </div>
-            </div>
-
-            <div id="tab-content-teams" class="glass-card rounded-3xl p-6 hidden animate-pop">
-                <h3 class="text-lg font-black text-gray-800 mb-4 uppercase italic">Dividir Times</h3>
-                <div class="space-y-4 mb-6">
-                    <div class="bg-gray-50 p-3 rounded-2xl border-2 border-gray-100 flex items-center justify-between">
-                        <span class="text-xs font-black text-gray-500 uppercase">Formato:</span>
-                        <select id="players-per-team" class="bg-white border-2 border-gray-100 rounded-xl px-2 py-1 font-black text-blue-600 outline-none text-sm cursor-pointer">
-                            <option value="2">2x2</option><option value="3">3x3</option><option value="4">4x4</option><option value="5">5x5</option><option value="6" selected>6x6</option><option value="colher">Colher de Chá (5x4)</option>
-                        </select>
-                    </div>
-                    <button onclick="window.drawTeams()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg uppercase tracking-widest active:scale-95 italic"><i class="fa-solid fa-shuffle mr-2"></i> Sortear Agora</button>
-                </div>
-                <div id="teams-result" class="space-y-3"></div>
-            </div>
-
-            <div id="tab-content-score" class="glass-card rounded-3xl p-6 hidden text-center animate-pop">
-                <div class="flex flex-col gap-3 mb-6">
-                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-2xl border-2 border-gray-100"><span class="text-xs font-black text-gray-500 uppercase">Set Fecha:</span><select id="config-max-score" class="bg-white border-2 border-gray-100 rounded-xl px-2 py-1 text-sm font-black text-blue-600 outline-none"><option value="15">15 pts</option><option value="21">21 pts</option><option value="25">25 pts</option></select></div>
-                    <button id="btn-voice" class="w-full bg-white text-gray-700 font-black py-3 rounded-2xl border-2 border-gray-100 shadow-sm flex items-center justify-center gap-2 active:scale-95 transition-all"><i class="fa-solid fa-microphone text-blue-400"></i><span>Ativar Juiz de Voz</span></button>
-                </div>
-                <div class="flex justify-between items-stretch gap-3">
-                    <div class="flex-1 bg-gray-50 rounded-2xl p-4 shadow-inner border-2 border-gray-100">
-                        <div class="text-[9px] font-black text-gray-400 mb-2 uppercase">Sets: <span id="sets-a" class="text-blue-600 text-sm">0</span></div>
-                        <input type="text" id="name-team-a" class="w-full text-center bg-transparent font-black text-[10px] border-b-2 mb-3 uppercase focus:outline-none" value="TIME A">
-                        <div class="text-6xl font-black text-gray-800 my-4" id="score-a">0</div>
-                        <div class="flex gap-2"><button onclick="updateScore('A', -1)" class="flex-1 bg-red-100 text-red-600 py-3 rounded-xl font-black">-</button><button onclick="updateScore('A', 1)" class="flex-[2] bg-green-500 text-white py-3 rounded-xl font-black shadow-lg">+</button></div>
-                    </div>
-                    <div class="flex items-center text-gray-300 font-black italic">VS</div>
-                    <div class="flex-1 bg-gray-50 rounded-2xl p-4 shadow-inner border-2 border-gray-100">
-                        <div class="text-[9px] font-black text-gray-400 mb-2 uppercase">Sets: <span id="sets-b" class="text-blue-600 text-sm">0</span></div>
-                        <input type="text" id="name-team-b" class="w-full text-center bg-transparent font-black text-[10px] border-b-2 mb-3 uppercase focus:outline-none" value="TIME B">
-                        <div class="text-6xl font-black text-gray-800 my-4" id="score-b">0</div>
-                        <div class="flex gap-2"><button onclick="updateScore('B', -1)" class="flex-1 bg-red-100 text-red-600 py-3 rounded-xl font-black">-</button><button onclick="updateScore('B', 1)" class="flex-[2] bg-blue-500 text-white py-3 rounded-xl font-black shadow-lg">+</button></div>
-                    </div>
-                </div>
-                <div class="mt-6"><button onclick="resetScore()" class="text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-red-500 transition-colors"><i class="fa-solid fa-rotate-left mr-1"></i> Zerar Partida</button></div>
             </div>
         </div>
+
+        <div id="section-teams" class="animate-pop space-y-4">
+            <div class="glass-card p-6">
+                <h3 class="text-lg font-900 mb-4 uppercase italic">Dividir Times</h3>
+                <select id="players-per-team" class="w-full mb-4 px-4 py-3 bg-gray-100 rounded-xl font-bold outline-none">
+                    <option value="2">2x2</option><option value="4">4x4</option><option value="6" selected>6x6</option><option value="colher">Colher de Chá (5x4)</option>
+                </select>
+                <button onclick="window.drawTeams()" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-lg uppercase italic tracking-widest"><i class="fa-solid fa-shuffle mr-2"></i> Sortear</button>
+                <div id="teams-result" class="mt-6 space-y-3"></div>
+            </div>
+        </div>
+
+        <div id="section-score" class="animate-pop text-center space-y-4">
+            <div class="glass-card p-6">
+                <div class="flex justify-between items-center mb-6 bg-gray-50 p-2 rounded-xl border">
+                    <span class="text-[10px] font-black text-gray-400">FECHA EM:</span>
+                    <select id="config-max-score" class="bg-transparent font-black text-blue-600 outline-none"><option value="15">15</option><option value="21">21</option></select>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="flex-1">
+                        <input type="text" id="name-team-a" class="w-full text-center font-black text-[10px] uppercase mb-2 outline-none" value="TIME A">
+                        <div class="text-6xl font-900 mb-4" id="score-a">0</div>
+                        <div class="flex gap-1"><button onclick="updateScore('A', -1)" class="bg-gray-100 flex-1 py-3 rounded-lg">-</button><button onclick="updateScore('A', 1)" class="bg-green-500 text-white flex-[2] py-3 rounded-lg shadow-lg">+</button></div>
+                    </div>
+                    <div class="font-black text-gray-200">VS</div>
+                    <div class="flex-1">
+                        <input type="text" id="name-team-b" class="w-full text-center font-black text-[10px] uppercase mb-2 outline-none" value="TIME B">
+                        <div class="text-6xl font-900 mb-4" id="score-b">0</div>
+                        <div class="flex gap-1"><button onclick="updateScore('B', -1)" class="bg-gray-100 flex-1 py-3 rounded-lg">-</button><button onclick="updateScore('B', 1)" class="bg-blue-600 text-white flex-[2] py-3 rounded-lg shadow-lg">+</button></div>
+                    </div>
+                </div>
+                <button onclick="resetScore()" class="mt-8 text-[9px] font-black text-gray-400 uppercase tracking-widest">Zerar Partida</button>
+            </div>
+        </div>
+
+        <div id="section-info" class="animate-pop space-y-4">
+            <div class="glass-card p-6">
+                <h3 class="text-lg font-900 mb-4 uppercase italic">Local e Links</h3>
+                <p class="text-sm font-bold text-gray-600 mb-6 flex items-start gap-2"><i class="fa-solid fa-map-pin text-red-500 mt-1"></i> <span id="display-address">...</span></p>
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                    <a id="link-maps" target="_blank" class="bg-gray-50 p-4 rounded-2xl text-center shadow-sm active:scale-95"><i class="fa-solid fa-location-dot text-blue-600 text-2xl"></i><p class="text-[9px] font-black mt-1">MAPS</p></a>
+                    <a id="link-waze" target="_blank" class="bg-gray-50 p-4 rounded-2xl text-center shadow-sm active:scale-95"><i class="fa-brands fa-waze text-cyan-500 text-2xl"></i><p class="text-[9px] font-black mt-1">WAZE</p></a>
+                </div>
+                <button id="btn-share" class="w-full bg-blue-600 text-white font-black py-4 rounded-2xl shadow-xl uppercase italic"><i class="fa-solid fa-share-nodes mr-2"></i> Mandar pro Grupo</button>
+            </div>
+        </div>
+
     </main>
 
-    <div id="edit-modal" class="fixed inset-0 z-[5000] flex items-center justify-center p-4" style="background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);">
-        <div class="glass-card w-full max-w-sm rounded-3xl p-6 relative animate-pop shadow-2xl border-4 border-yellow-400">
-            <h3 class="text-xl font-black mb-4 flex items-center gap-2 uppercase italic"><i class="fa-solid fa-gear text-blue-600"></i> Ajustar Rolê</h3>
-            <div class="space-y-3">
-                <input type="text" id="modal-edit-title" class="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl font-bold focus:outline-none">
-                <input type="text" id="modal-edit-address" class="w-full px-4 py-3 border-2 border-gray-100 rounded-2xl font-bold focus:outline-none">
-                <div class="flex gap-2 pt-2"><button id="modal-cancel" class="flex-1 py-3 font-black text-gray-400 uppercase text-xs">Sair</button><button id="modal-save" class="flex-[2] bg-blue-600 text-white font-black py-3 rounded-2xl shadow-lg uppercase text-xs">Salvar</button></div>
-            </div>
-        </div>
-    </div>
+    <nav class="bottom-nav hidden" id="main-nav">
+        <button onclick="showSection('players')" class="nav-item active" id="nav-players">
+            <i class="fa-solid fa-users"></i><span>Galera</span>
+        </button>
+        <button onclick="showSection('teams')" class="nav-item hidden" id="nav-teams">
+            <i class="fa-solid fa-shuffle"></i><span>Times</span>
+        </button>
+        <button onclick="showSection('score')" class="nav-item hidden" id="nav-score">
+            <i class="fa-solid fa-trophy"></i><span>Placar</span>
+        </button>
+        <button onclick="showSection('info')" class="nav-item" id="nav-info">
+            <i class="fa-solid fa-circle-info"></i><span>Info</span>
+        </button>
+    </nav>
 
-    <div id="toast" class="toast fixed bottom-6 left-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-2xl text-xs font-black uppercase tracking-widest flex items-center gap-3"><span id="toast-msg">Mensagem</span></div>
+    <div id="toast" class="toast fixed bottom-24 left-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-2xl text-xs font-black uppercase flex items-center gap-3">
+        <span id="toast-msg">Mensagem</span>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, collection, setDoc, getDoc, updateDoc, onSnapshot, arrayUnion, arrayRemove, increment, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, collection, setDoc, updateDoc, onSnapshot, arrayUnion, arrayRemove, increment, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyA3RQucgd5vMeJzZgZnC4Zim9hkFVVWXnw", authDomain: "volei-3f30d.firebaseapp.com", projectId: "volei-3f30d", storageBucket: "volei-3f30d.firebasestorage.app", messagingSenderId: "969073040869", appId: "1:969073040869:web:c0f6005d98fae4144de30c" };
-        let db, auth, currentUser, currentEventId, localEventData, deferredPrompt;
-        
+        let db, auth, currentEventId, localEventData;
         const urlParams = new URLSearchParams(window.location.search);
         const rawId = urlParams.get('id');
         if (rawId) { currentEventId = (rawId.length === 6) ? rawId.toUpperCase() : rawId; }
 
-        const viewLoading = document.getElementById('loading-view');
-        const viewCreate = document.getElementById('create-view');
-        const viewEvent = document.getElementById('event-view');
-        const toastEl = document.getElementById('toast');
-        const toastMsg = document.getElementById('toast-msg');
-
-        // --- PWA ---
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault(); deferredPrompt = e;
-            if (!window.matchMedia('(display-mode: standalone)').matches) {
-                document.getElementById('install-banner').style.display = 'block';
-            }
-        });
-        document.getElementById('btn-install-app').onclick = async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') document.getElementById('install-banner').style.display = 'none';
-                deferredPrompt = null;
-            }
+        // --- NAVEGAÇÃO ---
+        window.showSection = (name) => {
+            document.querySelectorAll('main > div').forEach(d => d.classList.remove('active-section'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active', 'text-blue-600'));
+            
+            document.getElementById(`section-${name}`).classList.add('active-section');
+            document.getElementById(`nav-${name}`).classList.add('active', 'text-blue-600');
+            window.scrollTo(0,0);
         };
 
         // --- FIREBASE ---
         const init = async () => {
             const app = initializeApp(firebaseConfig);
             auth = getAuth(app); db = getFirestore(app);
-            try { await enableIndexedDbPersistence(db); } catch (err) {}
+            try { await enableIndexedDbPersistence(db); } catch(e){}
             await signInAnonymously(auth);
-            onAuthStateChanged(auth, (u) => {
-                if(!u) return; currentUser = u;
-                if(currentEventId) {
-                    onSnapshot(doc(db, 'volei_events', currentEventId), (s) => {
-                        if(!s.exists()) { showToast("Código inválido!"); setTimeout(() => window.location.href = window.location.pathname, 1500); return; }
-                        localEventData = s.data(); renderEvent(localEventData);
-                        viewLoading.style.display = 'none'; viewEvent.style.display = 'block';
-                        document.getElementById('btn-open-edit').classList.remove('hidden');
-                    });
-                } else { viewLoading.style.display = 'none'; viewCreate.style.display = 'block'; }
-            });
+            
+            if(currentEventId) {
+                document.getElementById('loading-view').classList.add('active-section');
+                onSnapshot(doc(db, 'volei_events', currentEventId), (s) => {
+                    if(!s.exists()) { window.location.href = window.location.pathname; return; }
+                    localEventData = s.data(); renderEvent(localEventData);
+                    document.getElementById('loading-view').classList.remove('active-section');
+                    document.getElementById('main-nav').classList.remove('hidden');
+                    document.getElementById('game-badge').classList.remove('hidden');
+                    if(!document.querySelector('.active-section')) showSection('players');
+                });
+            } else {
+                document.getElementById('create-view').classList.add('active-section');
+            }
         };
 
         const renderEvent = (d) => {
-            document.getElementById('display-title').innerText = d.location;
-            document.querySelector('#display-address-text span').innerText = d.address;
+            document.getElementById('header-title').innerText = d.location;
             document.getElementById('display-game-id').innerText = currentEventId;
+            document.getElementById('display-address').innerText = d.address;
             
-            // Ajuste de Categoria
-            const iconMap = { volei: '🏐', churrasco: '🔥', jogos: '🎮', viagem: '✈️', outro: '😎' };
-            document.getElementById('bg-icon').innerText = iconMap[d.category] || '😎';
-            
-            // Abas condicionais
+            // Lógica de abas do vôlei
             const isVolei = d.category === 'volei';
-            document.getElementById('tab-btn-teams').classList.toggle('hidden', !isVolei);
-            document.getElementById('tab-btn-score').classList.toggle('hidden', !isVolei);
+            document.getElementById('nav-teams').classList.toggle('hidden', !isVolei);
+            document.getElementById('nav-score').classList.toggle('hidden', !isVolei);
 
             const enc = encodeURIComponent(d.address);
-            document.getElementById('link-maps').href = `http://maps.google.com/?q=${enc}`;
+            document.getElementById('link-maps').href = `https://www.google.com/maps/search/?api=1&query=$00{enc}`;
             document.getElementById('link-waze').href = `https://waze.com/ul?q=${enc}`;
             
-            document.getElementById('display-total-cost').innerText = `R$ ${d.totalCost.toFixed(2)}`;
             const p = d.participants || [];
             document.getElementById('display-person-cost').innerText = `R$ ${(d.totalCost / Math.max(1, p.length)).toFixed(2)}`;
             document.getElementById('display-count').innerText = p.length;
             
             document.getElementById('participants-list').innerHTML = p.map(u => `
-                <li class="flex items-center justify-between p-3 bg-white rounded-2xl shadow-sm border-2 border-gray-50 animate-pop">
-                    <span class="font-black text-gray-700 uppercase text-xs ml-2">${u.name}</span>
-                    <button onclick="removePlayer('${u.entryId}')" class="text-red-300 p-2 active:text-red-500"><i class="fa-solid fa-trash-can"></i></button>
+                <li class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <span class="font-black text-gray-700 uppercase text-xs">${u.name}</span>
+                    <button onclick="removePlayer('${u.entryId}')" class="text-red-200 p-2"><i class="fa-solid fa-trash-can"></i></button>
                 </li>
-            `).join('') || '<li class="text-center py-6 text-gray-400 text-xs font-bold italic">Ninguém confirmou ainda...</li>';
+            `).join('') || '<p class="text-center text-gray-400 font-bold italic py-4">Cuida... cadê o povo?</p>';
 
             document.getElementById('score-a').innerText = d.scoreA || 0;
             document.getElementById('score-b').innerText = d.scoreB || 0;
-            document.getElementById('sets-a').innerText = d.setsA || 0;
-            document.getElementById('sets-b').innerText = d.setsB || 0;
         };
 
         // --- SORTEIO ---
         window.drawTeams = () => {
-            if (!localEventData || !localEventData.participants.length) return showToast("Cadê o povo?");
             const mode = document.getElementById('players-per-team').value;
-            let players = [...localEventData.participants].map(p => p.name);
-            for (let i = players.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [players[i], players[j]] = [players[j], players[i]]; }
+            let p = [...localEventData.participants].map(x => x.name);
+            p.sort(() => Math.random() - 0.5);
             const res = document.getElementById('teams-result'); res.innerHTML = '';
-            const createTeamCard = (num, members, color) => {
-                const card = document.createElement('div'); card.className = `bg-white p-4 rounded-2xl border-l-8 border-${color}-500 shadow-md animate-pop`;
-                card.innerHTML = `<p class="text-[10px] font-black text-${color}-600 uppercase mb-2">Time ${num}</p><div class="space-y-1">${members.map(n => `<p class="font-black text-gray-700 uppercase text-[10px]">• ${n}</p>`).join('')}</div>`;
-                res.appendChild(card);
+            
+            const addTeam = (name, members, color) => {
+                const div = document.createElement('div');
+                div.className = `glass-card p-4 border-l-8 border-${color}-500 shadow-sm animate-pop`;
+                div.innerHTML = `<p class="text-[10px] font-black text-${color}-600 uppercase mb-2">${name}</p>
+                                 <div class="space-y-1">${members.map(m => `<p class="font-bold text-xs uppercase">• ${m}</p>`).join('')}</div>`;
+                res.appendChild(div);
             };
-            if (mode === 'colher') {
-                if (players.length < 9) return showToast("Precisa de 9 pessoas no mínimo!");
-                createTeamCard("A (Vantagem)", players.splice(0, 5), "yellow"); createTeamCard("B", players.splice(0, 4), "blue");
+
+            if(mode === 'colher') {
+                if(p.length < 9) return showToast("Precisa de 9 hum!");
+                addTeam("Time A (Vantagem)", p.splice(0, 5), "yellow");
+                addTeam("Time B", p.splice(0, 4), "blue");
             } else {
-                const n = parseInt(mode); let tCount = 1;
-                while(players.length >= n) { createTeamCard(tCount, players.splice(0, n), tCount % 2 === 0 ? "blue" : "yellow"); tCount++; }
+                const n = parseInt(mode); let count = 1;
+                while(p.length >= n) { addTeam(`Time ${count}`, p.splice(0, n), count % 2 === 0 ? "blue" : "yellow"); count++; }
             }
-            if(players.length > 0) {
-                const card = document.createElement('div'); card.className = "bg-gray-100 p-4 rounded-2xl border-2 border-dashed border-gray-300";
-                card.innerHTML = `<p class="text-[9px] font-black text-gray-400 uppercase mb-2">Próximos / Reserva</p>${players.map(n => `<p class="font-bold text-gray-400 text-[10px]">• ${n}</p>`).join('')}`;
-                res.appendChild(card);
-            }
-            showToast("Sorteado! Cuida!");
+            if(p.length > 0) addTeam("Reservas", p, "gray");
         };
 
-        // --- GLOBAIS ---
+        // --- ACTIONS ---
         window.updateScore = async (team, amt) => {
             const field = team === 'A' ? 'scoreA' : 'scoreB';
-            const setField = team === 'A' ? 'setsA' : 'setsB';
             let cur = (localEventData[field] || 0) + amt;
             const max = parseInt(document.getElementById('config-max-score').value);
-            if(cur >= max) { await updateDoc(doc(db, 'volei_events', currentEventId), { scoreA:0, scoreB:0, [setField]: increment(1) }); }
+            if(cur >= max) { await updateDoc(doc(db, 'volei_events', currentEventId), { scoreA:0, scoreB:0, setsA: increment(1) }); }
             else { await updateDoc(doc(db, 'volei_events', currentEventId), { [field]: Math.max(0, cur) }); }
         };
-        window.resetScore = async () => { if(confirm("Zerar tudo?")) await updateDoc(doc(db, 'volei_events', currentEventId), { scoreA:0, scoreB:0, setsA:0, setsB:0 }); };
+
+        window.resetScore = async () => { if(confirm("Zerar?")) await updateDoc(doc(db, 'volei_events', currentEventId), { scoreA:0, scoreB:0 }); };
         window.removePlayer = async (id) => { const p = localEventData.participants.find(x => x.entryId === id); await updateDoc(doc(db, 'volei_events', currentEventId), { participants: arrayRemove(p) }); };
         
         document.getElementById('btn-join').onclick = async () => {
             const n = document.getElementById('input-name').value.trim();
             if(!n) return;
-            const entryId = Math.random().toString(36).substr(2, 9);
-            await updateDoc(doc(db, 'volei_events', currentEventId), { participants: arrayUnion({ entryId, name: n }) });
+            await updateDoc(doc(db, 'volei_events', currentEventId), { participants: arrayUnion({ entryId: Math.random().toString(36).substr(2,9), name: n }) });
             document.getElementById('input-name').value = '';
-            showToast("Confirmado! ✅");
         };
-
-        // --- UI ---
-        const switchTab = (t) => {
-            ['players', 'teams', 'score'].forEach(x => {
-                document.getElementById(`tab-content-${x}`).classList.add('hidden');
-                document.getElementById(`tab-btn-${x}`).className = "flex-1 py-2.5 rounded-xl text-[10px] font-black text-white uppercase";
-            });
-            document.getElementById(`tab-content-${t}`).classList.remove('hidden');
-            document.getElementById(`tab-btn-${t}`).className = "flex-1 py-2.5 rounded-xl text-[10px] font-black bg-white text-blue-600 shadow-md uppercase";
-        };
-        document.getElementById('tab-btn-players').onclick = () => switchTab('players');
-        document.getElementById('tab-btn-teams').onclick = () => switchTab('teams');
-        document.getElementById('tab-btn-score').onclick = () => switchTab('score');
 
         document.getElementById('create-form').onsubmit = async (e) => {
             e.preventDefault();
-            const btn = e.target.querySelector('button'); btn.disabled = true;
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            const shortId = chars[Math.floor(Math.random() * 26)] + chars[Math.floor(Math.random() * 26)] + Math.floor(1000 + Math.random() * 9000);
-            try {
-                await setDoc(doc(db, 'volei_events', shortId), {
-                    location: document.getElementById('input-location').value,
-                    address: document.getElementById('input-address').value,
-                    category: document.getElementById('input-category').value,
-                    totalCost: parseFloat(document.getElementById('input-total').value),
-                    participants: [], scoreA:0, scoreB:0, setsA:0, setsB:0, datetime: document.getElementById('input-datetime').value
-                });
-                window.location.href = `?id=${shortId}`;
-            } catch(err) { showToast("Deu erro!"); btn.disabled = false; }
+            const id = Math.random().toString(36).substr(2, 2).toUpperCase() + Math.floor(1000 + Math.random() * 9000);
+            await setDoc(doc(db, 'volei_events', id), {
+                location: document.getElementById('input-location').value,
+                address: document.getElementById('input-address').value,
+                category: document.getElementById('input-category').value,
+                totalCost: parseFloat(document.getElementById('input-total').value),
+                participants: [], scoreA: 0, scoreB: 0
+            });
+            window.location.href = `?id=${id}`;
         };
 
-        document.getElementById('btn-share').onclick = () => { navigator.clipboard.writeText(window.location.href); showToast("Link na mão! 🍩"); };
+        document.getElementById('btn-share').onclick = () => { navigator.clipboard.writeText(window.location.href); showToast("Copiado! 🍩"); };
         document.getElementById('btn-search-id').onclick = () => { const id = document.getElementById('input-search-id').value.trim().toUpperCase(); if(id) window.location.href = `?id=${id}`; };
-        const showToast = (m) => { toastMsg.innerText = m; toastEl.classList.add('show'); setTimeout(() => toastEl.classList.remove('show'), 3000); };
+        const showToast = (m) => { const t = document.getElementById('toast'); document.getElementById('toast-msg').innerText = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); };
         
         init();
     </script>
