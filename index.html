@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vôlei v18</title>
+    <title>VoleiFlow v19</title>
     <meta name="theme-color" content="#0ea5e9">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3569/3569300.png">
     
@@ -18,16 +18,15 @@
         #create-view, #event-view, #loading-view, #edit-modal { display: none; }
         .toast { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: translateY(150%) translateX(-50%); opacity: 0; z-index: 1000; }
         .toast.show { transform: translateY(0) translateX(-50%); opacity: 1; }
-        
-        /* Indicador Offline */
-        #offline-indicator { display: none; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
         body.is-offline #offline-indicator { display: flex; }
+        #offline-indicator { display: none; }
     </style>
 </head>
 <body class="text-gray-800 pb-12 overflow-x-hidden relative">
 
     <div id="offline-indicator" class="fixed top-0 left-0 w-full bg-orange-600 text-white text-[10px] font-bold py-1 justify-center items-center gap-2 z-[2000] uppercase tracking-widest">
-        <i class="fa-solid fa-cloud-slash"></i> Você está offline - As mudanças serão sincronizadas depois
+        <i class="fa-solid fa-cloud-slash"></i> Offline - Sincronizando quando voltar
     </div>
 
     <div class="fixed top-10 right-10 w-32 h-32 bg-yellow-300 rounded-full blur-2xl opacity-60 pointer-events-none"></div>
@@ -36,7 +35,7 @@
         <div class="flex items-center justify-center gap-3 px-4">
             <h1 class="text-3xl sm:text-4xl font-bold text-white drop-shadow-lg cursor-pointer transition-transform hover:scale-105 flex items-center" onclick="window.location.href=window.location.pathname">
                 <i class="fa-solid fa-volleyball text-yellow-300 animate-bounce mr-3"></i> 
-                <span id="main-title-text">Vôlei do Italo</span>
+                <span id="main-title-text">VoleiFlow</span>
             </h1>
             <button id="btn-open-edit" class="hidden text-white/80 hover:text-white bg-white/20 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm shrink-0">
                 <i class="fa-solid fa-pen text-sm"></i>
@@ -45,31 +44,32 @@
     </header>
 
     <main class="max-w-md mx-auto px-4 relative z-10">
+        
         <div id="loading-view" class="text-center py-20">
             <i class="fa-solid fa-volleyball animate-spin text-6xl text-white"></i>
-            <p class="mt-6 text-white font-semibold uppercase tracking-widest">Sincronizando...</p>
+            <p class="mt-6 text-white font-semibold uppercase tracking-widest">Carregando...</p>
         </div>
 
         <div id="create-view" class="space-y-6">
-            <div class="glass-card rounded-3xl p-6 border-orange-200/50 border-2 shadow-lg">
+            <div class="glass-card rounded-3xl p-6 border-orange-200/50 border-2 shadow-lg animate-fade-in">
                 <h3 class="text-xs font-bold text-orange-600 uppercase tracking-widest mb-3 flex items-center gap-2">
                     <i class="fa-solid fa-magnifying-glass"></i> Código do Jogo
                 </h3>
                 <div class="flex gap-2">
                     <input type="text" id="input-search-id" class="flex-1 px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none uppercase font-mono text-sm tracking-widest" placeholder="EX: XS4567">
-                    <button id="btn-search-id" class="bg-orange-500 text-white font-bold px-6 rounded-2xl shadow-md active:scale-95">OK</button>
+                    <button id="btn-search-id" class="bg-orange-500 text-white font-bold px-6 rounded-2xl shadow-md active:scale-95 transition-all">OK</button>
                 </div>
             </div>
 
-            <div class="glass-card rounded-3xl p-7">
+            <div class="glass-card rounded-3xl p-7 animate-fade-in">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3 uppercase tracking-tighter">Novo Jogo</h2>
                 <form id="create-form" class="space-y-4">
                     <input type="text" id="input-location" required class="w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Nome do Jogo">
                     <input type="text" id="input-address" required class="w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Endereço">
-                    <input type="text" id="input-group-link" class="w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-green-500 outline-none" placeholder="Link do Grupo de Zap">
+                    <input type="text" id="input-group-link" class="w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-green-500 outline-none" placeholder="Link do Grupo de WhatsApp">
                     <div class="grid grid-cols-2 gap-3">
                         <input type="datetime-local" id="input-datetime" required class="w-full px-4 py-3 border rounded-2xl text-sm focus:outline-none">
-                        <input type="number" step="0.01" id="input-total" required class="w-full px-4 py-3 border rounded-2xl focus:outline-none" placeholder="Total R$">
+                        <input type="number" step="0.01" id="input-total" required class="w-full px-4 py-3 border rounded-2xl focus:outline-none" placeholder="Valor Total R$">
                     </div>
                     <div class="flex items-center justify-between px-1">
                         <label class="text-sm font-semibold text-gray-700">Limite de Pessoas</label>
@@ -88,7 +88,7 @@
                     <i class="fa-solid fa-location-dot text-orange-500 mr-1"></i> <span>Endereço...</span>
                 </p>
 
-                <div class="flex items-center gap-3 mb-6">
+                <div class="flex items-center gap-3 mb-6 no-scrollbar overflow-x-auto pb-1">
                     <div class="h-11 px-4 bg-orange-100 border border-orange-200 rounded-2xl flex flex-col items-center justify-center shrink-0 shadow-sm">
                         <span class="text-[8px] uppercase font-bold text-orange-400 leading-none">CÓDIGO</span>
                         <span class="text-xs font-mono font-black text-orange-700 tracking-tighter" id="display-game-id">--0000</span>
@@ -99,7 +99,7 @@
                 </div>
 
                 <div class="bg-white/40 rounded-2xl p-4 flex justify-between items-center border border-white/50">
-                    <div><p class="text-[10px] uppercase font-bold text-gray-500">Total</p><p class="font-bold text-gray-800" id="display-total-cost">R$ 0,00</p></div>
+                    <div><p class="text-[10px] uppercase font-bold text-gray-500">Valor Total</p><p class="font-bold text-gray-800" id="display-total-cost">R$ 0,00</p></div>
                     <div class="text-right"><p class="text-[10px] uppercase font-bold text-gray-500">Por Pessoa</p><p class="font-black text-green-600 text-2xl" id="display-person-cost">R$ 0,00</p></div>
                 </div>
             </div>
@@ -116,28 +116,39 @@
                 <ul id="participants-list" class="space-y-2 mb-6 max-h-[300px] overflow-y-auto pr-1"></ul>
                 <div id="action-area" class="border-t pt-5">
                     <div class="flex gap-2">
-                        <input type="text" id="input-name" class="flex-1 px-4 py-3 bg-white border-0 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none shadow-inner" placeholder="Nome...">
-                        <button id="btn-join" class="bg-green-500 text-white font-bold px-6 rounded-2xl shadow-lg active:scale-95"><i class="fa-solid fa-plus"></i></button>
+                        <input type="text" id="input-name" class="flex-1 px-4 py-3 bg-white border-0 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none shadow-inner" placeholder="Nome do jogador...">
+                        <button id="btn-join" class="bg-green-500 text-white font-bold px-6 rounded-2xl shadow-lg active:scale-95 transition-transform"><i class="fa-solid fa-plus"></i></button>
                     </div>
                     <a id="btn-join-group" target="_blank" class="hidden w-full mt-4 bg-green-500 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-xl hover:brightness-110 transition-all border-b-4 border-green-700 uppercase text-[10px] tracking-widest"><i class="fa-brands fa-whatsapp text-xl"></i> Grupo do Vôlei</a>
                 </div>
             </div>
 
             <div id="tab-content-teams" class="glass-card rounded-3xl p-6 hidden animate-pop">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">Montar Times</h3>
+                <h3 class="text-xl font-bold text-gray-800 mb-1">Montar Times</h3>
+                <p class="text-[9px] text-gray-400 uppercase font-bold tracking-widest mb-4">Embaralhar jogadores confirmados</p>
+                
                 <div class="space-y-4 mb-6">
                     <div class="flex gap-2">
-                        <input type="text" id="input-name-teams" class="flex-1 px-4 py-3 bg-white border-0 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none shadow-inner" placeholder="Adicionar...">
+                        <input type="text" id="input-name-teams" class="flex-1 px-4 py-3 bg-white border-0 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none shadow-inner" placeholder="Adicionar avulso...">
                         <button onclick="window.addPlayerFromTeams()" class="bg-orange-500 text-white font-bold px-5 rounded-2xl shadow-md active:scale-95"><i class="fa-solid fa-user-plus"></i></button>
                     </div>
-                    <div class="flex items-center justify-between bg-white/50 p-3 rounded-2xl border border-white">
-                        <span class="text-xs font-bold text-gray-600">Jogadores por Time:</span>
-                        <select id="players-per-team" class="bg-white border rounded-xl px-3 py-1 font-bold text-orange-600 outline-none">
-                            <option value="2">2x2</option><option value="4">4x4</option><option value="6" selected>6x6</option>
-                        </select>
+
+                    <div class="bg-white/50 p-3 rounded-2xl border border-white space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-gray-600">Formato do Jogo:</span>
+                            <select id="players-per-team" class="bg-white border rounded-xl px-2 py-1 font-bold text-orange-600 outline-none text-sm cursor-pointer">
+                                <option value="2">2x2</option>
+                                <option value="3">3x3</option>
+                                <option value="4">4x4</option>
+                                <option value="5">5x5</option>
+                                <option value="6" selected>6x6</option>
+                                <option value="colher">Colher de Chá (5x4)</option>
+                            </select>
+                        </div>
                     </div>
+
                     <button onclick="window.drawTeams()" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold py-4 rounded-2xl shadow-lg uppercase tracking-widest active:scale-95 transition-all">
-                        <i class="fa-solid fa-shuffle mr-2"></i> Sortear
+                        <i class="fa-solid fa-shuffle mr-2"></i> Sortear Times
                     </button>
                 </div>
                 <div id="teams-result" class="space-y-4"></div>
@@ -145,27 +156,22 @@
 
             <div id="tab-content-score" class="glass-card rounded-3xl p-6 hidden text-center animate-pop">
                 <div class="flex flex-col gap-3 mb-6">
-                    <div class="flex justify-between items-center bg-white/60 p-3 rounded-2xl border border-white/50">
-                        <span class="text-xs font-bold text-gray-600 uppercase">Set Fecha em:</span>
-                        <select id="config-max-score" class="bg-white border rounded-xl px-2 py-1 text-sm font-black text-orange-600 focus:outline-none">
-                            <option value="15">15 pts</option><option value="21">21 pts</option><option value="25">25 pts</option>
-                        </select>
-                    </div>
+                    <div class="flex justify-between items-center bg-white/60 p-3 rounded-2xl border border-white/50"><span class="text-xs font-bold text-gray-600 uppercase">Set Fecha em:</span><select id="config-max-score" class="bg-white border rounded-xl px-2 py-1 text-sm font-black text-orange-600 focus:outline-none"><option value="15">15 pts</option><option value="21">21 pts</option><option value="25">25 pts</option></select></div>
                     <button id="btn-voice" class="w-full bg-white/80 text-gray-700 font-bold py-3 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-center gap-2 transition-all"><i class="fa-solid fa-microphone-lines text-gray-400"></i><span>Ativar Juiz de Voz</span></button>
                 </div>
                 <div class="flex justify-between items-stretch gap-3">
-                    <div class="flex-1 bg-white/60 rounded-2xl p-4 shadow-sm border border-white/40"><div class="text-[10px] font-bold text-gray-400 mb-2 uppercase">Sets: <span id="sets-a" class="text-orange-600 text-sm">0</span></div><input type="text" id="name-team-a" class="w-full text-center bg-transparent font-bold text-xs border-b mb-3 focus:outline-none uppercase" value="TIME A"><div class="text-6xl font-black text-gray-800 my-4" id="score-a">0</div><div class="flex gap-2"><button onclick="updateScore('A', -1)" class="flex-1 bg-red-100 text-red-600 py-3 rounded-xl">-</button><button onclick="updateScore('A', 1)" class="flex-[2] bg-green-500 text-white py-3 rounded-xl font-bold shadow-md">+</button></div></div>
+                    <div class="flex-1 bg-white/60 rounded-2xl p-4 shadow-sm border border-white/40"><div class="text-[10px] font-bold text-gray-400 mb-2 uppercase">Sets: <span id="sets-a" class="text-orange-600 text-sm">0</span></div><input type="text" id="name-team-a" class="w-full text-center bg-transparent font-bold text-xs border-b mb-3 focus:outline-none uppercase" value="TIME A"><div class="text-6xl font-black text-gray-800 my-4" id="score-a">0</div><div class="flex gap-2"><button onclick="updateScore('A', -1)" class="flex-1 bg-red-100 text-red-600 py-3 rounded-xl">-</button><button onclick="updateScore('A', 1)" class="flex-[2] bg-green-500 text-white py-3 rounded-xl font-bold shadow-md active:scale-95 transition-all">+</button></div></div>
                     <div class="flex items-center text-gray-300 font-black">X</div>
-                    <div class="flex-1 bg-white/60 rounded-2xl p-4 shadow-sm border border-white/40"><div class="text-[10px] font-bold text-gray-400 mb-2 uppercase">Sets: <span id="sets-b" class="text-orange-600 text-sm">0</span></div><input type="text" id="name-team-b" class="w-full text-center bg-transparent font-bold text-xs border-b mb-3 focus:outline-none uppercase" value="TIME B"><div class="text-6xl font-black text-gray-800 my-4" id="score-b">0</div><div class="flex gap-2"><button onclick="updateScore('B', -1)" class="flex-1 bg-red-100 text-red-600 py-3 rounded-xl">-</button><button onclick="updateScore('B', 1)" class="flex-[2] bg-blue-500 text-white py-3 rounded-xl font-bold shadow-md">+</button></div></div>
+                    <div class="flex-1 bg-white/60 rounded-2xl p-4 shadow-sm border border-white/40"><div class="text-[10px] font-bold text-gray-400 mb-2 uppercase">Sets: <span id="sets-b" class="text-orange-600 text-sm">0</span></div><input type="text" id="name-team-b" class="w-full text-center bg-transparent font-bold text-xs border-b mb-3 focus:outline-none uppercase" value="TIME B"><div class="text-6xl font-black text-gray-800 my-4" id="score-b">0</div><div class="flex gap-2"><button onclick="updateScore('B', -1)" class="flex-1 bg-red-100 text-red-600 py-3 rounded-xl">-</button><button onclick="updateScore('B', 1)" class="flex-[2] bg-blue-500 text-white py-3 rounded-xl font-bold shadow-md active:scale-95 transition-all">+</button></div></div>
                 </div>
-                <div class="mt-6"><button onclick="resetScore()" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest hover:text-red-500"><i class="fa-solid fa-rotate-left mr-1"></i> Zerar Partida</button></div>
+                <div class="mt-6"><button onclick="resetScore()" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest hover:text-red-500 transition-colors"><i class="fa-solid fa-rotate-left mr-1"></i> Zerar Partida</button></div>
             </div>
         </div>
     </main>
 
     <div id="edit-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4" style="background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);">
         <div class="glass-card w-full max-w-sm rounded-3xl p-6 relative animate-pop shadow-2xl">
-            <h3 class="text-xl font-bold mb-4 flex items-center gap-2"><i class="fa-solid fa-gear text-orange-500"></i> Ajustar Detalhes</h3>
+            <h3 class="text-xl font-bold mb-4 flex items-center gap-2"><i class="fa-solid fa-gear text-orange-500"></i> Ajustar Jogo</h3>
             <div class="space-y-3">
                 <input type="text" id="modal-edit-title" class="w-full px-4 py-3 border rounded-2xl focus:outline-none" placeholder="Nome do Jogo">
                 <input type="text" id="modal-edit-address" class="w-full px-4 py-3 border rounded-2xl focus:outline-none" placeholder="Endereço">
@@ -194,23 +200,71 @@
         const toastEl = document.getElementById('toast');
         const toastMsg = document.getElementById('toast-msg');
 
-        // --- MONITOR DE CONEXÃO ---
-        window.addEventListener('online', () => { document.body.classList.remove('is-offline'); showToast("Conectado! Sincronizando..."); });
-        window.addEventListener('offline', () => { document.body.classList.add('is-offline'); });
-        if(!navigator.onLine) document.body.classList.add('is-offline');
+        // --- LÓGICA DE SORTEIO ---
+        window.drawTeams = () => {
+            if (!localEventData || !localEventData.participants.length) return showToast("Sem jogadores na lista!");
+            
+            const mode = document.getElementById('players-per-team').value;
+            let players = [...localEventData.participants].map(p => p.name);
+            
+            // Embaralhar
+            for (let i = players.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [players[i], players[j]] = [players[j], players[i]];
+            }
 
-        // --- INICIALIZAÇÃO FIREBASE COM OFFLINE PERSISTENCE ---
+            const resultDiv = document.getElementById('teams-result');
+            resultDiv.innerHTML = '';
+
+            const createTeamCard = (num, members, color) => {
+                const card = document.createElement('div');
+                card.className = "bg-white/70 p-4 rounded-2xl border border-white animate-pop shadow-sm";
+                card.innerHTML = `<p class="text-[10px] font-black text-${color}-500 uppercase tracking-widest mb-2">Time ${num}</p><div class="space-y-1">${members.map(n => `<p class="font-bold text-gray-700 uppercase text-xs">• ${n}</p>`).join('')}</div>`;
+                resultDiv.appendChild(card);
+            };
+
+            if (mode === 'colher') {
+                if (players.length < 9) return showToast("Precisa de pelo menos 9 jogadores!");
+                createTeamCard("A (Vantagem)", players.splice(0, 5), "orange");
+                createTeamCard("B", players.splice(0, 4), "blue");
+            } else {
+                const n = parseInt(mode);
+                let tCount = 1;
+                while(players.length >= n) {
+                    createTeamCard(tCount, players.splice(0, n), "indigo");
+                    tCount++;
+                }
+            }
+            
+            if (players.length > 0) {
+                const next = document.createElement('div');
+                next.className = "bg-gray-100/50 p-4 rounded-2xl border border-dashed border-gray-300";
+                next.innerHTML = `<p class="text-[10px] font-bold text-gray-400 uppercase mb-2">Próximos / Reserva</p><div class="space-y-1">${players.map(n => `<p class="text-gray-500 uppercase text-xs">• ${n}</p>`).join('')}</div>`;
+                resultDiv.appendChild(next);
+            }
+            showToast("Times formados!");
+        };
+
+        window.addPlayerFromTeams = async () => {
+            const input = document.getElementById('input-name-teams');
+            const name = input.value.trim();
+            if(!name) return;
+            const entryId = Math.random().toString(36).substr(2, 9);
+            await updateDoc(doc(db, 'volei_events', currentEventId), { participants: arrayUnion({ entryId, name }) });
+            input.value = '';
+            showToast("Jogador adicionado!");
+        };
+
+        // --- MONITOR OFFLINE ---
+        window.addEventListener('online', () => { document.body.classList.remove('is-offline'); showToast("Conectado!"); });
+        window.addEventListener('offline', () => { document.body.classList.add('is-offline'); });
+
+        // --- FIREBASE INIT ---
         const init = async () => {
             const app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             db = getFirestore(app);
-
-            // Ativa o banco de dados offline no navegador
-            try {
-                await enableIndexedDbPersistence(db);
-            } catch (err) {
-                console.warn("Persistência offline falhou:", err.code);
-            }
+            try { await enableIndexedDbPersistence(db); } catch (err) {}
 
             await signInAnonymously(auth);
             onAuthStateChanged(auth, (u) => {
@@ -226,33 +280,26 @@
             });
         };
 
-        // --- SORTEIO ---
-        window.drawTeams = () => {
-            if (!localEventData || !localEventData.participants.length) return showToast("Sem jogadores na lista!");
-            const n = parseInt(document.getElementById('players-per-team').value);
-            let p = [...localEventData.participants].map(x => x.name);
-            for (let i = p.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [p[i], p[j]] = [p[j], p[i]]; }
-            const res = document.getElementById('teams-result'); res.innerHTML = '';
-            let tCount = 1;
-            while(p.length > 0) {
-                const team = p.splice(0, n);
-                const card = document.createElement('div');
-                card.className = "bg-white/70 p-4 rounded-2xl border border-white animate-pop shadow-sm";
-                card.innerHTML = `<p class="text-[10px] font-black text-indigo-500 uppercase mb-2">Time ${tCount}</p><div class="space-y-1">${team.map(name => `<p class="font-bold text-gray-700 uppercase text-xs">• ${name}</p>`).join('')}</div>`;
-                res.appendChild(card); tCount++;
-            }
+        const renderEvent = (d) => {
+            document.getElementById('main-title-text').innerText = d.location;
+            document.querySelector('#display-address-text span').innerText = d.address;
+            document.getElementById('display-game-id').innerText = currentEventId;
+            const enc = encodeURIComponent(d.address);
+            document.getElementById('link-maps').href = `https://www.google.com/maps/search/?api=1&query=$0{enc}`;
+            document.getElementById('link-waze').href = `https://waze.com/ul?q=${enc}`;
+            if(d.groupLink) { document.getElementById('btn-join-group').href = d.groupLink; document.getElementById('btn-join-group').classList.remove('hidden'); }
+            
+            document.getElementById('display-total-cost').innerText = `R$ ${d.totalCost.toFixed(2)}`;
+            const p = d.participants || [];
+            document.getElementById('display-person-cost').innerText = `R$ ${(d.totalCost / Math.max(1, p.length)).toFixed(2)}`;
+            document.getElementById('display-count').innerText = d.playerLimit ? `${p.length}/${d.playerLimit}` : p.length;
+            if(d.playerLimit) { document.getElementById('progress-container').classList.remove('hidden'); document.getElementById('progress-bar').style.width = Math.min(100, (p.length/d.playerLimit*100)) + '%'; }
+            document.getElementById('participants-list').innerHTML = p.map(u => `<li class="flex items-center justify-between p-3 bg-white/80 rounded-2xl shadow-sm border border-white/50 animate-pop"><span class="font-bold text-gray-700 uppercase text-xs ml-2">${u.name}</span><button onclick="removePlayer('${u.entryId}')" class="text-red-300 p-2"><i class="fa-solid fa-trash-can"></i></button></li>`).join('');
+            document.getElementById('score-a').innerText = d.scoreA || 0; document.getElementById('score-b').innerText = d.scoreB || 0;
+            document.getElementById('sets-a').innerText = d.setsA || 0; document.getElementById('sets-b').innerText = d.setsB || 0;
         };
 
-        window.addPlayerFromTeams = async () => {
-            const i = document.getElementById('input-name-teams');
-            const name = i.value.trim();
-            if(!name) return;
-            const entryId = Math.random().toString(36).substr(2, 9);
-            await updateDoc(doc(db, 'volei_events', currentEventId), { participants: arrayUnion({ entryId, name }) });
-            i.value = '';
-        };
-
-        // --- AÇÕES GLOBAIS ---
+        // --- UI ACTIONS ---
         window.updateScore = async (team, amt) => {
             if(!currentEventId || !localEventData) return;
             const field = team === 'A' ? 'scoreA' : 'scoreB';
@@ -263,30 +310,8 @@
             if(cur >= max && (cur - other) >= 2) { await updateDoc(doc(db, 'volei_events', currentEventId), { scoreA:0, scoreB:0, [setField]: increment(1) }); }
             else { await updateDoc(doc(db, 'volei_events', currentEventId), { [field]: Math.max(0, cur) }); }
         };
-
         window.resetScore = async () => { if(confirm("Zerar partida?")) await updateDoc(doc(db, 'volei_events', currentEventId), { scoreA:0, scoreB:0, setsA:0, setsB:0 }); };
         window.removePlayer = async (id) => { const p = localEventData.participants.find(x => x.entryId === id); await updateDoc(doc(db, 'volei_events', currentEventId), { participants: arrayRemove(p) }); };
-
-        const renderEvent = (d) => {
-            document.getElementById('main-title-text').innerText = d.location;
-            document.querySelector('#display-address-text span').innerText = d.address;
-            document.getElementById('display-game-id').innerText = currentEventId;
-            const enc = encodeURIComponent(d.address);
-            document.getElementById('link-maps').href = `http://googleusercontent.com/maps.google.com/7{enc}`;
-            document.getElementById('link-waze').href = `https://waze.com/ul?q=${enc}`;
-            const btnGroup = document.getElementById('btn-join-group');
-            if(d.groupLink) { btnGroup.href = d.groupLink; btnGroup.classList.remove('hidden'); } else { btnGroup.classList.add('hidden'); }
-            document.getElementById('display-total-cost').innerText = `R$ ${d.totalCost.toFixed(2)}`;
-            const p = d.participants || [];
-            document.getElementById('display-person-cost').innerText = `R$ ${(d.totalCost / Math.max(1, p.length)).toFixed(2)}`;
-            document.getElementById('display-count').innerText = d.playerLimit ? `${p.length}/${d.playerLimit}` : p.length;
-            if(d.playerLimit) { document.getElementById('progress-container').classList.remove('hidden'); document.getElementById('progress-bar').style.width = Math.min(100, (p.length / d.playerLimit * 100)) + '%'; }
-            document.getElementById('participants-list').innerHTML = p.map(u => `<li class="flex items-center justify-between p-3 bg-white/80 rounded-2xl shadow-sm border border-white/50 animate-pop"><span class="font-bold text-gray-700 uppercase text-xs ml-2">${u.name}</span><button onclick="removePlayer('${u.entryId}')" class="text-red-300 p-2"><i class="fa-solid fa-trash-can"></i></button></li>`).join('');
-            document.getElementById('score-a').innerText = d.scoreA || 0; document.getElementById('score-b').innerText = d.scoreB || 0;
-            document.getElementById('sets-a').innerText = d.setsA || 0; document.getElementById('sets-b').innerText = d.setsB || 0;
-        };
-
-        // --- UI E TABS ---
         document.getElementById('btn-open-edit').onclick = () => { document.getElementById('modal-edit-title').value = localEventData.location; document.getElementById('modal-edit-address').value = localEventData.address; document.getElementById('modal-edit-group').value = localEventData.groupLink || ''; document.getElementById('edit-modal').style.display = 'flex'; };
         document.getElementById('modal-cancel').onclick = () => document.getElementById('edit-modal').style.display = 'none';
         document.getElementById('modal-save').onclick = async () => { await updateDoc(doc(db, 'volei_events', currentEventId), { location: document.getElementById('modal-edit-title').value, address: document.getElementById('modal-edit-address').value, groupLink: document.getElementById('modal-edit-group').value }); document.getElementById('edit-modal').style.display = 'none'; };
@@ -313,16 +338,7 @@
         };
 
         const showToast = (m) => { toastMsg.innerText = m; toastEl.classList.add('show'); setTimeout(() => toastEl.classList.remove('show'), 3000); };
-        
         init();
-    </script>
-
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch(err => console.log("SW reg error:", err));
-            });
-        }
     </script>
 </body>
 </html>
