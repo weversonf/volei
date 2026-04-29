@@ -26,16 +26,11 @@
         #offline-indicator { display: none; }
         
         /* Estilos do Bottom Nav */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(15px); border-top: 1px solid rgba(255, 255, 255, 0.6); display: flex; justify-content: space-around; padding: 12px 10px calc(12px + env(safe-area-inset-bottom)); z-index: 5000; box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; transition: 0.3s; flex: 1; border: none; background: none; outline: none !important; }
-        .nav-item.active { color: #f97316; }
-        .nav-item i { font-size: 20px; }
-        .nav-item span { font-size: 9px; font-weight: 700; text-transform: uppercase; }
+        .bottom-nav-container { padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+        .nav-item { transition: all 0.2s ease-in-out; }
     </style>
 </head>
-<body class="text-gray-800 pb-24 overflow-x-hidden relative">
-
-    <div id="install-banner" class="fixed top-0 left-0 w-full z-[3000] p-3 animate-pop">
+<body class="text-gray-800 pb-28 overflow-x-hidden relative"> <div id="install-banner" class="fixed top-0 left-0 w-full z-[3000] p-3 animate-pop">
         <div class="bg-white/95 backdrop-blur-md border border-blue-200 rounded-2xl shadow-2xl p-4 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <img src="volleyball.png" class="w-10 h-10 rounded-xl shadow-sm" alt="App Icon">
@@ -59,7 +54,7 @@
 
     <header class="pt-10 pb-6 text-center relative z-10">
         <div class="flex items-center justify-center gap-3 px-4">
-            <h1 class="text-3xl sm:text-4xl font-bold text-white drop-shadow-lg cursor-pointer transition-transform hover:scale-105 flex items-center" onclick="window.location.href=window.location.pathname">
+            <h1 class="text-3xl sm:text-4xl font-bold text-white drop-shadow-lg cursor-pointer transition-transform hover:scale-105 flex items-center" onclick="window.navTo('home')">
                 <i class="fa-solid fa-volleyball text-yellow-300 animate-bounce mr-3"></i> 
                 <span id="main-title-text">VoleiFlow</span>
             </h1>
@@ -87,7 +82,7 @@
                 </div>
             </div>
 
-            <div class="glass-card rounded-3xl p-7 animate-fade-in">
+            <div class="glass-card rounded-3xl p-7 animate-pop">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3 uppercase tracking-tighter">Novo Jogo</h2>
                 <form id="create-form" class="space-y-4">
                     <input type="text" id="input-location" required class="w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Nome do Jogo">
@@ -140,7 +135,7 @@
                 <div class="flex justify-between items-end mb-4"><h3 class="text-xl font-bold text-gray-800">Presença</h3><span id="display-count" class="bg-orange-500 text-white text-sm font-bold px-3 py-1 rounded-xl shadow-md">0</span></div>
                 <div id="progress-container" class="w-full bg-white/50 rounded-full h-3 mb-5 hidden overflow-hidden shadow-inner"><div id="progress-bar" class="bg-gradient-to-r from-yellow-400 to-orange-500 h-full"></div></div>
                 <ul id="participants-list" class="space-y-2 mb-6 max-h-[300px] overflow-y-auto pr-1"></ul>
-                <div id="action-area" class="border-t pt-5">
+                <div id="action-area" class="border-t border-gray-200/50 pt-5">
                     <div class="flex gap-2">
                         <input type="text" id="input-name" class="flex-1 px-4 py-3 bg-white border-0 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none shadow-inner" placeholder="Seu Nome...">
                         <button id="btn-join" class="bg-green-500 text-white font-bold px-6 rounded-2xl shadow-lg active:scale-95 transition-transform"><i class="fa-solid fa-plus"></i></button>
@@ -184,6 +179,17 @@
         </div>
     </main>
 
+    <nav id="bottom-nav" class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-md border-t border-white/40 flex justify-around bottom-nav-container z-[5000] hidden shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+        <button id="nav-btn-home" onclick="window.navTo('home')" class="nav-item flex flex-col items-center gap-1 flex-1 py-2 text-orange-500">
+            <i class="fa-solid fa-house text-lg"></i>
+            <span class="text-[9px] font-bold uppercase tracking-wide">Início</span>
+        </button>
+        <button id="nav-btn-event" onclick="window.navTo('event')" class="nav-item flex flex-col items-center gap-1 flex-1 py-2 text-gray-400">
+            <i class="fa-solid fa-volleyball text-lg"></i>
+            <span class="text-[9px] font-bold uppercase tracking-wide">O Jogo</span>
+        </button>
+    </nav>
+
     <div id="edit-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4" style="background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);">
         <div class="glass-card w-full max-w-sm rounded-3xl p-6 relative animate-pop shadow-2xl">
             <h3 class="text-xl font-bold mb-4 flex items-center gap-2"><i class="fa-solid fa-gear text-orange-500"></i> Ajustar Detalhes</h3>
@@ -196,22 +202,7 @@
         </div>
     </div>
 
-    <nav id="bottom-nav" class="bottom-nav hidden animate-pop">
-        <button id="nav-home" class="nav-item active" onclick="window.location.href=window.location.pathname">
-            <i class="fa-solid fa-house"></i>
-            <span>Início</span>
-        </button>
-        <button id="nav-event" class="nav-item" onclick="if(currentEventId) { window.scrollTo(0,0); } else { showToast('Nenhum jogo ativo!'); }">
-            <i class="fa-solid fa-volleyball"></i>
-            <span>Jogo</span>
-        </button>
-        <button id="nav-profile" class="nav-item">
-            <i class="fa-solid fa-user"></i>
-            <span>Perfil</span>
-        </button>
-    </nav>
-
-    <div id="toast" class="toast fixed bottom-28 left-1/2 bg-gray-900/90 text-white px-6 py-3 rounded-full shadow-2xl text-sm flex items-center gap-3 font-medium"><i class="fa-solid fa-circle-check text-green-400"></i><span id="toast-msg">Mensagem</span></div>
+    <div id="toast" class="toast fixed bottom-24 left-1/2 bg-gray-900/90 text-white px-6 py-3 rounded-full shadow-2xl text-sm flex items-center gap-3 font-medium"><i class="fa-solid fa-circle-check text-green-400"></i><span id="toast-msg">Mensagem</span></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -219,48 +210,48 @@
         import { getFirestore, doc, collection, setDoc, getDoc, updateDoc, onSnapshot, arrayUnion, arrayRemove, increment, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyA3RQucgd5vMeJzZgZnC4Zim9hkFVVWXnw", authDomain: "volei-3f30d.firebaseapp.com", projectId: "volei-3f30d", storageBucket: "volei-3f30d.firebasestorage.app", messagingSenderId: "969073040869", appId: "1:969073040869:web:c0f6005d98fae4144de30c" };
-        let db, auth, currentUser, localEventData, deferredPrompt;
+        let db, auth, currentUser, currentEventId, localEventData, deferredPrompt;
         
-        // Expondo currentEventId e showToast pro escopo global para que o onclick do HTML funcione
-        window.currentEventId = null;
         const urlParams = new URLSearchParams(window.location.search);
         const rawId = urlParams.get('id');
-        if (rawId) { window.currentEventId = (rawId.length === 6) ? rawId.toUpperCase() : rawId; }
+        if (rawId) { currentEventId = (rawId.length === 6) ? rawId.toUpperCase() : rawId; }
 
         const viewLoading = document.getElementById('loading-view');
         const viewCreate = document.getElementById('create-view');
         const viewEvent = document.getElementById('event-view');
         const toastEl = document.getElementById('toast');
         const toastMsg = document.getElementById('toast-msg');
+        const bottomNav = document.getElementById('bottom-nav');
 
-        window.showToast = (m) => { toastMsg.innerText = m; toastEl.classList.add('show'); setTimeout(() => toastEl.classList.remove('show'), 3000); };
-
-        // --- LÓGICA DE INSTALAÇÃO ---
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            if (!window.matchMedia('(display-mode: standalone)').matches) {
-                document.getElementById('install-banner').style.display = 'block';
-            }
-        });
-
-        document.getElementById('btn-install-app').onclick = async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    window.hideInstallBanner();
+        // FUNÇÃO DE NAVEGAÇÃO DO MENU INFERIOR
+        window.navTo = (target) => {
+            document.getElementById('nav-btn-home').classList.replace('text-orange-500', 'text-gray-400');
+            document.getElementById('nav-btn-event').classList.replace('text-orange-500', 'text-gray-400');
+            
+            if (target === 'home') {
+                viewEvent.style.display = 'none';
+                viewCreate.style.display = 'block';
+                document.getElementById('nav-btn-home').classList.replace('text-gray-400', 'text-orange-500');
+                // Se quiser remover o ID da URL ao ir pra home, descomente abaixo:
+                // window.history.pushState({}, '', window.location.pathname);
+            } else if (target === 'event') {
+                if (currentEventId && localEventData) {
+                    viewCreate.style.display = 'none';
+                    viewEvent.style.display = 'block';
+                    document.getElementById('nav-btn-event').classList.replace('text-gray-400', 'text-orange-500');
+                } else {
+                    window.showToast("Nenhum jogo ativo no momento!");
+                    document.getElementById('nav-btn-home').classList.replace('text-gray-400', 'text-orange-500');
                 }
-                deferredPrompt = null;
             }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
-        window.hideInstallBanner = () => {
-            document.getElementById('install-banner').style.display = 'none';
-        };
-
-        // --- MONITOR OFFLINE ---
-        window.addEventListener('online', () => { document.body.classList.remove('is-offline'); window.showToast("Conectado!"); });
+        // ... Lógica PWA e Offline mantida ...
+        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; if (!window.matchMedia('(display-mode: standalone)').matches) { document.getElementById('install-banner').style.display = 'block'; } });
+        document.getElementById('btn-install-app').onclick = async () => { if (deferredPrompt) { deferredPrompt.prompt(); const { outcome } = await deferredPrompt.userChoice; if (outcome === 'accepted') { hideInstallBanner(); } deferredPrompt = null; } };
+        window.hideInstallBanner = () => { document.getElementById('install-banner').style.display = 'none'; };
+        window.addEventListener('online', () => { document.body.classList.remove('is-offline'); showToast("Conectado!"); });
         window.addEventListener('offline', () => { document.body.classList.add('is-offline'); });
 
         // --- FIREBASE INIT ---
@@ -272,30 +263,33 @@
             
             onAuthStateChanged(auth, (u) => {
                 if(!u) return; currentUser = u;
+                bottomNav.style.display = 'flex'; // Exibe o menu após carregar
                 
-                // Exibe a barra de navegação assim que o app carrega
-                document.getElementById('bottom-nav').style.display = 'flex';
-                
-                if(window.currentEventId) {
-                    // Ajusta o destaque do menu
-                    document.getElementById('nav-home').classList.remove('active');
-                    document.getElementById('nav-event').classList.add('active');
-
-                    onSnapshot(doc(db, 'volei_events', window.currentEventId), (s) => {
-                        if(!s.exists()) { window.showToast("Código inválido!"); setTimeout(() => window.location.href = window.location.pathname, 1500); return; }
+                if(currentEventId) {
+                    onSnapshot(doc(db, 'volei_events', currentEventId), (s) => {
+                        if(!s.exists()) { showToast("Código inválido!"); setTimeout(() => window.location.href = window.location.pathname, 1500); return; }
                         localEventData = s.data(); renderEvent(localEventData);
-                        viewLoading.style.display = 'none'; viewEvent.style.display = 'block';
+                        viewLoading.style.display = 'none'; 
+                        
+                        // Atualiza as views via navTo
+                        document.getElementById('nav-btn-home').classList.replace('text-orange-500', 'text-gray-400');
+                        document.getElementById('nav-btn-event').classList.replace('text-gray-400', 'text-orange-500');
+                        viewCreate.style.display = 'none';
+                        viewEvent.style.display = 'block';
+                        
                         document.getElementById('btn-open-edit').classList.remove('hidden');
                     });
                 } else { 
-                    viewLoading.style.display = 'none'; viewCreate.style.display = 'block'; 
+                    viewLoading.style.display = 'none'; 
+                    viewCreate.style.display = 'block'; 
+                    document.getElementById('nav-btn-home').classList.replace('text-gray-400', 'text-orange-500');
                 }
             });
         };
 
-        // --- SORTEIO ---
+        // --- SORTEIO E DEMAIS FUNÇÕES ORIGINAIS ---
         window.drawTeams = () => {
-            if (!localEventData || !localEventData.participants.length) return window.showToast("Sem jogadores na lista!");
+            if (!localEventData || !localEventData.participants.length) return showToast("Sem jogadores na lista!");
             const mode = document.getElementById('players-per-team').value;
             let players = [...localEventData.participants].map(p => p.name);
             for (let i = players.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [players[i], players[j]] = [players[j], players[i]]; }
@@ -306,7 +300,7 @@
                 res.appendChild(card);
             };
             if (mode === 'colher') {
-                if (players.length < 9) return window.showToast("Mínimo 9 jogadores para 5x4!");
+                if (players.length < 9) return showToast("Mínimo 9 jogadores para 5x4!");
                 createTeamCard("A (Vantagem)", players.splice(0, 5), "orange"); createTeamCard("B", players.splice(0, 4), "blue");
             } else {
                 const n = parseInt(mode); let tCount = 1;
@@ -317,35 +311,35 @@
                 next.innerHTML = `<p class="text-[10px] font-bold text-gray-400 uppercase mb-2">Reserva / Próximos</p><div class="space-y-1">${players.map(n => `<p class="text-gray-500 uppercase text-xs">• ${n}</p>`).join('')}</div>`;
                 res.appendChild(next);
             }
-            window.showToast("Times embaralhados!");
+            showToast("Times embaralhados!");
         };
 
         window.addPlayerFromTeams = async () => {
             const i = document.getElementById('input-name-teams'); const name = i.value.trim();
             if(!name) return;
             const entryId = Math.random().toString(36).substr(2, 9);
-            await updateDoc(doc(db, 'volei_events', window.currentEventId), { participants: arrayUnion({ entryId, name }) });
+            await updateDoc(doc(db, 'volei_events', currentEventId), { participants: arrayUnion({ entryId, name }) });
             i.value = '';
         };
 
         window.updateScore = async (team, amt) => {
-            if(!window.currentEventId || !localEventData) return;
+            if(!currentEventId || !localEventData) return;
             const field = team === 'A' ? 'scoreA' : 'scoreB';
             const setField = team === 'A' ? 'setsA' : 'setsB';
             let cur = (localEventData[field] || 0) + amt;
             const max = parseInt(document.getElementById('config-max-score').value);
             const other = team === 'A' ? (localEventData.scoreB || 0) : (localEventData.scoreA || 0);
-            if(cur >= max && (cur - other) >= 2) { await updateDoc(doc(db, 'volei_events', window.currentEventId), { scoreA:0, scoreB:0, [setField]: increment(1) }); }
-            else { await updateDoc(doc(db, 'volei_events', window.currentEventId), { [field]: Math.max(0, cur) }); }
+            if(cur >= max && (cur - other) >= 2) { await updateDoc(doc(db, 'volei_events', currentEventId), { scoreA:0, scoreB:0, [setField]: increment(1) }); }
+            else { await updateDoc(doc(db, 'volei_events', currentEventId), { [field]: Math.max(0, cur) }); }
         };
 
-        window.resetScore = async () => { if(confirm("Zerar partida?")) await updateDoc(doc(db, 'volei_events', window.currentEventId), { scoreA:0, scoreB:0, setsA:0, setsB:0 }); };
-        window.removePlayer = async (id) => { const p = localEventData.participants.find(x => x.entryId === id); await updateDoc(doc(db, 'volei_events', window.currentEventId), { participants: arrayRemove(p) }); };
+        window.resetScore = async () => { if(confirm("Zerar partida?")) await updateDoc(doc(db, 'volei_events', currentEventId), { scoreA:0, scoreB:0, setsA:0, setsB:0 }); };
+        window.removePlayer = async (id) => { const p = localEventData.participants.find(x => x.entryId === id); await updateDoc(doc(db, 'volei_events', currentEventId), { participants: arrayRemove(p) }); };
 
         const renderEvent = (d) => {
             document.getElementById('main-title-text').innerText = d.location;
             document.querySelector('#display-address-text span').innerText = d.address;
-            document.getElementById('display-game-id').innerText = window.currentEventId;
+            document.getElementById('display-game-id').innerText = currentEventId;
             const enc = encodeURIComponent(d.address);
             document.getElementById('link-maps').href = `http://googleusercontent.com/maps.google.com/?q=${enc}`;
             document.getElementById('link-waze').href = `https://waze.com/ul?q=${enc}`;
@@ -371,7 +365,15 @@
         document.getElementById('tab-btn-teams').onclick = () => switchTab('teams');
         document.getElementById('tab-btn-score').onclick = () => switchTab('score');
 
-        // --- VOZ ---
+        // Adicionar jogador pelo botão verde (Presença)
+        document.getElementById('btn-join').onclick = async () => {
+            const i = document.getElementById('input-name'); const name = i.value.trim();
+            if(!name) return;
+            const entryId = Math.random().toString(36).substr(2, 9);
+            await updateDoc(doc(db, 'volei_events', currentEventId), { participants: arrayUnion({ entryId, name }) });
+            i.value = '';
+        };
+
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if(SpeechRecognition) {
             const rec = new SpeechRecognition(); rec.lang = 'pt-BR'; rec.continuous = true;
@@ -399,6 +401,7 @@
 
         document.getElementById('btn-share').onclick = () => { navigator.clipboard.writeText(window.location.href); window.showToast("Link Copiado! 🏐"); };
         document.getElementById('btn-search-id').onclick = () => { const id = document.getElementById('input-search-id').value.trim().toUpperCase(); if(id) window.location.href = `?id=${id}`; };
+        window.showToast = (m) => { toastMsg.innerText = m; toastEl.classList.add('show'); setTimeout(() => toastEl.classList.remove('show'), 3000); };
         
         init();
     </script>
