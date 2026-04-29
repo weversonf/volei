@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Cuida na Fuga v10.1</title>
-    <meta name="theme-color" content="#FFD90F">
+    <title>Cuida na Fuga v11</title>
     
+    <meta name="theme-color" content="#FFD90F">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -17,57 +16,47 @@
 
     <style>
         :root { --homer-yellow: #FFD90F; --homer-blue: #0094DA; }
+        body { font-family: 'Fredoka', sans-serif; background: #f8fafc; min-height: 100vh; padding-bottom: 100px; }
         
-        /* Fonte Fredoka aplicada globalmente */
-        body { 
-            font-family: 'Fredoka', sans-serif; 
-            background: #f8fafc; 
-            min-height: 100vh; 
-            padding-bottom: 100px; 
-            -webkit-tap-highlight-color: transparent;
-        }
-
         .bg-homer { background: linear-gradient(180deg, #FFD90F 0%, #fbbf24 100%); }
         .glass-card { background: white; border-radius: 28px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: 1px solid rgba(255,255,255,0.7); }
         
+        /* Nav Estilizada */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(15px); border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; padding: 12px 10px calc(12px + env(safe-area-inset-bottom)); z-index: 5000; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; transition: 0.3s; flex: 1; border: none; background: none; outline: none !important; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; flex: 1; border: none; background: none; }
         .nav-item.active { color: #0094DA; }
         .nav-item i { font-size: 20px; }
         .nav-item span { font-size: 9px; font-weight: 700; text-transform: uppercase; }
 
-        #view-login, #view-agenda, #view-event, #view-create, #view-users, #view-profile, #loading-screen { display: none; }
+        /* Controle de Views */
+        .view { display: none; }
         .active-view { display: block !important; }
         .active-flex { display: flex !important; }
 
+        /* Animações */
         .animate-pop { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes popIn { 0% { transform: scale(0.95); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         
+        .tab-btn-active { background: #eff6ff !important; color: #2563eb !important; border: 2px solid #bfdbfe !important; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .tab-btn-active { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; border-width: 2px; }
-
-        input, select, textarea { font-family: 'Fredoka', sans-serif !important; }
-        
-        /* Ajuste do Donuts da Imagem que você enviou */
-        .donut-loader { font-size: 80px; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1)); }
     </style>
 </head>
 <body>
 
     <div id="loading-screen" class="fixed inset-0 bg-homer z-[9000] flex flex-col items-center justify-center active-flex">
-        <div class="donut-loader animate-bounce mb-4">🍩</div>
+        <div class="text-7xl animate-bounce mb-4">🍩</div>
         <p class="font-700 uppercase tracking-widest italic text-white text-lg">Cuida na Fuga...</p>
     </div>
 
     <header id="main-header" class="bg-homer pt-12 pb-16 rounded-b-[45px] px-8 relative shadow-lg hidden">
         <div class="flex justify-between items-center">
-            <div class="flex items-center gap-3 cursor-pointer active:scale-95 transition-all" onclick="window.changeView('profile')">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.changeView('profile')">
                 <div class="w-12 h-12 rounded-full border-4 border-white shadow-lg bg-white overflow-hidden">
                     <img id="user-photo" src="https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png" class="w-full h-full object-cover">
                 </div>
                 <div class="text-left">
                     <p class="text-[10px] font-700 text-blue-900 uppercase opacity-60 leading-none">Salve,</p>
-                    <p id="user-name-display" class="text-xl font-700 text-blue-900 leading-tight">...</p>
+                    <p id="user-name-display" class="text-xl font-700 text-blue-900 leading-tight">Visitante</p>
                 </div>
             </div>
             <span id="user-role-badge" class="bg-white text-blue-900 px-3 py-1 rounded-full text-[10px] font-700 uppercase hidden">Diretoria</span>
@@ -75,23 +64,140 @@
     </header>
 
     <main class="max-w-md mx-auto px-5 -mt-8 relative z-20">
-        <div id="view-login" class="pt-10">
+
+        <div id="view-login" class="view pt-10">
             <div class="glass-card p-8 space-y-6 text-center border-b-4 border-yellow-400 mt-12">
-                <h2 class="text-3xl font-700 text-gray-800 uppercase italic leading-none">Bora fugir?</h2>
+                <h2 class="text-3xl font-700 text-gray-800 uppercase italic">Bora fugir?</h2>
                 <form id="form-login" class="space-y-4">
-                    <input type="text" id="input-user" placeholder="USUÁRIO" class="w-full p-4 bg-gray-50 rounded-2xl font-600 border-2 border-gray-100 text-center uppercase outline-none">
-                    <input type="password" id="input-pass" placeholder="SENHA" class="w-full p-4 bg-gray-50 rounded-2xl font-600 border-2 border-gray-100 text-center outline-none">
-                    <button class="w-full bg-blue-600 text-white font-700 py-4 rounded-2xl shadow-lg uppercase tracking-wider">Entrar</button>
+                    <input type="text" id="input-user" required placeholder="USUÁRIO" class="w-full p-4 bg-gray-50 rounded-2xl font-600 border-2 border-gray-100 text-center uppercase outline-none">
+                    <input type="password" id="input-pass" required placeholder="SENHA" class="w-full p-4 bg-gray-50 rounded-2xl font-600 border-2 border-gray-100 text-center outline-none">
+                    <button type="submit" class="w-full bg-blue-600 text-white font-700 py-4 rounded-2xl shadow-lg uppercase">Entrar</button>
                 </form>
             </div>
         </div>
 
-        <div id="view-agenda" class="space-y-4 animate-pop">
+        <div id="view-agenda" class="view space-y-4 animate-pop">
             <h3 class="text-xs font-700 text-blue-900 uppercase ml-1">📅 Próximos Rolês</h3>
             <div id="agenda-list" class="space-y-3"></div>
         </div>
 
-        </main>
+        <div id="view-create" class="view animate-pop">
+            <div class="glass-card p-6">
+                <h2 class="text-xl font-700 text-gray-800 mb-6 uppercase italic border-b-2 border-yellow-400 pb-2">Marcar Rolê</h2>
+                <form id="form-new-event" class="space-y-4">
+                    <select id="new-category" class="w-full p-4 bg-gray-50 rounded-2xl font-700 outline-none border" onchange="window.updateFormFields()">
+                        <option value="churrasco">🔥 Churrasco</option>
+                        <option value="volei">🏐 Vôlei</option>
+                        <option value="viagem">✈️ Viagem</option>
+                        <option value="passeio">🚗 Passeio</option>
+                        <option value="jogos">🎮 Noite de Games</option>
+                    </select>
+                    <input type="text" id="new-title" required class="w-full p-4 bg-gray-50 rounded-2xl font-600 outline-none border" placeholder="Nome do Evento">
+                    <input type="text" id="new-address" required class="w-full p-4 bg-gray-50 rounded-2xl font-600 outline-none border text-sm" placeholder="Onde? (Endereço)">
+                    <div id="area-details" class="hidden">
+                        <textarea id="new-details" class="w-full p-4 bg-blue-50 rounded-2xl font-600 border-2 border-blue-100 outline-none text-sm" placeholder="Roteiro ou Passeios" rows="3"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="datetime-local" id="new-date" required class="p-4 bg-gray-50 rounded-2xl font-600 border outline-none text-[10px]">
+                        <input type="number" id="new-total" placeholder="Custo Fixo R$" class="p-4 bg-gray-50 rounded-2xl font-600 border outline-none">
+                    </div>
+                    <button type="submit" class="w-full bg-[#FFD90F] text-blue-900 font-700 py-5 rounded-2xl shadow-xl uppercase italic">Lançar a Braba 🚀</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="view-event" class="view animate-pop space-y-4">
+            <div class="glass-card p-6 relative overflow-hidden">
+                <div class="absolute -top-4 -right-4 text-7xl opacity-10 rotate-12" id="event-icon">😎</div>
+                <h2 id="event-title" class="text-xl font-700 text-gray-800 uppercase italic">...</h2>
+                <p id="event-address" class="text-[10px] font-600 text-gray-400 uppercase mb-4 truncate">...</p>
+                
+                <div class="bg-blue-600 rounded-2xl p-4 flex justify-between items-center text-white shadow-inner">
+                    <div><p class="text-[8px] font-700 opacity-70 uppercase">Total do Rolê</p><p class="font-700 text-lg" id="event-total-display">R$ 0,00</p></div>
+                    <div class="text-right"><p class="text-[8px] font-700 opacity-70 uppercase">Sua Cota</p><p class="font-700 text-yellow-300 text-2xl" id="event-user-display">R$ 0,00</p></div>
+                </div>
+            </div>
+
+            <div id="event-tabs" class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                <button onclick="window.switchTab('players')" id="tab-btn-players" class="px-6 py-3 glass-card text-[10px] font-700 uppercase whitespace-nowrap tab-btn-active">Galera</button>
+                <button onclick="window.switchTab('finance')" id="tab-btn-finance" class="px-6 py-3 glass-card text-[10px] font-700 uppercase whitespace-nowrap hidden">Compras</button>
+                <button onclick="window.switchTab('volei')" id="tab-btn-volei" class="px-6 py-3 glass-card text-[10px] font-700 uppercase whitespace-nowrap hidden">Vôlei</button>
+                <button onclick="window.switchTab('details')" id="tab-btn-details" class="px-6 py-3 glass-card text-[10px] font-700 uppercase whitespace-nowrap hidden">Roteiro</button>
+            </div>
+
+            <div id="tab-players" class="tab-content space-y-3">
+                <div class="glass-card p-5">
+                    <ul id="list-participants" class="space-y-2 mb-6"></ul>
+                    <div class="space-y-2 pt-4 border-t border-dashed">
+                        <div id="opt-churras" class="hidden">
+                            <label class="flex items-center justify-between p-3 bg-orange-50 rounded-xl border border-orange-100">
+                                <span class="text-[10px] font-700 text-orange-900">Cota Churrasco?</span>
+                                <input type="checkbox" id="check-churras" class="w-5 h-5 accent-orange-600">
+                            </label>
+                        </div>
+                        <div id="opt-drink" class="hidden">
+                            <label class="flex items-center justify-between p-3 bg-blue-50 rounded-xl border border-blue-100">
+                                <span class="text-[10px] font-700 text-blue-900">Cota Bebida?</span>
+                                <input type="checkbox" id="check-drink" class="w-5 h-5 accent-blue-600">
+                            </label>
+                        </div>
+                        <button id="btn-join" class="w-full bg-green-500 text-white font-700 py-4 rounded-2xl shadow-md uppercase">Tô Dentro!</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-finance" class="tab-content hidden space-y-3">
+                <div class="glass-card p-5">
+                    <div id="list-receipts" class="space-y-2 mb-4"></div>
+                    <button onclick="window.openNoteModal()" class="w-full bg-blue-600 text-white font-700 py-3 rounded-xl text-[10px] uppercase">Lançar Nota / Scan</button>
+                </div>
+            </div>
+
+            <div id="tab-volei" class="tab-content hidden space-y-4">
+                <div class="glass-card p-5 text-center">
+                    <div class="flex justify-around items-center">
+                        <div><p class="text-[10px] font-700 text-blue-600">TIME A</p><p class="text-5xl font-700" id="score-a">0</p><button onclick="window.updateScore('A', 1)" class="mt-2 bg-blue-100 text-blue-600 w-10 h-10 rounded-full font-700">+</button></div>
+                        <div class="text-gray-300 font-700">VS</div>
+                        <div><p class="text-[10px] font-700 text-red-600">TIME B</p><p class="text-5xl font-700" id="score-b">0</p><button onclick="window.updateScore('B', 1)" class="mt-2 bg-red-100 text-red-600 w-10 h-10 rounded-full font-700">+</button></div>
+                    </div>
+                </div>
+                <button onclick="window.shuffleTeams()" class="w-full bg-blue-600 text-white font-700 py-4 rounded-xl uppercase text-[10px]">Sortear Times</button>
+                <div id="teams-result" class="grid grid-cols-2 gap-2"></div>
+            </div>
+
+            <div id="tab-details" class="tab-content hidden">
+                <div class="glass-card p-6">
+                    <h4 class="font-700 text-gray-800 mb-2 uppercase text-xs">Roteiro:</h4>
+                    <div id="event-details-text" class="text-sm text-gray-600 whitespace-pre-wrap"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-profile" class="view animate-pop space-y-6">
+            <div class="glass-card p-8 text-center border-b-4 border-blue-600">
+                <img id="profile-img" src="" class="w-24 h-24 rounded-full mx-auto border-4 border-white shadow-lg mb-4 object-cover">
+                <h2 id="profile-name" class="text-2xl font-700 text-gray-800 uppercase italic">--</h2>
+                <p id="profile-role" class="text-[10px] font-700 text-blue-500 uppercase mt-1">--</p>
+            </div>
+            <button onclick="window.logout()" class="w-full bg-white text-red-500 font-700 py-4 rounded-2xl shadow-sm border border-red-100 uppercase text-xs">Sair da Conta</button>
+        </div>
+
+        <div id="view-users" class="view animate-pop space-y-4">
+            <div class="glass-card p-6">
+                <h3 class="font-700 text-gray-800 uppercase italic mb-4">Novo Parceiro</h3>
+                <form id="form-add-user" class="space-y-3">
+                    <input type="text" id="add-name" required placeholder="NOME" class="w-full p-3 bg-gray-50 border rounded-xl font-600 outline-none">
+                    <div class="flex gap-2">
+                        <input type="text" id="add-user" required placeholder="LOGIN" class="flex-1 p-3 bg-gray-50 border rounded-xl font-600 outline-none lowercase">
+                        <input type="text" id="add-pass" required placeholder="SENHA" class="flex-1 p-3 bg-gray-50 border rounded-xl font-600 outline-none">
+                    </div>
+                    <button class="w-full bg-blue-600 text-white font-700 py-3 rounded-xl uppercase text-xs">Criar Usuário</button>
+                </form>
+            </div>
+            <div id="all-users-list" class="space-y-2"></div>
+        </div>
+
+    </main>
 
     <nav id="bottom-nav" class="bottom-nav hidden">
         <button onclick="window.goHome()" class="nav-item active" id="nav-agenda"><i class="fa-solid fa-calendar-days"></i><span>Agenda</span></button>
@@ -100,71 +206,89 @@
         <button onclick="window.changeView('users')" class="nav-item hidden" id="nav-users"><i class="fa-solid fa-users-gear"></i><span>Galera</span></button>
     </nav>
 
-    <div id="toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full text-[10px] font-700 uppercase opacity-0 transition-all pointer-events-none z-[7000]">Mensagem</div>
+    <div id="modal-note" class="fixed inset-0 z-[6000] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-6">
+        <div class="glass-card w-full max-w-sm p-6 space-y-4">
+            <h3 class="font-700 uppercase italic text-gray-800">Lançar Compra</h3>
+            <input type="text" id="note-title" placeholder="Mercado / Açougue" class="w-full p-4 bg-gray-50 border rounded-xl font-600 outline-none">
+            <input type="number" id="note-val" placeholder="Valor R$" class="w-full p-4 bg-gray-50 border rounded-xl font-600 outline-none">
+            <select id="note-type" class="w-full p-4 bg-gray-50 border rounded-xl font-700 outline-none">
+                <option value="geral">🛒 Geral (Todos)</option>
+                <option value="churrasco">🥩 Só Churrasco</option>
+                <option value="bebida">🍺 Só Bebida</option>
+            </select>
+            <div class="flex gap-2">
+                <button onclick="window.closeNoteModal()" class="flex-1 font-700 text-gray-400 uppercase text-[10px]">Cancelar</button>
+                <button onclick="window.saveNote()" class="flex-[2] bg-blue-600 text-white font-700 py-4 rounded-xl uppercase text-xs">Salvar</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         const firebaseConfig = { apiKey: "AIzaSyA3RQucgd5vMeJzZgZnC4Zim9hkFVVWXnw", authDomain: "volei-3f30d.firebaseapp.com", projectId: "volei-3f30d", storageBucket: "volei-3f30d.firebasestorage.app", messagingSenderId: "969073040869", appId: "1:969073040869:web:c0f6005d98fae4144de30c" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore(), auth = firebase.auth();
 
-        let userData = null;
+        let userData = null, currentEventId = null, localEventData = null;
 
-        // Função de segurança para remover o loading se nada acontecer em 5 segundos
-        const hideLoading = () => {
-            const screen = document.getElementById('loading-screen');
-            if (screen) screen.classList.remove('active-flex');
-        };
+        const hideLoading = () => document.getElementById('loading-screen')?.classList.remove('active-flex');
 
         window.changeView = (v) => {
-            document.querySelectorAll('main > div').forEach(x => x.classList.remove('active-view'));
+            document.querySelectorAll('.view').forEach(x => x.classList.remove('active-view'));
             document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
-            const view = document.getElementById(`view-${v}`);
-            if(view) view.classList.add('active-view');
+            const target = document.getElementById(`view-${v}`);
+            if (target) target.classList.add('active-view');
             const nav = document.getElementById(`nav-${v}`);
-            if(nav) nav.classList.add('active');
+            if (nav) nav.classList.add('active');
+            if (v !== 'event') { currentEventId = null; window.history.pushState({}, '', window.location.pathname); }
             window.scrollTo(0,0);
         };
 
         window.goHome = () => window.changeView('agenda');
 
+        window.updateFormFields = () => {
+            const cat = document.getElementById('new-category').value;
+            document.getElementById('area-details').classList.toggle('hidden', !['viagem', 'passeio', 'churrasco'].includes(cat));
+        };
+
+        window.switchTab = (t) => {
+            document.querySelectorAll('.tab-content').forEach(x => x.classList.add('hidden'));
+            document.querySelectorAll('#event-tabs button').forEach(x => x.classList.remove('tab-btn-active'));
+            document.getElementById(`tab-${t}`).classList.remove('hidden');
+            document.getElementById(`btn-tab-${t}`).classList.add('tab-btn-active');
+        };
+
         const init = () => {
-            // Backup: Se o Firebase travar, remove o loading depois de um tempo
-            const safetyTimeout = setTimeout(hideLoading, 5000);
-
             auth.onAuthStateChanged(u => {
-                const sess = localStorage.getItem('cuida_session');
-                
-                if(sess) {
-                    // Se há sessão mas não há auth anônima, loga primeiro
-                    if(!u) { 
-                        auth.signInAnonymously().catch(() => hideLoading()); 
-                        return; 
-                    }
-
-                    // Busca dados do usuário
-                    db.collection('app_users').doc(sess).onSnapshot(s => {
-                        clearTimeout(safetyTimeout);
-                        hideLoading(); // REMOVE O LOADING AQUI
-
-                        if(s.exists()){
+                const session = localStorage.getItem('cuida_session');
+                if (session) {
+                    if (!u) { auth.signInAnonymously(); return; }
+                    db.collection('app_users').doc(session).onSnapshot(s => {
+                        hideLoading();
+                        if (s.exists()) {
                             userData = s.data(); userData.uid = s.id;
                             document.getElementById('main-header').classList.remove('hidden');
                             document.getElementById('bottom-nav').classList.remove('hidden');
                             document.getElementById('user-name-display').innerText = userData.name.split(' ')[0];
+                            document.getElementById('profile-name').innerText = userData.name;
+                            document.getElementById('profile-role').innerText = userData.role;
+                            document.getElementById('profile-img').src = userData.photo || 'https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png';
                             
                             const isDir = userData.role === 'Diretoria';
                             document.getElementById('nav-users').classList.toggle('hidden', !isDir);
+                            document.getElementById('user-role-badge').classList.toggle('hidden', !isDir);
                             
-                            // Carrega a agenda por padrão
-                            loadAgenda();
-                            if(!window.location.search.includes('id')) window.changeView('agenda');
-                        } else {
-                            window.logout();
-                        }
-                    }, err => {
-                        console.error(err);
-                        hideLoading();
-                    });
+                            if (isDir) loadAdminUsers();
+
+                            const urlId = new URLSearchParams(window.location.search).get('id');
+                            if (urlId && !currentEventId) {
+                                currentEventId = urlId.toUpperCase();
+                                loadEventData();
+                            } else if (!currentEventId) {
+                                loadAgenda();
+                                window.changeView('agenda');
+                            }
+                        } else window.logout();
+                    }, () => hideLoading());
                 } else {
                     hideLoading();
                     window.changeView('login');
@@ -172,42 +296,177 @@
             });
         };
 
-        // ... Restante das funções (loadAgenda, loadEventData, logout, etc.) ...
-        // Certifique-se de que a função logout limpa tudo:
-        window.logout = () => { 
-            localStorage.removeItem('cuida_session'); 
-            auth.signOut().then(() => location.reload()); 
-        };
-
-        document.getElementById('form-login').onsubmit = (e) => {
-            e.preventDefault();
-            const u = document.getElementById('input-user').value.toLowerCase().trim();
-            const p = document.getElementById('input-pass').value.trim();
-            
-            db.collection('app_users').doc(u).get().then(s => {
-                if(s.exists() && s.data().password === p) { 
-                    localStorage.setItem('cuida_session', u); 
-                    auth.signInAnonymously().then(() => location.reload());
-                } else {
-                    alert("Dados incorretos!");
-                }
-            });
-        };
-
-        function loadAgenda() {
+        const loadAgenda = () => {
             db.collection('volei_events').onSnapshot(snap => {
-                const list = document.getElementById('agenda-list'); 
-                list.innerHTML = '';
+                const list = document.getElementById('agenda-list'); list.innerHTML = '';
                 snap.forEach(doc => {
                     const d = doc.data();
                     const el = document.createElement('div');
                     el.className = "glass-card p-4 flex items-center gap-4 active:scale-95 cursor-pointer animate-pop";
-                    el.onclick = () => { /* lógica de carregar evento */ };
-                    el.innerHTML = `<div class="text-2xl bg-gray-50 w-14 h-14 flex items-center justify-center rounded-2xl border">🍩</div><div class="flex-1"><h4 class="font-700 text-gray-800 uppercase text-xs truncate">${d.location}</h4><p class="text-[9px] font-bold text-gray-400 uppercase">Ver detalhes</p></div>`;
+                    el.onclick = () => { currentEventId = doc.id; window.history.pushState({}, '', `?id=${doc.id}`); loadEventData(); };
+                    const icons = { volei: '🏐', churrasco: '🔥', viagem: '✈️', passeio: '🚗', jogos: '🎮' };
+                    el.innerHTML = `<div class="text-2xl bg-gray-50 w-14 h-14 flex items-center justify-center rounded-2xl border">${icons[d.category] || '🍩'}</div><div class="flex-1"><h4 class="font-700 text-gray-800 uppercase text-xs truncate">${d.location}</h4><p class="text-[8px] font-700 text-gray-400 uppercase">${new Date(d.datetime).toLocaleDateString('pt-BR')}</p></div>`;
                     list.appendChild(el);
                 });
             });
-        }
+        };
+
+        const loadEventData = () => {
+            db.collection('volei_events').doc(currentEventId).onSnapshot(s => {
+                if (!s.exists) return window.goHome();
+                localEventData = s.data();
+                renderEvent();
+                window.changeView('event');
+            });
+        };
+
+        const renderEvent = () => {
+            const d = localEventData;
+            document.getElementById('event-title').innerText = d.location;
+            document.getElementById('event-address').innerText = d.address;
+            const icons = { volei: '🏐', churrasco: '🥩', viagem: '✈️', passeio: '🚗', jogos: '🎮' };
+            document.getElementById('event-icon').innerText = icons[d.category] || '😎';
+
+            // Abas Dinâmicas
+            const showFinance = ['churrasco', 'viagem'].includes(d.category);
+            document.getElementById('tab-btn-finance').classList.toggle('hidden', !showFinance);
+            document.getElementById('tab-btn-volei').classList.toggle('hidden', d.category !== 'volei');
+            document.getElementById('tab-btn-details').classList.toggle('hidden', !['viagem', 'passeio'].includes(d.category));
+            document.getElementById('event-details-text').innerText = d.details || '';
+
+            // Toggles
+            document.getElementById('opt-churras').classList.toggle('hidden', !['churrasco', 'viagem'].includes(d.category));
+            document.getElementById('opt-drink').classList.toggle('hidden', d.category === 'volei');
+
+            // Lógica Financeira
+            const pts = d.participants || [], recs = d.receipts || [];
+            const me = pts.find(p => p.entryId === userData.uid);
+            
+            const totalGeral = recs.filter(r => r.type === 'geral').reduce((a, b) => a + b.value, 0) + (d.totalCost || 0);
+            const totalChurras = recs.filter(r => r.type === 'churrasco').reduce((a, b) => a + b.value, 0);
+            const totalDrink = recs.filter(r => r.type === 'bebida').reduce((a, b) => a + b.value, 0);
+
+            const perGeral = pts.length > 0 ? totalGeral / pts.length : 0;
+            const countChurras = pts.filter(p => p.churras).length;
+            const perChurras = countChurras > 0 ? totalChurras / countChurras : 0;
+            const countDrink = pts.filter(p => p.drinks).length;
+            const perDrink = countDrink > 0 ? totalDrink / countDrink : 0;
+
+            document.getElementById('event-total-display').innerText = `R$ ${(totalGeral + totalChurras + totalDrink).toFixed(2)}`;
+            
+            let myTotal = 0;
+            if (me) {
+                myTotal = perGeral + (me.churras ? perChurras : 0) + (me.drinks ? perDrink : 0);
+                document.getElementById('btn-join').innerText = "Tô Fora (Sair)";
+                document.getElementById('btn-join').classList.replace('bg-green-500', 'bg-red-500');
+                document.getElementById('check-churras').checked = me.churras;
+                document.getElementById('check-drink').checked = me.drinks;
+            } else {
+                document.getElementById('btn-join').innerText = "Tô Dentro!";
+                document.getElementById('btn-join').classList.replace('bg-red-500', 'bg-green-500');
+            }
+            document.getElementById('event-user-display').innerText = `R$ ${myTotal.toFixed(2)}`;
+
+            // Listas
+            document.getElementById('list-participants').innerHTML = pts.map(p => `
+                <li class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border">
+                    <div class="flex items-center gap-3">
+                        <img src="${p.photo || 'https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png'}" class="w-8 h-8 rounded-full">
+                        <p class="font-700 text-[10px] uppercase">${p.name}</p>
+                    </div>
+                    <div class="flex gap-1">
+                        ${p.churras ? '<span class="text-[7px] bg-orange-100 text-orange-600 px-1 font-bold rounded">🥩</span>' : ''}
+                        ${p.drinks ? '<span class="text-[7px] bg-blue-100 text-blue-600 px-1 font-bold rounded">🍺</span>' : ''}
+                    </div>
+                </li>
+            `).join('');
+
+            document.getElementById('list-receipts').innerHTML = recs.map(r => `
+                <div class="flex items-center justify-between p-3 bg-white border rounded-xl">
+                    <div><p class="text-[9px] font-700 uppercase">${r.title}</p><p class="text-[7px] font-600 text-gray-400">R$ ${r.value.toFixed(2)}</p></div>
+                    ${userData.role === 'Diretoria' ? `<button onclick='window.deleteNote(${JSON.stringify(r)})' class="text-red-300 text-xs"><i class="fa-solid fa-trash"></i></button>` : ''}
+                </div>
+            `).join('');
+
+            document.getElementById('score-a').innerText = d.scoreA || 0;
+            document.getElementById('score-b').innerText = d.scoreB || 0;
+            window.switchTab('players');
+        };
+
+        // Ações
+        document.getElementById('btn-join').onclick = async () => {
+            const me = localEventData.participants.find(p => p.entryId === userData.uid);
+            if (me) {
+                await db.collection('volei_events').doc(currentEventId).update({ participants: firebase.firestore.FieldValue.arrayRemove(me) });
+            } else {
+                const obj = { entryId: userData.uid, name: userData.name, photo: userData.photo || '', drinks: document.getElementById('check-drink').checked, churras: document.getElementById('check-churras').checked };
+                await db.collection('volei_events').doc(currentEventId).update({ participants: firebase.firestore.FieldValue.arrayUnion(obj) });
+            }
+        };
+
+        window.updateScore = (t, v) => {
+            const f = t === 'A' ? 'scoreA' : 'scoreB';
+            db.collection('volei_events').doc(currentEventId).update({ [f]: firebase.firestore.FieldValue.increment(v) });
+        };
+
+        window.shuffleTeams = () => {
+            const p = localEventData.participants.map(x => x.name.split(' ')[0]).sort(() => Math.random() - 0.5);
+            const m = Math.ceil(p.length / 2);
+            document.getElementById('teams-result').innerHTML = `
+                <div class="p-3 bg-blue-50 rounded-xl border border-blue-100"><p class="text-[8px] font-700 text-blue-600 uppercase">A</p><p class="text-[10px] font-600">${p.slice(0,m).join(', ')}</p></div>
+                <div class="p-3 bg-red-50 rounded-xl border border-red-100"><p class="text-[8px] font-700 text-red-600 uppercase">B</p><p class="text-[10px] font-600">${p.slice(m).join(', ')}</p></div>`;
+        };
+
+        window.openNoteModal = () => document.getElementById('modal-note').classList.add('active-flex');
+        window.closeNoteModal = () => document.getElementById('modal-note').classList.remove('active-flex');
+        window.saveNote = async () => {
+            const t = document.getElementById('note-title').value, v = parseFloat(document.getElementById('note-val').value), type = document.getElementById('note-type').value;
+            if (!t || !v) return alert("Preencha!");
+            await db.collection('volei_events').doc(currentEventId).update({
+                receipts: firebase.firestore.FieldValue.arrayUnion({ id: Date.now(), title: t, value: v, type, addedBy: userData.name })
+            });
+            window.closeNoteModal();
+        };
+
+        window.deleteNote = (r) => db.collection('volei_events').doc(currentEventId).update({ receipts: firebase.firestore.FieldValue.arrayRemove(r) });
+
+        window.logout = () => { localStorage.clear(); auth.signOut().then(() => location.reload()); };
+
+        document.getElementById('form-login').onsubmit = (e) => {
+            e.preventDefault();
+            const u = document.getElementById('input-user').value.toLowerCase().trim(), p = document.getElementById('input-pass').value.trim();
+            db.collection('app_users').doc(u).get().then(s => {
+                if (s.exists() && s.data().password === p) {
+                    localStorage.setItem('cuida_session', u);
+                    location.reload();
+                } else alert("Erro! 🍩");
+            });
+        };
+
+        document.getElementById('form-new-event').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = Math.random().toString(36).substring(2,4).toUpperCase() + Math.floor(1000 + Math.random() * 9000);
+            await db.collection('volei_events').doc(id).set({
+                location: document.getElementById('new-title').value, address: document.getElementById('new-address').value,
+                category: document.getElementById('new-category').value, details: document.getElementById('new-details').value || '',
+                datetime: document.getElementById('new-date').value, totalCost: parseFloat(document.getElementById('new-total').value) || 0,
+                participants: [], receipts: [], scoreA: 0, scoreB: 0
+            });
+            window.goHome();
+        };
+
+        const loadAdminUsers = () => {
+            db.collection('app_users').onSnapshot(snap => {
+                const list = document.getElementById('all-users-list'); list.innerHTML = '';
+                snap.forEach(d => {
+                    const data = d.data();
+                    const el = document.createElement('div');
+                    el.className = "glass-card p-3 flex justify-between items-center";
+                    el.innerHTML = `<div><p class="text-[10px] font-700 uppercase">${data.name}</p><p class="text-[8px] text-gray-400">@${data.username}</p></div><span class="text-[8px] font-700 text-blue-500">${data.role}</span>`;
+                    list.appendChild(el);
+                });
+            });
+        };
 
         init();
     </script>
