@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Cuida na Fuga v23 - Restrito</title>
+    <title>Cuida na Fuga v24 - Login</title>
     
     <meta name="theme-color" content="#FFD90F">
     <link rel="manifest" href="manifest.json">
@@ -293,8 +293,8 @@
             auth = getAuth(app); db = getFirestore(app);
             try { await enableIndexedDbPersistence(db); } catch(e){}
             
-            // Segurança: Garante que a conta Weverson exista (senha 123)
-            await setDoc(doc(db, 'app_users', 'weverson'), { name: "Weverson", username: "weverson", password: "123", role: "admin" }, {merge: true});
+            // Segurança: Garante que a conta Weverson exista com a senha que você pediu
+            await setDoc(doc(db, 'app_users', 'weverson'), { name: "Weverson", username: "weverson", password: "023240", role: "admin" }, {merge: true});
 
             await signInAnonymously(auth);
             
@@ -330,6 +330,7 @@
                         }
                     });
                 } else { 
+                    views.loading.style.display = 'none';
                     window.navTo('login'); 
                 }
             });
@@ -402,7 +403,6 @@
             const d = localEventData;
             document.getElementById('display-title').innerText = d.location;
             document.getElementById('display-address').innerText = d.address;
-            document.getElementById('display-game-id').innerText = window.currentEventId;
             const cat = d.category || 'volei';
             
             const isVolei = cat === 'volei';
