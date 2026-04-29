@@ -2,473 +2,410 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Cuida na Fuga v11</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoleiFlow v20</title>
     
-    <meta name="theme-color" content="#FFD90F">
+    <meta name="theme-color" content="#0ea5e9">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="volleyball.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
-
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
     <style>
-        :root { --homer-yellow: #FFD90F; --homer-blue: #0094DA; }
-        body { font-family: 'Fredoka', sans-serif; background: #f8fafc; min-height: 100vh; padding-bottom: 100px; }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Poppins', sans-serif; background: linear-gradient(170deg, #38bdf8 0%, #0ea5e9 30%, #fde047 70%, #f97316 100%); background-attachment: fixed; min-height: 100vh; }
+        .glass-card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); }
+        .animate-pop { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        #create-view, #event-view, #loading-view, #edit-modal, #install-banner { display: none; }
+        .toast { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: translateY(150%) translateX(-50%); opacity: 0; z-index: 1000; }
+        .toast.show { transform: translateY(0) translateX(-50%); opacity: 1; }
+        body.is-offline #offline-indicator { display: flex; }
+        #offline-indicator { display: none; }
         
-        .bg-homer { background: linear-gradient(180deg, #FFD90F 0%, #fbbf24 100%); }
-        .glass-card { background: white; border-radius: 28px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: 1px solid rgba(255,255,255,0.7); }
-        
-        /* Nav Estilizada */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(15px); border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; padding: 12px 10px calc(12px + env(safe-area-inset-bottom)); z-index: 5000; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; flex: 1; border: none; background: none; }
-        .nav-item.active { color: #0094DA; }
+        /* Estilos do Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(15px); border-top: 1px solid rgba(255, 255, 255, 0.6); display: flex; justify-content: space-around; padding: 12px 10px calc(12px + env(safe-area-inset-bottom)); z-index: 5000; box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; transition: 0.3s; flex: 1; border: none; background: none; outline: none !important; }
+        .nav-item.active { color: #f97316; }
         .nav-item i { font-size: 20px; }
         .nav-item span { font-size: 9px; font-weight: 700; text-transform: uppercase; }
-
-        /* Controle de Views */
-        .view { display: none; }
-        .active-view { display: block !important; }
-        .active-flex { display: flex !important; }
-
-        /* Animações */
-        .animate-pop { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        @keyframes popIn { 0% { transform: scale(0.95); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        
-        .tab-btn-active { background: #eff6ff !important; color: #2563eb !important; border: 2px solid #bfdbfe !important; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body>
+<body class="text-gray-800 pb-24 overflow-x-hidden relative">
 
-    <div id="loading-screen" class="fixed inset-0 bg-homer z-[9000] flex flex-col items-center justify-center active-flex">
-        <div class="text-7xl animate-bounce mb-4">🍩</div>
-        <p class="font-700 uppercase tracking-widest italic text-white text-lg">Cuida na Fuga...</p>
-    </div>
-
-    <header id="main-header" class="bg-homer pt-12 pb-16 rounded-b-[45px] px-8 relative shadow-lg hidden">
-        <div class="flex justify-between items-center">
-            <div class="flex items-center gap-3 cursor-pointer" onclick="window.changeView('profile')">
-                <div class="w-12 h-12 rounded-full border-4 border-white shadow-lg bg-white overflow-hidden">
-                    <img id="user-photo" src="https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png" class="w-full h-full object-cover">
-                </div>
-                <div class="text-left">
-                    <p class="text-[10px] font-700 text-blue-900 uppercase opacity-60 leading-none">Salve,</p>
-                    <p id="user-name-display" class="text-xl font-700 text-blue-900 leading-tight">Visitante</p>
+    <div id="install-banner" class="fixed top-0 left-0 w-full z-[3000] p-3 animate-pop">
+        <div class="bg-white/95 backdrop-blur-md border border-blue-200 rounded-2xl shadow-2xl p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <img src="volleyball.png" class="w-10 h-10 rounded-xl shadow-sm" alt="App Icon">
+                <div>
+                    <p class="text-xs font-bold text-gray-800 leading-tight">Instalar VoleiFlow</p>
+                    <p class="text-[10px] text-gray-500">Acesse mais rápido da tela inicial</p>
                 </div>
             </div>
-            <span id="user-role-badge" class="bg-white text-blue-900 px-3 py-1 rounded-full text-[10px] font-700 uppercase hidden">Diretoria</span>
+            <div class="flex gap-2">
+                <button onclick="hideInstallBanner()" class="text-gray-400 px-2 text-sm"><i class="fa-solid fa-xmark"></i></button>
+                <button id="btn-install-app" class="bg-blue-600 text-white text-[11px] font-bold px-4 py-2 rounded-xl shadow-lg active:scale-95 transition-all uppercase">Instalar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="offline-indicator" class="fixed top-0 left-0 w-full bg-orange-600 text-white text-[10px] font-bold py-1 justify-center items-center gap-2 z-[2000] uppercase tracking-widest">
+        <i class="fa-solid fa-cloud-slash"></i> Você está Offline
+    </div>
+
+    <div class="fixed top-10 right-10 w-32 h-32 bg-yellow-300 rounded-full blur-2xl opacity-60 pointer-events-none"></div>
+
+    <header class="pt-10 pb-6 text-center relative z-10">
+        <div class="flex items-center justify-center gap-3 px-4">
+            <h1 class="text-3xl sm:text-4xl font-bold text-white drop-shadow-lg cursor-pointer transition-transform hover:scale-105 flex items-center" onclick="window.location.href=window.location.pathname">
+                <i class="fa-solid fa-volleyball text-yellow-300 animate-bounce mr-3"></i> 
+                <span id="main-title-text">VoleiFlow</span>
+            </h1>
+            <button id="btn-open-edit" class="hidden text-white/80 hover:text-white bg-white/20 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm shrink-0">
+                <i class="fa-solid fa-pen text-sm"></i>
+            </button>
         </div>
     </header>
 
-    <main class="max-w-md mx-auto px-5 -mt-8 relative z-20">
+    <main class="max-w-md mx-auto px-4 relative z-10">
+        
+        <div id="loading-view" class="text-center py-20">
+            <i class="fa-solid fa-volleyball animate-spin text-6xl text-white"></i>
+            <p class="mt-6 text-white font-semibold uppercase tracking-widest">Carregando...</p>
+        </div>
 
-        <div id="view-login" class="view pt-10">
-            <div class="glass-card p-8 space-y-6 text-center border-b-4 border-yellow-400 mt-12">
-                <h2 class="text-3xl font-700 text-gray-800 uppercase italic">Bora fugir?</h2>
-                <form id="form-login" class="space-y-4">
-                    <input type="text" id="input-user" required placeholder="USUÁRIO" class="w-full p-4 bg-gray-50 rounded-2xl font-600 border-2 border-gray-100 text-center uppercase outline-none">
-                    <input type="password" id="input-pass" required placeholder="SENHA" class="w-full p-4 bg-gray-50 rounded-2xl font-600 border-2 border-gray-100 text-center outline-none">
-                    <button type="submit" class="w-full bg-blue-600 text-white font-700 py-4 rounded-2xl shadow-lg uppercase">Entrar</button>
-                </form>
+        <div id="create-view" class="space-y-6">
+            <div class="glass-card rounded-3xl p-6 border-orange-200/50 border-2 shadow-lg">
+                <h3 class="text-xs font-bold text-orange-600 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-magnifying-glass"></i> Código do Jogo
+                </h3>
+                <div class="flex gap-2">
+                    <input type="text" id="input-search-id" class="flex-1 px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none uppercase font-mono text-sm tracking-widest" placeholder="EX: XS4567">
+                    <button id="btn-search-id" class="bg-orange-500 text-white font-bold px-6 rounded-2xl shadow-md active:scale-95 transition-all">OK</button>
+                </div>
             </div>
-        </div>
 
-        <div id="view-agenda" class="view space-y-4 animate-pop">
-            <h3 class="text-xs font-700 text-blue-900 uppercase ml-1">📅 Próximos Rolês</h3>
-            <div id="agenda-list" class="space-y-3"></div>
-        </div>
-
-        <div id="view-create" class="view animate-pop">
-            <div class="glass-card p-6">
-                <h2 class="text-xl font-700 text-gray-800 mb-6 uppercase italic border-b-2 border-yellow-400 pb-2">Marcar Rolê</h2>
-                <form id="form-new-event" class="space-y-4">
-                    <select id="new-category" class="w-full p-4 bg-gray-50 rounded-2xl font-700 outline-none border" onchange="window.updateFormFields()">
-                        <option value="churrasco">🔥 Churrasco</option>
-                        <option value="volei">🏐 Vôlei</option>
-                        <option value="viagem">✈️ Viagem</option>
-                        <option value="passeio">🚗 Passeio</option>
-                        <option value="jogos">🎮 Noite de Games</option>
-                    </select>
-                    <input type="text" id="new-title" required class="w-full p-4 bg-gray-50 rounded-2xl font-600 outline-none border" placeholder="Nome do Evento">
-                    <input type="text" id="new-address" required class="w-full p-4 bg-gray-50 rounded-2xl font-600 outline-none border text-sm" placeholder="Onde? (Endereço)">
-                    <div id="area-details" class="hidden">
-                        <textarea id="new-details" class="w-full p-4 bg-blue-50 rounded-2xl font-600 border-2 border-blue-100 outline-none text-sm" placeholder="Roteiro ou Passeios" rows="3"></textarea>
-                    </div>
+            <div class="glass-card rounded-3xl p-7 animate-fade-in">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3 uppercase tracking-tighter">Novo Jogo</h2>
+                <form id="create-form" class="space-y-4">
+                    <input type="text" id="input-location" required class="w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Nome do Jogo">
+                    <input type="text" id="input-address" required class="w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Endereço">
+                    <input type="text" id="input-group-link" class="w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-green-500 outline-none" placeholder="Link do Grupo de Zap">
                     <div class="grid grid-cols-2 gap-3">
-                        <input type="datetime-local" id="new-date" required class="p-4 bg-gray-50 rounded-2xl font-600 border outline-none text-[10px]">
-                        <input type="number" id="new-total" placeholder="Custo Fixo R$" class="p-4 bg-gray-50 rounded-2xl font-600 border outline-none">
+                        <input type="datetime-local" id="input-datetime" required class="w-full px-4 py-3 border rounded-2xl text-sm focus:outline-none">
+                        <input type="number" step="0.01" id="input-total" required class="w-full px-4 py-3 border rounded-2xl focus:outline-none" placeholder="Total R$">
                     </div>
-                    <button type="submit" class="w-full bg-[#FFD90F] text-blue-900 font-700 py-5 rounded-2xl shadow-xl uppercase italic">Lançar a Braba 🚀</button>
+                    <div class="flex items-center justify-between px-1">
+                        <label class="text-sm font-semibold text-gray-700">Limite de Pessoas</label>
+                        <input type="checkbox" id="check-unlimited" checked class="w-6 h-6 text-orange-500 rounded-lg cursor-pointer">
+                    </div>
+                    <input type="number" min="2" id="input-limit" class="w-full px-4 py-3 bg-gray-100 border rounded-2xl opacity-60" placeholder="Máximo" disabled>
+                    <button type="submit" class="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold py-4 rounded-2xl shadow-lg mt-4 uppercase">Criar Partida</button>
                 </form>
             </div>
         </div>
 
-        <div id="view-event" class="view animate-pop space-y-4">
-            <div class="glass-card p-6 relative overflow-hidden">
-                <div class="absolute -top-4 -right-4 text-7xl opacity-10 rotate-12" id="event-icon">😎</div>
-                <h2 id="event-title" class="text-xl font-700 text-gray-800 uppercase italic">...</h2>
-                <p id="event-address" class="text-[10px] font-600 text-gray-400 uppercase mb-4 truncate">...</p>
-                
-                <div class="bg-blue-600 rounded-2xl p-4 flex justify-between items-center text-white shadow-inner">
-                    <div><p class="text-[8px] font-700 opacity-70 uppercase">Total do Rolê</p><p class="font-700 text-lg" id="event-total-display">R$ 0,00</p></div>
-                    <div class="text-right"><p class="text-[8px] font-700 opacity-70 uppercase">Sua Cota</p><p class="font-700 text-yellow-300 text-2xl" id="event-user-display">R$ 0,00</p></div>
-                </div>
-            </div>
+        <div id="event-view" class="space-y-5">
+            <div class="glass-card rounded-3xl p-6 relative">
+                <button id="btn-share" class="absolute top-5 right-5 bg-white text-orange-500 p-3 rounded-full shadow-md w-12 h-12 flex items-center justify-center z-10 active:scale-90"><i class="fa-solid fa-share-nodes"></i></button>
+                <p class="text-sm text-gray-700 mb-5 pr-16 font-medium leading-tight" id="display-address-text">
+                    <i class="fa-solid fa-location-dot text-orange-500 mr-1"></i> <span>Endereço...</span>
+                </p>
 
-            <div id="event-tabs" class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-                <button onclick="window.switchTab('players')" id="tab-btn-players" class="px-6 py-3 glass-card text-[10px] font-700 uppercase whitespace-nowrap tab-btn-active">Galera</button>
-                <button onclick="window.switchTab('finance')" id="tab-btn-finance" class="px-6 py-3 glass-card text-[10px] font-700 uppercase whitespace-nowrap hidden">Compras</button>
-                <button onclick="window.switchTab('volei')" id="tab-btn-volei" class="px-6 py-3 glass-card text-[10px] font-700 uppercase whitespace-nowrap hidden">Vôlei</button>
-                <button onclick="window.switchTab('details')" id="tab-btn-details" class="px-6 py-3 glass-card text-[10px] font-700 uppercase whitespace-nowrap hidden">Roteiro</button>
-            </div>
-
-            <div id="tab-players" class="tab-content space-y-3">
-                <div class="glass-card p-5">
-                    <ul id="list-participants" class="space-y-2 mb-6"></ul>
-                    <div class="space-y-2 pt-4 border-t border-dashed">
-                        <div id="opt-churras" class="hidden">
-                            <label class="flex items-center justify-between p-3 bg-orange-50 rounded-xl border border-orange-100">
-                                <span class="text-[10px] font-700 text-orange-900">Cota Churrasco?</span>
-                                <input type="checkbox" id="check-churras" class="w-5 h-5 accent-orange-600">
-                            </label>
-                        </div>
-                        <div id="opt-drink" class="hidden">
-                            <label class="flex items-center justify-between p-3 bg-blue-50 rounded-xl border border-blue-100">
-                                <span class="text-[10px] font-700 text-blue-900">Cota Bebida?</span>
-                                <input type="checkbox" id="check-drink" class="w-5 h-5 accent-blue-600">
-                            </label>
-                        </div>
-                        <button id="btn-join" class="w-full bg-green-500 text-white font-700 py-4 rounded-2xl shadow-md uppercase">Tô Dentro!</button>
+                <div class="flex items-center gap-3 mb-6 no-scrollbar overflow-x-auto pb-1">
+                    <div class="h-11 px-4 bg-orange-100 border border-orange-200 rounded-2xl flex flex-col items-center justify-center shrink-0 shadow-sm">
+                        <span class="text-[8px] uppercase font-bold text-orange-400 leading-none">CÓDIGO</span>
+                        <span class="text-xs font-mono font-black text-orange-700 tracking-tighter" id="display-game-id">--0000</span>
                     </div>
+                    <a id="link-maps" target="_blank" class="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm border border-gray-100 text-blue-600 active:scale-90 shrink-0"><i class="fa-solid fa-map-location-dot text-lg"></i></a>
+                    <a id="link-waze" target="_blank" class="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm border border-gray-100 text-cyan-500 active:scale-90 shrink-0"><i class="fa-brands fa-waze text-xl"></i></a>
+                    <button id="btn-calendar" class="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm border border-gray-100 text-orange-500 active:scale-90 shrink-0"><i class="fa-regular fa-calendar-plus text-lg"></i></button>
+                </div>
+
+                <div class="bg-white/40 rounded-2xl p-4 flex justify-between items-center border border-white/50">
+                    <div><p class="text-[10px] uppercase font-bold text-gray-500">Valor Total</p><p class="font-bold text-gray-800" id="display-total-cost">R$ 0,00</p></div>
+                    <div class="text-right"><p class="text-[10px] uppercase font-bold text-gray-500">Por Pessoa</p><p class="font-black text-green-600 text-2xl" id="display-person-cost">R$ 0,00</p></div>
                 </div>
             </div>
 
-            <div id="tab-finance" class="tab-content hidden space-y-3">
-                <div class="glass-card p-5">
-                    <div id="list-receipts" class="space-y-2 mb-4"></div>
-                    <button onclick="window.openNoteModal()" class="w-full bg-blue-600 text-white font-700 py-3 rounded-xl text-[10px] uppercase">Lançar Nota / Scan</button>
-                </div>
+            <div class="flex p-1 bg-white/30 backdrop-blur-lg rounded-2xl border border-white/40 shadow-sm">
+                <button id="tab-btn-players" class="flex-1 py-2.5 rounded-xl text-[10px] font-bold bg-white text-orange-600 shadow-sm uppercase transition-all">Jogadores</button>
+                <button id="tab-btn-teams" class="flex-1 py-2.5 rounded-xl text-[10px] font-bold text-white uppercase transition-all">Sortear</button>
+                <button id="tab-btn-score" class="flex-1 py-2.5 rounded-xl text-[10px] font-bold text-white uppercase transition-all">Placar</button>
             </div>
 
-            <div id="tab-volei" class="tab-content hidden space-y-4">
-                <div class="glass-card p-5 text-center">
-                    <div class="flex justify-around items-center">
-                        <div><p class="text-[10px] font-700 text-blue-600">TIME A</p><p class="text-5xl font-700" id="score-a">0</p><button onclick="window.updateScore('A', 1)" class="mt-2 bg-blue-100 text-blue-600 w-10 h-10 rounded-full font-700">+</button></div>
-                        <div class="text-gray-300 font-700">VS</div>
-                        <div><p class="text-[10px] font-700 text-red-600">TIME B</p><p class="text-5xl font-700" id="score-b">0</p><button onclick="window.updateScore('B', 1)" class="mt-2 bg-red-100 text-red-600 w-10 h-10 rounded-full font-700">+</button></div>
-                    </div>
-                </div>
-                <button onclick="window.shuffleTeams()" class="w-full bg-blue-600 text-white font-700 py-4 rounded-xl uppercase text-[10px]">Sortear Times</button>
-                <div id="teams-result" class="grid grid-cols-2 gap-2"></div>
-            </div>
-
-            <div id="tab-details" class="tab-content hidden">
-                <div class="glass-card p-6">
-                    <h4 class="font-700 text-gray-800 mb-2 uppercase text-xs">Roteiro:</h4>
-                    <div id="event-details-text" class="text-sm text-gray-600 whitespace-pre-wrap"></div>
-                </div>
-            </div>
-        </div>
-
-        <div id="view-profile" class="view animate-pop space-y-6">
-            <div class="glass-card p-8 text-center border-b-4 border-blue-600">
-                <img id="profile-img" src="" class="w-24 h-24 rounded-full mx-auto border-4 border-white shadow-lg mb-4 object-cover">
-                <h2 id="profile-name" class="text-2xl font-700 text-gray-800 uppercase italic">--</h2>
-                <p id="profile-role" class="text-[10px] font-700 text-blue-500 uppercase mt-1">--</p>
-            </div>
-            <button onclick="window.logout()" class="w-full bg-white text-red-500 font-700 py-4 rounded-2xl shadow-sm border border-red-100 uppercase text-xs">Sair da Conta</button>
-        </div>
-
-        <div id="view-users" class="view animate-pop space-y-4">
-            <div class="glass-card p-6">
-                <h3 class="font-700 text-gray-800 uppercase italic mb-4">Novo Parceiro</h3>
-                <form id="form-add-user" class="space-y-3">
-                    <input type="text" id="add-name" required placeholder="NOME" class="w-full p-3 bg-gray-50 border rounded-xl font-600 outline-none">
+            <div id="tab-content-players" class="glass-card rounded-3xl p-6 block animate-pop">
+                <div class="flex justify-between items-end mb-4"><h3 class="text-xl font-bold text-gray-800">Presença</h3><span id="display-count" class="bg-orange-500 text-white text-sm font-bold px-3 py-1 rounded-xl shadow-md">0</span></div>
+                <div id="progress-container" class="w-full bg-white/50 rounded-full h-3 mb-5 hidden overflow-hidden shadow-inner"><div id="progress-bar" class="bg-gradient-to-r from-yellow-400 to-orange-500 h-full"></div></div>
+                <ul id="participants-list" class="space-y-2 mb-6 max-h-[300px] overflow-y-auto pr-1"></ul>
+                <div id="action-area" class="border-t pt-5">
                     <div class="flex gap-2">
-                        <input type="text" id="add-user" required placeholder="LOGIN" class="flex-1 p-3 bg-gray-50 border rounded-xl font-600 outline-none lowercase">
-                        <input type="text" id="add-pass" required placeholder="SENHA" class="flex-1 p-3 bg-gray-50 border rounded-xl font-600 outline-none">
+                        <input type="text" id="input-name" class="flex-1 px-4 py-3 bg-white border-0 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none shadow-inner" placeholder="Seu Nome...">
+                        <button id="btn-join" class="bg-green-500 text-white font-bold px-6 rounded-2xl shadow-lg active:scale-95 transition-transform"><i class="fa-solid fa-plus"></i></button>
                     </div>
-                    <button class="w-full bg-blue-600 text-white font-700 py-3 rounded-xl uppercase text-xs">Criar Usuário</button>
-                </form>
+                    <a id="btn-join-group" target="_blank" class="hidden w-full mt-4 bg-green-500 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-xl hover:brightness-110 transition-all border-b-4 border-green-700 uppercase text-[10px] tracking-widest"><i class="fa-brands fa-whatsapp text-xl"></i> Grupo do Vôlei</a>
+                </div>
             </div>
-            <div id="all-users-list" class="space-y-2"></div>
-        </div>
 
+            <div id="tab-content-teams" class="glass-card rounded-3xl p-6 hidden animate-pop">
+                <h3 class="text-xl font-bold text-gray-800 mb-4 tracking-tight">Sortear Times</h3>
+                <div class="space-y-4 mb-6">
+                    <div class="flex gap-2">
+                        <input type="text" id="input-name-teams" class="flex-1 px-4 py-3 bg-white border-0 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none shadow-inner" placeholder="Adicionar avulso...">
+                        <button onclick="window.addPlayerFromTeams()" class="bg-orange-500 text-white font-bold px-5 rounded-2xl shadow-md active:scale-95 transition-transform"><i class="fa-solid fa-user-plus"></i></button>
+                    </div>
+                    <div class="bg-white/50 p-3 rounded-2xl border border-white space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-gray-600 uppercase tracking-tighter">Jogadores por Time:</span>
+                            <select id="players-per-team" class="bg-white border rounded-xl px-2 py-1 font-bold text-orange-600 outline-none text-sm cursor-pointer">
+                                <option value="2">2x2</option><option value="3">3x3</option><option value="4">4x4</option><option value="5">5x5</option><option value="6" selected>6x6</option><option value="colher">Colher de Chá (5x4)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button onclick="window.drawTeams()" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold py-4 rounded-2xl shadow-lg uppercase tracking-widest active:scale-95 transition-all"><i class="fa-solid fa-shuffle mr-2"></i> Sortear Agora</button>
+                </div>
+                <div id="teams-result" class="space-y-3"></div>
+            </div>
+
+            <div id="tab-content-score" class="glass-card rounded-3xl p-6 hidden text-center animate-pop">
+                <div class="flex flex-col gap-3 mb-6">
+                    <div class="flex justify-between items-center bg-white/60 p-3 rounded-2xl border border-white/50"><span class="text-xs font-bold text-gray-600 uppercase tracking-widest">Set Fecha em:</span><select id="config-max-score" class="bg-white border rounded-xl px-2 py-1 text-sm font-black text-orange-600 focus:outline-none"><option value="15">15 pts</option><option value="21">21 pts</option><option value="25">25 pts</option></select></div>
+                    <button id="btn-voice" class="w-full bg-white/80 text-gray-700 font-bold py-3 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95"><i class="fa-solid fa-microphone-lines text-gray-400"></i><span>Ativar Juiz de Voz</span></button>
+                </div>
+                <div class="flex justify-between items-stretch gap-3">
+                    <div class="flex-1 bg-white/60 rounded-2xl p-4 shadow-sm border border-white/40"><div class="text-[10px] font-bold text-gray-400 mb-2 uppercase">Sets: <span id="sets-a" class="text-orange-600 text-sm">0</span></div><input type="text" id="name-team-a" class="w-full text-center bg-transparent font-bold text-xs border-b mb-3 focus:outline-none uppercase" value="TIME A"><div class="text-6xl font-black text-gray-800 my-4" id="score-a">0</div><div class="flex gap-2"><button onclick="updateScore('A', -1)" class="flex-1 bg-red-100 text-red-600 py-3 rounded-xl">-</button><button onclick="updateScore('A', 1)" class="flex-[2] bg-green-500 text-white py-3 rounded-xl font-bold shadow-md active:scale-95 transition-all">+</button></div></div>
+                    <div class="flex items-center text-gray-300 font-black">X</div>
+                    <div class="flex-1 bg-white/60 rounded-2xl p-4 shadow-sm border border-white/40"><div class="text-[10px] font-bold text-gray-400 mb-2 uppercase">Sets: <span id="sets-b" class="text-orange-600 text-sm">0</span></div><input type="text" id="name-team-b" class="w-full text-center bg-transparent font-bold text-xs border-b mb-3 focus:outline-none uppercase" value="TIME B"><div class="text-6xl font-black text-gray-800 my-4" id="score-b">0</div><div class="flex gap-2"><button onclick="updateScore('B', -1)" class="flex-1 bg-red-100 text-red-600 py-3 rounded-xl">-</button><button onclick="updateScore('B', 1)" class="flex-[2] bg-blue-500 text-white py-3 rounded-xl font-bold shadow-md active:scale-95 transition-all">+</button></div></div>
+                </div>
+                <div class="mt-6"><button onclick="resetScore()" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest hover:text-red-500 transition-colors"><i class="fa-solid fa-rotate-left mr-1"></i> Zerar Partida</button></div>
+            </div>
+        </div>
     </main>
 
-    <nav id="bottom-nav" class="bottom-nav hidden">
-        <button onclick="window.goHome()" class="nav-item active" id="nav-agenda"><i class="fa-solid fa-calendar-days"></i><span>Agenda</span></button>
-        <button onclick="window.changeView('create')" class="nav-item" id="nav-create"><i class="fa-solid fa-circle-plus"></i><span>Lançar</span></button>
-        <button onclick="window.changeView('profile')" class="nav-item" id="nav-profile"><i class="fa-solid fa-user-astronaut"></i><span>Perfil</span></button>
-        <button onclick="window.changeView('users')" class="nav-item hidden" id="nav-users"><i class="fa-solid fa-users-gear"></i><span>Galera</span></button>
-    </nav>
-
-    <div id="modal-note" class="fixed inset-0 z-[6000] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-6">
-        <div class="glass-card w-full max-w-sm p-6 space-y-4">
-            <h3 class="font-700 uppercase italic text-gray-800">Lançar Compra</h3>
-            <input type="text" id="note-title" placeholder="Mercado / Açougue" class="w-full p-4 bg-gray-50 border rounded-xl font-600 outline-none">
-            <input type="number" id="note-val" placeholder="Valor R$" class="w-full p-4 bg-gray-50 border rounded-xl font-600 outline-none">
-            <select id="note-type" class="w-full p-4 bg-gray-50 border rounded-xl font-700 outline-none">
-                <option value="geral">🛒 Geral (Todos)</option>
-                <option value="churrasco">🥩 Só Churrasco</option>
-                <option value="bebida">🍺 Só Bebida</option>
-            </select>
-            <div class="flex gap-2">
-                <button onclick="window.closeNoteModal()" class="flex-1 font-700 text-gray-400 uppercase text-[10px]">Cancelar</button>
-                <button onclick="window.saveNote()" class="flex-[2] bg-blue-600 text-white font-700 py-4 rounded-xl uppercase text-xs">Salvar</button>
+    <div id="edit-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4" style="background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);">
+        <div class="glass-card w-full max-w-sm rounded-3xl p-6 relative animate-pop shadow-2xl">
+            <h3 class="text-xl font-bold mb-4 flex items-center gap-2"><i class="fa-solid fa-gear text-orange-500"></i> Ajustar Detalhes</h3>
+            <div class="space-y-3">
+                <input type="text" id="modal-edit-title" class="w-full px-4 py-3 border rounded-2xl focus:outline-none" placeholder="Nome do Jogo">
+                <input type="text" id="modal-edit-address" class="w-full px-4 py-3 border rounded-2xl focus:outline-none" placeholder="Endereço">
+                <input type="text" id="modal-edit-group" class="w-full px-4 py-3 border rounded-2xl focus:outline-none" placeholder="Link do Grupo">
+                <div class="flex gap-2 pt-2"><button id="modal-cancel" class="flex-1 py-3 font-bold text-gray-500">Voltar</button><button id="modal-save" class="flex-[2] bg-green-500 text-white font-bold py-3 rounded-2xl shadow-lg">Salvar</button></div>
             </div>
         </div>
     </div>
 
-    <script>
+    <nav id="bottom-nav" class="bottom-nav hidden animate-pop">
+        <button id="nav-home" class="nav-item active" onclick="window.location.href=window.location.pathname">
+            <i class="fa-solid fa-house"></i>
+            <span>Início</span>
+        </button>
+        <button id="nav-event" class="nav-item" onclick="if(currentEventId) { window.scrollTo(0,0); } else { showToast('Nenhum jogo ativo!'); }">
+            <i class="fa-solid fa-volleyball"></i>
+            <span>Jogo</span>
+        </button>
+        <button id="nav-profile" class="nav-item">
+            <i class="fa-solid fa-user"></i>
+            <span>Perfil</span>
+        </button>
+    </nav>
+
+    <div id="toast" class="toast fixed bottom-28 left-1/2 bg-gray-900/90 text-white px-6 py-3 rounded-full shadow-2xl text-sm flex items-center gap-3 font-medium"><i class="fa-solid fa-circle-check text-green-400"></i><span id="toast-msg">Mensagem</span></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, collection, setDoc, getDoc, updateDoc, onSnapshot, arrayUnion, arrayRemove, increment, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
         const firebaseConfig = { apiKey: "AIzaSyA3RQucgd5vMeJzZgZnC4Zim9hkFVVWXnw", authDomain: "volei-3f30d.firebaseapp.com", projectId: "volei-3f30d", storageBucket: "volei-3f30d.firebasestorage.app", messagingSenderId: "969073040869", appId: "1:969073040869:web:c0f6005d98fae4144de30c" };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore(), auth = firebase.auth();
+        let db, auth, currentUser, localEventData, deferredPrompt;
+        
+        // Expondo currentEventId e showToast pro escopo global para que o onclick do HTML funcione
+        window.currentEventId = null;
+        const urlParams = new URLSearchParams(window.location.search);
+        const rawId = urlParams.get('id');
+        if (rawId) { window.currentEventId = (rawId.length === 6) ? rawId.toUpperCase() : rawId; }
 
-        let userData = null, currentEventId = null, localEventData = null;
+        const viewLoading = document.getElementById('loading-view');
+        const viewCreate = document.getElementById('create-view');
+        const viewEvent = document.getElementById('event-view');
+        const toastEl = document.getElementById('toast');
+        const toastMsg = document.getElementById('toast-msg');
 
-        const hideLoading = () => document.getElementById('loading-screen')?.classList.remove('active-flex');
+        window.showToast = (m) => { toastMsg.innerText = m; toastEl.classList.add('show'); setTimeout(() => toastEl.classList.remove('show'), 3000); };
 
-        window.changeView = (v) => {
-            document.querySelectorAll('.view').forEach(x => x.classList.remove('active-view'));
-            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
-            const target = document.getElementById(`view-${v}`);
-            if (target) target.classList.add('active-view');
-            const nav = document.getElementById(`nav-${v}`);
-            if (nav) nav.classList.add('active');
-            if (v !== 'event') { currentEventId = null; window.history.pushState({}, '', window.location.pathname); }
-            window.scrollTo(0,0);
+        // --- LÓGICA DE INSTALAÇÃO ---
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            if (!window.matchMedia('(display-mode: standalone)').matches) {
+                document.getElementById('install-banner').style.display = 'block';
+            }
+        });
+
+        document.getElementById('btn-install-app').onclick = async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    window.hideInstallBanner();
+                }
+                deferredPrompt = null;
+            }
         };
 
-        window.goHome = () => window.changeView('agenda');
-
-        window.updateFormFields = () => {
-            const cat = document.getElementById('new-category').value;
-            document.getElementById('area-details').classList.toggle('hidden', !['viagem', 'passeio', 'churrasco'].includes(cat));
+        window.hideInstallBanner = () => {
+            document.getElementById('install-banner').style.display = 'none';
         };
 
-        window.switchTab = (t) => {
-            document.querySelectorAll('.tab-content').forEach(x => x.classList.add('hidden'));
-            document.querySelectorAll('#event-tabs button').forEach(x => x.classList.remove('tab-btn-active'));
-            document.getElementById(`tab-${t}`).classList.remove('hidden');
-            document.getElementById(`btn-tab-${t}`).classList.add('tab-btn-active');
-        };
+        // --- MONITOR OFFLINE ---
+        window.addEventListener('online', () => { document.body.classList.remove('is-offline'); window.showToast("Conectado!"); });
+        window.addEventListener('offline', () => { document.body.classList.add('is-offline'); });
 
-        const init = () => {
-            auth.onAuthStateChanged(u => {
-                const session = localStorage.getItem('cuida_session');
-                if (session) {
-                    if (!u) { auth.signInAnonymously(); return; }
-                    db.collection('app_users').doc(session).onSnapshot(s => {
-                        hideLoading();
-                        if (s.exists()) {
-                            userData = s.data(); userData.uid = s.id;
-                            document.getElementById('main-header').classList.remove('hidden');
-                            document.getElementById('bottom-nav').classList.remove('hidden');
-                            document.getElementById('user-name-display').innerText = userData.name.split(' ')[0];
-                            document.getElementById('profile-name').innerText = userData.name;
-                            document.getElementById('profile-role').innerText = userData.role;
-                            document.getElementById('profile-img').src = userData.photo || 'https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png';
-                            
-                            const isDir = userData.role === 'Diretoria';
-                            document.getElementById('nav-users').classList.toggle('hidden', !isDir);
-                            document.getElementById('user-role-badge').classList.toggle('hidden', !isDir);
-                            
-                            if (isDir) loadAdminUsers();
+        // --- FIREBASE INIT ---
+        const init = async () => {
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app); db = getFirestore(app);
+            try { await enableIndexedDbPersistence(db); } catch (err) {}
+            await signInAnonymously(auth);
+            
+            onAuthStateChanged(auth, (u) => {
+                if(!u) return; currentUser = u;
+                
+                // Exibe a barra de navegação assim que o app carrega
+                document.getElementById('bottom-nav').style.display = 'flex';
+                
+                if(window.currentEventId) {
+                    // Ajusta o destaque do menu
+                    document.getElementById('nav-home').classList.remove('active');
+                    document.getElementById('nav-event').classList.add('active');
 
-                            const urlId = new URLSearchParams(window.location.search).get('id');
-                            if (urlId && !currentEventId) {
-                                currentEventId = urlId.toUpperCase();
-                                loadEventData();
-                            } else if (!currentEventId) {
-                                loadAgenda();
-                                window.changeView('agenda');
-                            }
-                        } else window.logout();
-                    }, () => hideLoading());
-                } else {
-                    hideLoading();
-                    window.changeView('login');
+                    onSnapshot(doc(db, 'volei_events', window.currentEventId), (s) => {
+                        if(!s.exists()) { window.showToast("Código inválido!"); setTimeout(() => window.location.href = window.location.pathname, 1500); return; }
+                        localEventData = s.data(); renderEvent(localEventData);
+                        viewLoading.style.display = 'none'; viewEvent.style.display = 'block';
+                        document.getElementById('btn-open-edit').classList.remove('hidden');
+                    });
+                } else { 
+                    viewLoading.style.display = 'none'; viewCreate.style.display = 'block'; 
                 }
             });
         };
 
-        const loadAgenda = () => {
-            db.collection('volei_events').onSnapshot(snap => {
-                const list = document.getElementById('agenda-list'); list.innerHTML = '';
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    const el = document.createElement('div');
-                    el.className = "glass-card p-4 flex items-center gap-4 active:scale-95 cursor-pointer animate-pop";
-                    el.onclick = () => { currentEventId = doc.id; window.history.pushState({}, '', `?id=${doc.id}`); loadEventData(); };
-                    const icons = { volei: '🏐', churrasco: '🔥', viagem: '✈️', passeio: '🚗', jogos: '🎮' };
-                    el.innerHTML = `<div class="text-2xl bg-gray-50 w-14 h-14 flex items-center justify-center rounded-2xl border">${icons[d.category] || '🍩'}</div><div class="flex-1"><h4 class="font-700 text-gray-800 uppercase text-xs truncate">${d.location}</h4><p class="text-[8px] font-700 text-gray-400 uppercase">${new Date(d.datetime).toLocaleDateString('pt-BR')}</p></div>`;
-                    list.appendChild(el);
-                });
-            });
-        };
-
-        const loadEventData = () => {
-            db.collection('volei_events').doc(currentEventId).onSnapshot(s => {
-                if (!s.exists) return window.goHome();
-                localEventData = s.data();
-                renderEvent();
-                window.changeView('event');
-            });
-        };
-
-        const renderEvent = () => {
-            const d = localEventData;
-            document.getElementById('event-title').innerText = d.location;
-            document.getElementById('event-address').innerText = d.address;
-            const icons = { volei: '🏐', churrasco: '🥩', viagem: '✈️', passeio: '🚗', jogos: '🎮' };
-            document.getElementById('event-icon').innerText = icons[d.category] || '😎';
-
-            // Abas Dinâmicas
-            const showFinance = ['churrasco', 'viagem'].includes(d.category);
-            document.getElementById('tab-btn-finance').classList.toggle('hidden', !showFinance);
-            document.getElementById('tab-btn-volei').classList.toggle('hidden', d.category !== 'volei');
-            document.getElementById('tab-btn-details').classList.toggle('hidden', !['viagem', 'passeio'].includes(d.category));
-            document.getElementById('event-details-text').innerText = d.details || '';
-
-            // Toggles
-            document.getElementById('opt-churras').classList.toggle('hidden', !['churrasco', 'viagem'].includes(d.category));
-            document.getElementById('opt-drink').classList.toggle('hidden', d.category === 'volei');
-
-            // Lógica Financeira
-            const pts = d.participants || [], recs = d.receipts || [];
-            const me = pts.find(p => p.entryId === userData.uid);
-            
-            const totalGeral = recs.filter(r => r.type === 'geral').reduce((a, b) => a + b.value, 0) + (d.totalCost || 0);
-            const totalChurras = recs.filter(r => r.type === 'churrasco').reduce((a, b) => a + b.value, 0);
-            const totalDrink = recs.filter(r => r.type === 'bebida').reduce((a, b) => a + b.value, 0);
-
-            const perGeral = pts.length > 0 ? totalGeral / pts.length : 0;
-            const countChurras = pts.filter(p => p.churras).length;
-            const perChurras = countChurras > 0 ? totalChurras / countChurras : 0;
-            const countDrink = pts.filter(p => p.drinks).length;
-            const perDrink = countDrink > 0 ? totalDrink / countDrink : 0;
-
-            document.getElementById('event-total-display').innerText = `R$ ${(totalGeral + totalChurras + totalDrink).toFixed(2)}`;
-            
-            let myTotal = 0;
-            if (me) {
-                myTotal = perGeral + (me.churras ? perChurras : 0) + (me.drinks ? perDrink : 0);
-                document.getElementById('btn-join').innerText = "Tô Fora (Sair)";
-                document.getElementById('btn-join').classList.replace('bg-green-500', 'bg-red-500');
-                document.getElementById('check-churras').checked = me.churras;
-                document.getElementById('check-drink').checked = me.drinks;
+        // --- SORTEIO ---
+        window.drawTeams = () => {
+            if (!localEventData || !localEventData.participants.length) return window.showToast("Sem jogadores na lista!");
+            const mode = document.getElementById('players-per-team').value;
+            let players = [...localEventData.participants].map(p => p.name);
+            for (let i = players.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [players[i], players[j]] = [players[j], players[i]]; }
+            const res = document.getElementById('teams-result'); res.innerHTML = '';
+            const createTeamCard = (num, members, color) => {
+                const card = document.createElement('div'); card.className = "bg-white/70 p-4 rounded-2xl border border-white animate-pop shadow-sm";
+                card.innerHTML = `<p class="text-[10px] font-black text-${color}-500 uppercase tracking-widest mb-2">Time ${num}</p><div class="space-y-1">${members.map(n => `<p class="font-bold text-gray-700 uppercase text-xs">• ${n}</p>`).join('')}</div>`;
+                res.appendChild(card);
+            };
+            if (mode === 'colher') {
+                if (players.length < 9) return window.showToast("Mínimo 9 jogadores para 5x4!");
+                createTeamCard("A (Vantagem)", players.splice(0, 5), "orange"); createTeamCard("B", players.splice(0, 4), "blue");
             } else {
-                document.getElementById('btn-join').innerText = "Tô Dentro!";
-                document.getElementById('btn-join').classList.replace('bg-red-500', 'bg-green-500');
+                const n = parseInt(mode); let tCount = 1;
+                while(players.length >= n) { createTeamCard(tCount, players.splice(0, n), "indigo"); tCount++; }
             }
-            document.getElementById('event-user-display').innerText = `R$ ${myTotal.toFixed(2)}`;
-
-            // Listas
-            document.getElementById('list-participants').innerHTML = pts.map(p => `
-                <li class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border">
-                    <div class="flex items-center gap-3">
-                        <img src="${p.photo || 'https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png'}" class="w-8 h-8 rounded-full">
-                        <p class="font-700 text-[10px] uppercase">${p.name}</p>
-                    </div>
-                    <div class="flex gap-1">
-                        ${p.churras ? '<span class="text-[7px] bg-orange-100 text-orange-600 px-1 font-bold rounded">🥩</span>' : ''}
-                        ${p.drinks ? '<span class="text-[7px] bg-blue-100 text-blue-600 px-1 font-bold rounded">🍺</span>' : ''}
-                    </div>
-                </li>
-            `).join('');
-
-            document.getElementById('list-receipts').innerHTML = recs.map(r => `
-                <div class="flex items-center justify-between p-3 bg-white border rounded-xl">
-                    <div><p class="text-[9px] font-700 uppercase">${r.title}</p><p class="text-[7px] font-600 text-gray-400">R$ ${r.value.toFixed(2)}</p></div>
-                    ${userData.role === 'Diretoria' ? `<button onclick='window.deleteNote(${JSON.stringify(r)})' class="text-red-300 text-xs"><i class="fa-solid fa-trash"></i></button>` : ''}
-                </div>
-            `).join('');
-
-            document.getElementById('score-a').innerText = d.scoreA || 0;
-            document.getElementById('score-b').innerText = d.scoreB || 0;
-            window.switchTab('players');
-        };
-
-        // Ações
-        document.getElementById('btn-join').onclick = async () => {
-            const me = localEventData.participants.find(p => p.entryId === userData.uid);
-            if (me) {
-                await db.collection('volei_events').doc(currentEventId).update({ participants: firebase.firestore.FieldValue.arrayRemove(me) });
-            } else {
-                const obj = { entryId: userData.uid, name: userData.name, photo: userData.photo || '', drinks: document.getElementById('check-drink').checked, churras: document.getElementById('check-churras').checked };
-                await db.collection('volei_events').doc(currentEventId).update({ participants: firebase.firestore.FieldValue.arrayUnion(obj) });
+            if (players.length > 0) {
+                const next = document.createElement('div'); next.className = "bg-gray-100/50 p-4 rounded-2xl border border-dashed border-gray-300";
+                next.innerHTML = `<p class="text-[10px] font-bold text-gray-400 uppercase mb-2">Reserva / Próximos</p><div class="space-y-1">${players.map(n => `<p class="text-gray-500 uppercase text-xs">• ${n}</p>`).join('')}</div>`;
+                res.appendChild(next);
             }
+            window.showToast("Times embaralhados!");
         };
 
-        window.updateScore = (t, v) => {
-            const f = t === 'A' ? 'scoreA' : 'scoreB';
-            db.collection('volei_events').doc(currentEventId).update({ [f]: firebase.firestore.FieldValue.increment(v) });
+        window.addPlayerFromTeams = async () => {
+            const i = document.getElementById('input-name-teams'); const name = i.value.trim();
+            if(!name) return;
+            const entryId = Math.random().toString(36).substr(2, 9);
+            await updateDoc(doc(db, 'volei_events', window.currentEventId), { participants: arrayUnion({ entryId, name }) });
+            i.value = '';
         };
 
-        window.shuffleTeams = () => {
-            const p = localEventData.participants.map(x => x.name.split(' ')[0]).sort(() => Math.random() - 0.5);
-            const m = Math.ceil(p.length / 2);
-            document.getElementById('teams-result').innerHTML = `
-                <div class="p-3 bg-blue-50 rounded-xl border border-blue-100"><p class="text-[8px] font-700 text-blue-600 uppercase">A</p><p class="text-[10px] font-600">${p.slice(0,m).join(', ')}</p></div>
-                <div class="p-3 bg-red-50 rounded-xl border border-red-100"><p class="text-[8px] font-700 text-red-600 uppercase">B</p><p class="text-[10px] font-600">${p.slice(m).join(', ')}</p></div>`;
+        window.updateScore = async (team, amt) => {
+            if(!window.currentEventId || !localEventData) return;
+            const field = team === 'A' ? 'scoreA' : 'scoreB';
+            const setField = team === 'A' ? 'setsA' : 'setsB';
+            let cur = (localEventData[field] || 0) + amt;
+            const max = parseInt(document.getElementById('config-max-score').value);
+            const other = team === 'A' ? (localEventData.scoreB || 0) : (localEventData.scoreA || 0);
+            if(cur >= max && (cur - other) >= 2) { await updateDoc(doc(db, 'volei_events', window.currentEventId), { scoreA:0, scoreB:0, [setField]: increment(1) }); }
+            else { await updateDoc(doc(db, 'volei_events', window.currentEventId), { [field]: Math.max(0, cur) }); }
         };
 
-        window.openNoteModal = () => document.getElementById('modal-note').classList.add('active-flex');
-        window.closeNoteModal = () => document.getElementById('modal-note').classList.remove('active-flex');
-        window.saveNote = async () => {
-            const t = document.getElementById('note-title').value, v = parseFloat(document.getElementById('note-val').value), type = document.getElementById('note-type').value;
-            if (!t || !v) return alert("Preencha!");
-            await db.collection('volei_events').doc(currentEventId).update({
-                receipts: firebase.firestore.FieldValue.arrayUnion({ id: Date.now(), title: t, value: v, type, addedBy: userData.name })
-            });
-            window.closeNoteModal();
+        window.resetScore = async () => { if(confirm("Zerar partida?")) await updateDoc(doc(db, 'volei_events', window.currentEventId), { scoreA:0, scoreB:0, setsA:0, setsB:0 }); };
+        window.removePlayer = async (id) => { const p = localEventData.participants.find(x => x.entryId === id); await updateDoc(doc(db, 'volei_events', window.currentEventId), { participants: arrayRemove(p) }); };
+
+        const renderEvent = (d) => {
+            document.getElementById('main-title-text').innerText = d.location;
+            document.querySelector('#display-address-text span').innerText = d.address;
+            document.getElementById('display-game-id').innerText = window.currentEventId;
+            const enc = encodeURIComponent(d.address);
+            document.getElementById('link-maps').href = `http://googleusercontent.com/maps.google.com/?q=${enc}`;
+            document.getElementById('link-waze').href = `https://waze.com/ul?q=${enc}`;
+            if(d.groupLink) { document.getElementById('btn-join-group').href = d.groupLink; document.getElementById('btn-join-group').classList.remove('hidden'); }
+            document.getElementById('display-total-cost').innerText = `R$ ${d.totalCost.toFixed(2)}`;
+            const p = d.participants || [];
+            document.getElementById('display-person-cost').innerText = `R$ ${(d.totalCost / Math.max(1, p.length)).toFixed(2)}`;
+            document.getElementById('display-count').innerText = d.playerLimit ? `${p.length}/${d.playerLimit}` : p.length;
+            if(d.playerLimit) { document.getElementById('progress-container').classList.remove('hidden'); document.getElementById('progress-bar').style.width = Math.min(100, (p.length/d.playerLimit*100)) + '%'; }
+            document.getElementById('participants-list').innerHTML = p.map(u => `<li class="flex items-center justify-between p-3 bg-white/80 rounded-2xl shadow-sm border border-white/50 animate-pop"><span class="font-bold text-gray-700 uppercase text-xs ml-2">${u.name}</span><button onclick="removePlayer('${u.entryId}')" class="text-red-300 p-2 hover:bg-red-50 rounded-full transition-all"><i class="fa-solid fa-trash-can"></i></button></li>`).join('');
+            document.getElementById('score-a').innerText = d.scoreA || 0; document.getElementById('score-b').innerText = d.scoreB || 0;
+            document.getElementById('sets-a').innerText = d.setsA || 0; document.getElementById('sets-b').innerText = d.setsB || 0;
         };
 
-        window.deleteNote = (r) => db.collection('volei_events').doc(currentEventId).update({ receipts: firebase.firestore.FieldValue.arrayRemove(r) });
+        const switchTab = (tab) => {
+            ['players', 'teams', 'score'].forEach(t => document.getElementById(`tab-content-${t}`).classList.add('hidden'));
+            ['players', 'teams', 'score'].forEach(t => { document.getElementById(`tab-btn-${t}`).classList.remove('bg-white', 'text-orange-600', 'shadow-sm'); document.getElementById(`tab-btn-${t}`).classList.add('text-white'); });
+            document.getElementById(`tab-content-${tab}`).classList.remove('hidden');
+            document.getElementById(`tab-btn-${tab}`).classList.add('bg-white', 'text-orange-600', 'shadow-sm');
+            document.getElementById(`tab-btn-${tab}`).classList.remove('text-white');
+        };
+        document.getElementById('tab-btn-players').onclick = () => switchTab('players');
+        document.getElementById('tab-btn-teams').onclick = () => switchTab('teams');
+        document.getElementById('tab-btn-score').onclick = () => switchTab('score');
 
-        window.logout = () => { localStorage.clear(); auth.signOut().then(() => location.reload()); };
+        // --- VOZ ---
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if(SpeechRecognition) {
+            const rec = new SpeechRecognition(); rec.lang = 'pt-BR'; rec.continuous = true;
+            rec.onresult = (e) => {
+                const text = e.results[e.results.length - 1][0].transcript.toLowerCase();
+                const teamA = document.getElementById('name-team-a').value.toLowerCase();
+                const teamB = document.getElementById('name-team-b').value.toLowerCase();
+                if(text.includes('ponto') || text.includes('marca')) {
+                    if(text.includes(teamA)) window.updateScore('A', 1);
+                    else if(text.includes(teamB)) window.updateScore('B', 1);
+                }
+            };
+            document.getElementById('btn-voice').onclick = () => {
+                const btn = document.getElementById('btn-voice');
+                if(btn.classList.contains('listening')) { rec.stop(); btn.classList.remove('listening', 'bg-red-100', 'animate-pulse'); btn.querySelector('span').innerText = "Ativar Juiz de Voz"; }
+                else { rec.start(); btn.classList.add('listening', 'bg-red-100', 'animate-pulse'); btn.querySelector('span').innerText = "Ouvindo..."; }
+            };
+        }
 
-        document.getElementById('form-login').onsubmit = (e) => {
-            e.preventDefault();
-            const u = document.getElementById('input-user').value.toLowerCase().trim(), p = document.getElementById('input-pass').value.trim();
-            db.collection('app_users').doc(u).get().then(s => {
-                if (s.exists() && s.data().password === p) {
-                    localStorage.setItem('cuida_session', u);
-                    location.reload();
-                } else alert("Erro! 🍩");
-            });
+        document.getElementById('create-form').onsubmit = async (e) => {
+            e.preventDefault(); const btn = e.target.querySelector('button'); btn.disabled = true;
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; const shortId = chars[Math.floor(Math.random() * 26)] + chars[Math.floor(Math.random() * 26)] + Math.floor(1000 + Math.random() * 9000);
+            try { await setDoc(doc(db, 'volei_events', shortId), { location: document.getElementById('input-location').value, address: document.getElementById('input-address').value, groupLink: document.getElementById('input-group-link').value, totalCost: parseFloat(document.getElementById('input-total').value), playerLimit: document.getElementById('check-unlimited').checked ? 0 : parseInt(document.getElementById('input-limit').value), participants: [], scoreA:0, scoreB:0, setsA:0, setsB:0, maxScore: 21, datetime: document.getElementById('input-datetime').value }); window.location.href = `?id=${shortId}`; } catch(err) { window.showToast("Erro ao criar."); btn.disabled = false; }
         };
 
-        document.getElementById('form-new-event').onsubmit = async (e) => {
-            e.preventDefault();
-            const id = Math.random().toString(36).substring(2,4).toUpperCase() + Math.floor(1000 + Math.random() * 9000);
-            await db.collection('volei_events').doc(id).set({
-                location: document.getElementById('new-title').value, address: document.getElementById('new-address').value,
-                category: document.getElementById('new-category').value, details: document.getElementById('new-details').value || '',
-                datetime: document.getElementById('new-date').value, totalCost: parseFloat(document.getElementById('new-total').value) || 0,
-                participants: [], receipts: [], scoreA: 0, scoreB: 0
-            });
-            window.goHome();
-        };
-
-        const loadAdminUsers = () => {
-            db.collection('app_users').onSnapshot(snap => {
-                const list = document.getElementById('all-users-list'); list.innerHTML = '';
-                snap.forEach(d => {
-                    const data = d.data();
-                    const el = document.createElement('div');
-                    el.className = "glass-card p-3 flex justify-between items-center";
-                    el.innerHTML = `<div><p class="text-[10px] font-700 uppercase">${data.name}</p><p class="text-[8px] text-gray-400">@${data.username}</p></div><span class="text-[8px] font-700 text-blue-500">${data.role}</span>`;
-                    list.appendChild(el);
-                });
-            });
-        };
-
+        document.getElementById('btn-share').onclick = () => { navigator.clipboard.writeText(window.location.href); window.showToast("Link Copiado! 🏐"); };
+        document.getElementById('btn-search-id').onclick = () => { const id = document.getElementById('input-search-id').value.trim().toUpperCase(); if(id) window.location.href = `?id=${id}`; };
+        
         init();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(err => console.log("SW error:", err)); });
+        }
     </script>
 </body>
 </html>
