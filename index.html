@@ -129,13 +129,21 @@
             position: fixed;
             bottom: 0;
             left: 0;
-            width: 100%;
+            right: 0;
+            max-width: 28rem;
+            margin-left: auto;
+            margin-right: auto;
             background: #fff;
             border-top: 4px solid #000;
+            border-left: 4px solid #000;
+            border-right: 4px solid #000;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
             display: flex;
             justify-content: space-around;
             padding: 8px 4px calc(10px + env(safe-area-inset-bottom));
             z-index: 4000;
+            box-shadow: 0 -4px 0 rgba(0,0,0,0.15);
         }
         .nav-item {
             display: flex;
@@ -331,20 +339,15 @@
                 <span>LANÇAR NOVO ROLÊ! 🚀</span>
             </button>
 
-            <!-- FILTRO DE CATEGORIAS -->
-            <div class="flex gap-2 overflow-x-auto no-scrollbar py-1">
-                <button onclick="window.filterAgenda('todos')" id="filter-btn-todos" class="tab-btn active">
-                    🍩 Todos
-                </button>
-                <button onclick="window.filterAgenda('volei')" id="filter-btn-volei" class="tab-btn">
-                    🏐 Vôlei
-                </button>
-                <button onclick="window.filterAgenda('viagem')" id="filter-btn-viagem" class="tab-btn">
-                    🚗 Viagens
-                </button>
-                <button onclick="window.filterAgenda('churrasco')" id="filter-btn-churrasco" class="tab-btn">
-                    🔥 Churrasco
-                </button>
+            <!-- INDICADOR DA ABA ATIVA (SELECIONADA NA BARRA INFERIOR) -->
+            <div class="flex items-center justify-between px-2 pt-1 pb-1">
+                <span id="agenda-section-title" class="text-xs font-black uppercase text-gray-800 tracking-wider flex items-center gap-1.5">
+                    <span id="agenda-section-icon">🍩</span>
+                    <span id="agenda-section-text">Todos os Rolês</span>
+                </span>
+                <span id="agenda-section-badge" class="badge-tag bg-amber-100 text-[9px]">
+                    TODOS
+                </span>
             </div>
 
             <!-- LISTA DE ROLÊS -->
@@ -1115,6 +1118,35 @@
         };
 
         // --- NAVEGAÇÃO DE TELAS ---
+        const updateAgendaHeader = (cat) => {
+            const iconEl = document.getElementById('agenda-section-icon');
+            const textEl = document.getElementById('agenda-section-text');
+            const badgeEl = document.getElementById('agenda-section-badge');
+            if (!iconEl || !textEl || !badgeEl) return;
+
+            if (cat === 'volei') {
+                iconEl.innerText = '🏐';
+                textEl.innerText = 'Rachas de Vôlei';
+                badgeEl.innerText = 'VÔLEI';
+                badgeEl.className = 'badge-tag bg-yellow-300 text-[9px]';
+            } else if (cat === 'viagem') {
+                iconEl.innerText = '🚗';
+                textEl.innerText = 'Viagens & Passeios';
+                badgeEl.innerText = 'VIAGEM';
+                badgeEl.className = 'badge-tag bg-blue-300 text-[9px]';
+            } else if (cat === 'churrasco') {
+                iconEl.innerText = '🔥';
+                textEl.innerText = 'Churrascos & Eventos';
+                badgeEl.innerText = 'CHURRAS';
+                badgeEl.className = 'badge-tag bg-red-400 text-white text-[9px]';
+            } else {
+                iconEl.innerText = '🍩';
+                textEl.innerText = 'Todos os Rolês';
+                badgeEl.innerText = 'TODOS';
+                badgeEl.className = 'badge-tag bg-amber-100 text-[9px]';
+            }
+        };
+
         window.navTo = (target) => {
             Object.values(views).forEach(v => { if (v) v.classList.remove('active-view'); });
             
@@ -1131,8 +1163,11 @@
                 document.getElementById('bottom-nav').style.display = 'flex';
                 
                 if (target === 'home') {
+                    currentAgendaFilter = 'todos';
                     views.agenda.classList.add('active-view');
                     document.getElementById('nav-btn-home').classList.add('active');
+                    updateAgendaHeader('todos');
+                    loadAgenda();
                 } else if (target === 'create') {
                     views.create.classList.add('active-view');
                 } else if (target === 'event') {
@@ -1156,8 +1191,33 @@
 
         window.filterAndNav = (category) => {
             currentAgendaFilter = category;
-            window.navTo('home');
-            window.filterAgenda(category);
+            Object.values(views).forEach(v => { if (v) v.classList.remove('active-view'); });
+
+            const navButtons = ['nav-btn-home', 'nav-btn-volei', 'nav-btn-viagem', 'nav-btn-churras', 'nav-btn-profile'];
+            navButtons.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.classList.remove('active');
+            });
+
+            document.getElementById('bottom-nav').style.display = 'flex';
+            views.agenda.classList.add('active-view');
+
+            const btnMap = {
+                'volei': 'nav-btn-volei',
+                'viagem': 'nav-btn-viagem',
+                'churrasco': 'nav-btn-churras',
+                'todos': 'nav-btn-home'
+            };
+            const activeId = btnMap[category] || 'nav-btn-home';
+            document.getElementById(activeId)?.classList.add('active');
+
+            updateAgendaHeader(category);
+            loadAgenda();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.filterAgenda = (cat) => {
+            window.filterAndNav(cat);
         };
 
         // --- ESCAPE HTML ---
@@ -1440,13 +1500,6 @@
             });
         };
 
-        window.filterAgenda = (cat) => {
-            currentAgendaFilter = cat;
-            document.querySelectorAll('#view-agenda .tab-btn').forEach(btn => btn.classList.remove('active'));
-            const activeBtn = document.getElementById(`filter-btn-${cat}`);
-            if (activeBtn) activeBtn.classList.add('active');
-            loadAgenda();
-        };
 
         window.searchEvent = () => {
             const code = document.getElementById('input-search-id').value.trim().toUpperCase();
