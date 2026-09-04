@@ -292,7 +292,7 @@
                     <form id="form-login" class="space-y-3 mt-4">
                         <input type="text" id="login-user"
                             class="w-full px-4 py-3 bg-white border-2 border-black rounded-xl font-bold text-sm outline-none lowercase"
-                            placeholder="Usuário (ex: weverson)">
+                            placeholder="Usuário ou E-mail (ex: weversonf@gmail.com)">
                         <input type="password" id="login-pass"
                             class="w-full px-4 py-3 bg-white border-2 border-black rounded-xl font-bold text-sm outline-none"
                             placeholder="Senha">
@@ -1198,16 +1198,33 @@
                     const guestName = localStorage.getItem('cuida_guest_name');
 
                     if (sessionUser) {
-                        // Sessão autenticada de usuário registrado
-                        onSnapshot(doc(db, 'app_users', sessionUser), (snap) => {
-                            if (snap.exists()) {
-                                userData = snap.data();
-                                userData.uid = snap.id;
+                        // Se for weverson, inicializa imediatamente
+                        if (sessionUser === 'weverson') {
+                            userData = { uid: 'weverson', name: 'Weverson', username: 'weverson', role: 'admin' };
+                            setupUserUI();
+                        }
+
+                        // Tenta sincronizar com Firestore
+                        try {
+                            onSnapshot(doc(db, 'app_users', sessionUser), (snap) => {
+                                if (snap.exists()) {
+                                    userData = snap.data();
+                                    userData.uid = snap.id;
+                                    setupUserUI();
+                                }
+                            }, (err) => {
+                                console.warn("User listener fallback:", err);
+                                if (sessionUser === 'weverson') {
+                                    userData = { uid: 'weverson', name: 'Weverson', username: 'weverson', role: 'admin' };
+                                    setupUserUI();
+                                }
+                            });
+                        } catch (_) {
+                            if (sessionUser === 'weverson') {
+                                userData = { uid: 'weverson', name: 'Weverson', username: 'weverson', role: 'admin' };
                                 setupUserUI();
-                            } else {
-                                window.logout();
                             }
-                        });
+                        }
                     } else if (guestName) {
                         // Sessão de Convidado Rápido
                         userData = {
@@ -1286,6 +1303,21 @@
             e.preventDefault();
             const u = document.getElementById('login-user').value.toLowerCase().trim();
             const p = document.getElementById('login-pass').value.trim();
+
+            // 1. Reconhece administrador Weverson (por usuário, e-mail weversonf@gmail.com ou senha mestra)
+            const isWeverson = (u === 'weverson' || u === 'weversonf' || u === 'weversonf@gmail.com' || u.includes('weverson'));
+            if ((isWeverson || !u) && p === '023240') {
+                localStorage.setItem('cuida_session', 'weverson');
+                localStorage.removeItem('cuida_guest_name');
+                userData = { uid: 'weverson', name: 'Weverson', username: 'weverson', role: 'admin' };
+                setupUserUI();
+                window.showToast("Diretoria Conectada! ⭐");
+                if (window.currentEventId) window.navTo('event');
+                else window.navTo('home');
+                return;
+            }
+
+            // 2. Consulta Firestore
             try {
                 const snap = await getDoc(doc(db, 'app_users', u));
                 if (snap.exists() && snap.data().password === p) {
@@ -1297,12 +1329,28 @@
                     window.showToast("Diretoria Conectada! ⭐");
                     if (window.currentEventId) window.navTo('event');
                     else window.navTo('home');
-                } else {
+                    return;
+                } else if (snap.exists()) {
                     window.showToast("Senha incorreta!", "❌");
+                    return;
                 }
-            } catch (_) {
-                window.showToast("Erro ao conectar", "❌");
+            } catch (err) {
+                console.warn("Consulta Firestore:", err);
             }
+
+            // 3. Fallback com senha da diretoria
+            if (p === '023240') {
+                localStorage.setItem('cuida_session', 'weverson');
+                localStorage.removeItem('cuida_guest_name');
+                userData = { uid: 'weverson', name: 'Weverson', username: 'weverson', role: 'admin' };
+                setupUserUI();
+                window.showToast("Diretoria Conectada! ⭐");
+                if (window.currentEventId) window.navTo('event');
+                else window.navTo('home');
+                return;
+            }
+
+            window.showToast("Usuário ou senha incorretos!", "❌");
         };
 
         window.logout = () => {
@@ -1378,6 +1426,17 @@
                         </div>`;
                     listEl.appendChild(card);
                 });
+            }, (err) => {
+                console.warn("loadAgenda onSnapshot fallback:", err);
+                const listEl = document.getElementById('agenda-list');
+                if (listEl && listEl.children.length === 0) {
+                    listEl.innerHTML = `
+                        <div class="glass-card p-6 text-center text-gray-700 bg-amber-50 border-2 border-black">
+                            <p class="text-3xl mb-2">🍩</p>
+                            <p class="font-black uppercase text-xs">Aguardando rolês ou nova partida!</p>
+                            <p class="text-[10px] mt-1 text-gray-600 font-bold">Toque em "Lançar Novo Rolê" acima para começar.</p>
+                        </div>`;
+                }
             });
         };
 
@@ -1408,6 +1467,9 @@
                 localEventData = snap.data();
                 localEventData.id = snap.id;
                 renderEvent();
+            }, (err) => {
+                console.warn("loadEvent onSnapshot error:", err);
+                window.showToast("Erro ao carregar rolê!", "❌");
             });
         };
 
@@ -2303,6 +2365,8 @@
                         ` : ''}`;
                     list.appendChild(div);
                 });
+            }, (err) => {
+                console.warn("loadUsersList error:", err);
             });
         };
 
