@@ -1,11 +1,11 @@
 {
-  "name": "VoleiFlow",
-  "short_name": "VoleiFlow",
+  "name": "Cuida na Fuga",
+  "short_name": "Cuida na Fuga",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0ea5e9",
-  "theme_color": "#0ea5e9",
-  "description": "Gestão de racha, sorteio e placar de vôlei.",
+  "background_color": "#FFD90F",
+  "theme_color": "#FFD90F",
+  "description": "O hub oficial de rolês da turma: Vôlei, Viagens e Churrascos.",
   "icons": [
     {
       "src": "volleyball.png",

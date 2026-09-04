@@ -2,10 +2,10 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VoleiFlow v20</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Cuida na Fuga - O App do Rolê</title>
     
-    <meta name="theme-color" content="#0ea5e9">
+    <meta name="theme-color" content="#FFD90F">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="volleyball.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,362 +13,2324 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Poppins', sans-serif; background: linear-gradient(170deg, #38bdf8 0%, #0ea5e9 30%, #fde047 70%, #f97316 100%); background-attachment: fixed; min-height: 100vh; }
-        .glass-card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); }
-        .animate-pop { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        #create-view, #event-view, #loading-view, #edit-modal, #install-banner { display: none; }
-        .toast { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: translateY(150%) translateX(-50%); opacity: 0; z-index: 1000; }
-        .toast.show { transform: translateY(0) translateX(-50%); opacity: 1; }
-        body.is-offline #offline-indicator { display: flex; }
-        #offline-indicator { display: none; }
+        :root {
+            --homer-yellow: #FFD90F;
+            --homer-blue: #0094DA;
+            --duff-red: #D61B22;
+            --donut-pink: #FF69B4;
+            --springfield-green: #10B981;
+        }
+
+        * { -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Fredoka', cursive, sans-serif;
+            background-color: var(--homer-yellow);
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(255,255,255,0.45) 0%, transparent 35%),
+                radial-gradient(circle at 85% 85%, rgba(255,255,255,0.45) 0%, transparent 35%),
+                radial-gradient(#facc15 2px, transparent 2px);
+            background-size: 100% 100%, 100% 100%, 28px 28px;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        /* Glass / Cartoon Cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 3px solid #000;
+            box-shadow: 6px 6px 0px #000;
+            border-radius: 22px;
+        }
+
+        .glass-card-sub {
+            background: rgba(255, 255, 255, 0.85);
+            border: 2px solid #000;
+            box-shadow: 3px 3px 0px #000;
+            border-radius: 16px;
+        }
+
+        /* Buttons Simpsons Style */
+        .btn-homer {
+            border: 3px solid #000;
+            box-shadow: 4px 4px 0px #000;
+            transition: all 0.1s ease;
+            cursor: pointer;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+        .btn-homer:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #000;
+        }
+
+        .btn-homer-sm {
+            border: 2px solid #000;
+            box-shadow: 2px 2px 0px #000;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.1s ease;
+        }
+        .btn-homer-sm:active {
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0px #000;
+        }
+
+        /* Badges */
+        .badge-duff {
+            background: var(--duff-red);
+            border: 2px solid #000;
+            color: #fff;
+            font-weight: 900;
+            font-size: 10px;
+            border-radius: 6px;
+            padding: 2px 7px;
+            transform: rotate(-6deg);
+            display: inline-block;
+            box-shadow: 2px 2px 0px #000;
+        }
+
+        .badge-donut {
+            background: var(--donut-pink);
+            border: 2px solid #000;
+            color: #fff;
+            font-weight: 900;
+            font-size: 10px;
+            border-radius: 6px;
+            padding: 2px 7px;
+            transform: rotate(5deg);
+            display: inline-block;
+            box-shadow: 2px 2px 0px #000;
+        }
+
+        .badge-tag {
+            border: 2px solid #000;
+            color: #000;
+            font-weight: 900;
+            font-size: 10px;
+            border-radius: 8px;
+            padding: 2px 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            text-transform: uppercase;
+        }
+
+        /* Views */
+        .app-view { display: none; }
+        .active-view { display: block !important; }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #fff;
+            border-top: 4px solid #000;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 4px calc(10px + env(safe-area-inset-bottom));
+            z-index: 4000;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            color: #000;
+            flex: 1;
+            border: none;
+            background: none;
+            opacity: 0.4;
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+        .nav-item.active {
+            opacity: 1;
+            color: var(--homer-blue);
+            transform: scale(1.06);
+        }
+        .nav-item i { font-size: 19px; }
+        .nav-item span { font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Tab Buttons */
+        .tab-btn {
+            border: 2px solid #000;
+            box-shadow: 2px 2px 0px #000;
+            background: #fff;
+            color: #000;
+            font-weight: 900;
+            font-size: 10px;
+            text-transform: uppercase;
+            padding: 8px 12px;
+            border-radius: 12px;
+            transition: all 0.1s ease;
+            white-space: nowrap;
+        }
+        .tab-btn.active {
+            background: var(--homer-blue);
+            color: #fff;
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0px #000;
+        }
+
+        /* Toast */
+        .toast {
+            transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateY(180%) translateX(-50%);
+            opacity: 0;
+            z-index: 6000;
+        }
+        .toast.show {
+            transform: translateY(0) translateX(-50%);
+            opacity: 1;
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Microphone pulse */
+        .mic-listening {
+            background-color: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            animation: pulse-mic 1s infinite alternate;
+        }
+        @keyframes pulse-mic {
+            from { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            to { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+        }
+
+        /* Pop animation */
+        .animate-pop {
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
     </style>
 </head>
-<body class="text-gray-800 pb-12 overflow-x-hidden relative">
+<body class="text-gray-900 pb-28">
 
-    <div id="install-banner" class="fixed top-0 left-0 w-full z-[3000] p-3 animate-pop">
-        <div class="bg-white/95 backdrop-blur-md border border-blue-200 rounded-2xl shadow-2xl p-4 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <img src="volleyball.png" class="w-10 h-10 rounded-xl shadow-sm" alt="App Icon">
-                <div>
-                    <p class="text-xs font-bold text-gray-800 leading-tight">Instalar VoleiFlow</p>
-                    <p class="text-[10px] text-gray-500">Acesse mais rápido da tela inicial</p>
+    <!-- OFFLINE INDICATOR -->
+    <div id="offline-indicator" class="fixed top-0 left-0 w-full bg-red-600 border-b-2 border-black text-white text-[10px] font-black py-1.5 flex justify-center items-center gap-2 z-[6000] uppercase tracking-widest hidden">
+        <i class="fa-solid fa-cloud-slash"></i> Você está Offline (Modo Local Ativo)
+    </div>
+
+    <!-- MAIN HEADER -->
+    <header id="main-header" class="pt-6 pb-3 text-center relative z-20">
+        <div class="max-w-md mx-auto px-4 flex items-center justify-between">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="window.navTo('home')">
+                <div class="w-11 h-11 bg-white border-3 border-black rounded-full flex items-center justify-center shadow-[3px_3px_0px_#000] text-2xl active:scale-95 transition-transform">
+                    🍩
+                </div>
+                <div class="text-left leading-none">
+                    <h1 class="text-2xl font-black text-black uppercase italic tracking-tighter drop-shadow-[2px_2px_0px_#fff]">
+                        Cuida na Fuga
+                    </h1>
+                    <span class="text-[9px] font-black text-blue-800 uppercase tracking-widest">
+                        O Hub Oficial dos Rolês
+                    </span>
                 </div>
             </div>
-            <div class="flex gap-2">
-                <button onclick="hideInstallBanner()" class="text-gray-400 px-2 text-sm"><i class="fa-solid fa-xmark"></i></button>
-                <button id="btn-install-app" class="bg-blue-600 text-white text-[11px] font-bold px-4 py-2 rounded-xl shadow-lg active:scale-95 transition-all uppercase">Instalar</button>
+
+            <div class="flex items-center gap-2">
+                <button id="btn-user-badge" onclick="window.navTo('profile')" class="btn-homer-sm bg-white px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-xs font-black">
+                    <span id="user-display-name">Visitante</span>
+                    <span id="user-role-icon">👤</span>
+                </button>
             </div>
-        </div>
-    </div>
-
-    <div id="offline-indicator" class="fixed top-0 left-0 w-full bg-orange-600 text-white text-[10px] font-bold py-1 justify-center items-center gap-2 z-[2000] uppercase tracking-widest">
-        <i class="fa-solid fa-cloud-slash"></i> Você está Offline
-    </div>
-
-    <div class="fixed top-10 right-10 w-32 h-32 bg-yellow-300 rounded-full blur-2xl opacity-60 pointer-events-none"></div>
-
-    <header class="pt-10 pb-6 text-center relative z-10">
-        <div class="flex items-center justify-center gap-3 px-4">
-            <h1 class="text-3xl sm:text-4xl font-bold text-white drop-shadow-lg cursor-pointer transition-transform hover:scale-105 flex items-center" onclick="window.location.href=window.location.pathname">
-                <i class="fa-solid fa-volleyball text-yellow-300 animate-bounce mr-3"></i> 
-                <span id="main-title-text">VoleiFlow</span>
-            </h1>
-            <button id="btn-open-edit" class="hidden text-white/80 hover:text-white bg-white/20 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm shrink-0">
-                <i class="fa-solid fa-pen text-sm"></i>
-            </button>
         </div>
     </header>
 
+    <!-- MAIN CONTENT CONTAINER -->
     <main class="max-w-md mx-auto px-4 relative z-10">
-        
-        <div id="loading-view" class="text-center py-20">
-            <i class="fa-solid fa-volleyball animate-spin text-6xl text-white"></i>
-            <p class="mt-6 text-white font-semibold uppercase tracking-widest">Carregando...</p>
+
+        <!-- VIEW: LOADING -->
+        <div id="view-loading" class="app-view active-view text-center py-24">
+            <div class="relative inline-block scale-125 mb-6">
+                <i class="fa-solid fa-beer-mug-empty text-6xl text-amber-500 animate-bounce"></i>
+                <div class="badge-duff absolute -top-2 -right-3">DUFF</div>
+            </div>
+            <p class="text-black font-black uppercase text-lg tracking-wider drop-shadow-[1px_1px_0px_#fff]">
+                Carregando a bagaça...
+            </p>
         </div>
 
-        <div id="create-view" class="space-y-6">
-            <div class="glass-card rounded-3xl p-6 border-orange-200/50 border-2 shadow-lg">
-                <h3 class="text-xs font-bold text-orange-600 uppercase tracking-widest mb-3 flex items-center gap-2">
-                    <i class="fa-solid fa-magnifying-glass"></i> Código do Jogo
+        <!-- VIEW: LOGIN (AMIGÁVEL: CONVIDADO OU DIRETORIA) -->
+        <div id="view-login" class="app-view space-y-5 pt-4">
+            <div class="glass-card p-6 text-center animate-pop">
+                <div class="text-6xl mb-3">🍻</div>
+                <h2 class="text-2xl font-black text-black uppercase italic mb-1 leading-tight">
+                    Quem é você no rolê?
+                </h2>
+                <p class="text-xs font-bold text-gray-600 mb-6">
+                    Digite seu nome pra entrar rapidinho ou acerte a senha da Diretoria!
+                </p>
+
+                <!-- MODO RÁPIDO CONVIDADO -->
+                <form id="form-guest" class="space-y-3 mb-6 pb-6 border-b-2 border-black border-dashed">
+                    <input type="text" id="guest-name" required
+                        class="w-full px-4 py-3.5 bg-white border-2 border-black rounded-xl font-black text-sm outline-none placeholder:text-gray-400 uppercase"
+                        placeholder="Seu Nome / Apelido">
+                    <button type="submit"
+                        class="w-full btn-homer bg-green-500 hover:bg-green-400 text-white py-3.5 rounded-xl text-sm">
+                        Entrar no Rolê! 🚀
+                    </button>
+                </form>
+
+                <!-- MODO DIRETORIA (ADMIN) -->
+                <details class="text-left cursor-pointer group">
+                    <summary class="text-xs font-black text-blue-700 uppercase tracking-wider text-center select-none py-1">
+                        🔑 Sou da Diretoria (Admin)
+                    </summary>
+                    <form id="form-login" class="space-y-3 mt-4">
+                        <input type="text" id="login-user"
+                            class="w-full px-4 py-3 bg-white border-2 border-black rounded-xl font-bold text-sm outline-none lowercase"
+                            placeholder="Usuário (ex: weverson)">
+                        <input type="password" id="login-pass"
+                            class="w-full px-4 py-3 bg-white border-2 border-black rounded-xl font-bold text-sm outline-none"
+                            placeholder="Senha">
+                        <button type="submit"
+                            class="w-full btn-homer bg-blue-600 text-white py-3 rounded-xl text-xs">
+                            Acessar Diretoria ⭐
+                        </button>
+                    </form>
+                </details>
+            </div>
+        </div>
+
+        <!-- VIEW: AGENDA (LISTA DE ROLÊS / MEUS ROLÊS) -->
+        <div id="view-agenda" class="app-view space-y-4">
+            
+            <!-- BUSCA RÁPIDA POR CÓDIGO -->
+            <div class="glass-card p-4">
+                <h3 class="text-[10px] font-black text-blue-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <i class="fa-solid fa-magnifying-glass"></i> Entrar por Código do Rolê
                 </h3>
                 <div class="flex gap-2">
-                    <input type="text" id="input-search-id" class="flex-1 px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none uppercase font-mono text-sm tracking-widest" placeholder="EX: XS4567">
-                    <button id="btn-search-id" class="bg-orange-500 text-white font-bold px-6 rounded-2xl shadow-md active:scale-95 transition-all">OK</button>
+                    <input type="text" id="input-search-id"
+                        class="flex-1 px-4 py-2.5 bg-white border-2 border-black rounded-xl outline-none uppercase font-mono font-black text-sm tracking-wider"
+                        placeholder="EX: XS4567" maxlength="8">
+                    <button onclick="window.searchEvent()"
+                        class="btn-homer bg-blue-500 text-white px-5 rounded-xl text-sm font-black">
+                        OK
+                    </button>
                 </div>
             </div>
 
-            <div class="glass-card rounded-3xl p-7 animate-fade-in">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-3 uppercase tracking-tighter">Novo Jogo</h2>
-                <form id="create-form" class="space-y-4">
-                    <input type="text" id="input-location" required class="w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Nome do Jogo">
-                    <input type="text" id="input-address" required class="w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Endereço">
-                    <input type="text" id="input-group-link" class="w-full px-4 py-3 border rounded-2xl focus:ring-2 focus:ring-green-500 outline-none" placeholder="Link do Grupo de Zap">
-                    <div class="grid grid-cols-2 gap-3">
-                        <input type="datetime-local" id="input-datetime" required class="w-full px-4 py-3 border rounded-2xl text-sm focus:outline-none">
-                        <input type="number" step="0.01" id="input-total" required class="w-full px-4 py-3 border rounded-2xl focus:outline-none" placeholder="Total R$">
+            <!-- BOTÃO LANÇAR NOVO -->
+            <button onclick="window.navTo('create')"
+                class="w-full btn-homer bg-gradient-to-r from-orange-500 to-amber-500 text-white py-4 rounded-2xl flex items-center justify-center gap-2 text-base shadow-[4px_4px_0px_#000]">
+                <i class="fa-solid fa-circle-plus text-xl"></i>
+                <span>LANÇAR NOVO ROLÊ! 🚀</span>
+            </button>
+
+            <!-- FILTRO DE CATEGORIAS -->
+            <div class="flex gap-2 overflow-x-auto no-scrollbar py-1">
+                <button onclick="window.filterAgenda('todos')" id="filter-btn-todos" class="tab-btn active">
+                    🍩 Todos
+                </button>
+                <button onclick="window.filterAgenda('volei')" id="filter-btn-volei" class="tab-btn">
+                    🏐 Vôlei
+                </button>
+                <button onclick="window.filterAgenda('viagem')" id="filter-btn-viagem" class="tab-btn">
+                    🚗 Viagens
+                </button>
+                <button onclick="window.filterAgenda('churrasco')" id="filter-btn-churrasco" class="tab-btn">
+                    🔥 Churrasco
+                </button>
+            </div>
+
+            <!-- LISTA DE ROLÊS -->
+            <div id="agenda-list" class="space-y-3 pb-6">
+                <!-- Injetado dinamicamente via JS -->
+            </div>
+        </div>
+
+        <!-- VIEW: CRIAR ROLÊ -->
+        <div id="view-create" class="app-view space-y-4">
+            <div class="glass-card p-6 animate-pop">
+                <div class="flex items-center justify-between border-b-2 border-black pb-3 mb-4">
+                    <h2 class="text-2xl font-black text-black uppercase italic">
+                        Novo Rolê
+                    </h2>
+                    <span class="badge-donut">BORA!</span>
+                </div>
+
+                <form id="create-form" class="space-y-3.5">
+                    <div>
+                        <label class="block text-[10px] font-black uppercase text-gray-700 mb-1">Qual é a Fuga?</label>
+                        <select id="create-category" required
+                            class="w-full px-4 py-3 bg-white border-2 border-black rounded-xl font-black text-sm outline-none cursor-pointer">
+                            <option value="volei" selected>🏐 RACHA DE VÔLEI</option>
+                            <option value="viagem">🚗 PASSEIO / VIAGEM</option>
+                            <option value="churrasco">🔥 CHURRASCO & RESENHA</option>
+                            <option value="jogos">🎮 NOITE DE JOGOS / OUTRO</option>
+                        </select>
                     </div>
-                    <div class="flex items-center justify-between px-1">
-                        <label class="text-sm font-semibold text-gray-700">Limite de Pessoas</label>
-                        <input type="checkbox" id="check-unlimited" checked class="w-6 h-6 text-orange-500 rounded-lg cursor-pointer">
+
+                    <div>
+                        <label class="block text-[10px] font-black uppercase text-gray-700 mb-1">Título / Nome do Rolê</label>
+                        <input type="text" id="create-title" required
+                            class="w-full px-4 py-3 border-2 border-black rounded-xl font-bold text-sm outline-none"
+                            placeholder="Ex: Vôlei de Domingo / Praia de Pipa">
                     </div>
-                    <input type="number" min="2" id="input-limit" class="w-full px-4 py-3 bg-gray-100 border rounded-2xl opacity-60" placeholder="Máximo" disabled>
-                    <button type="submit" class="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold py-4 rounded-2xl shadow-lg mt-4 uppercase">Criar Partida</button>
+
+                    <div>
+                        <label class="block text-[10px] font-black uppercase text-gray-700 mb-1">Endereço / Local</label>
+                        <input type="text" id="create-address" required
+                            class="w-full px-4 py-3 border-2 border-black rounded-xl font-bold text-sm outline-none"
+                            placeholder="Ex: Arena Beach Point, Rua 10">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div>
+                            <label class="block text-[10px] font-black uppercase text-gray-700 mb-1">Data e Hora</label>
+                            <input type="datetime-local" id="create-datetime" required
+                                class="w-full px-3 py-3 border-2 border-black rounded-xl font-bold text-xs outline-none bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black uppercase text-gray-700 mb-1">Custo Fixo (R$)</label>
+                            <input type="number" step="0.01" min="0" id="create-total" required
+                                class="w-full px-3 py-3 border-2 border-black rounded-xl font-bold text-xs outline-none"
+                                placeholder="0.00">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-black uppercase text-gray-700 mb-1">Link do Grupo de Zap (Opcional)</label>
+                        <input type="url" id="create-group"
+                            class="w-full px-4 py-3 border-2 border-black rounded-xl font-bold text-sm outline-none"
+                            placeholder="https://chat.whatsapp.com/...">
+                    </div>
+
+                    <div class="p-3 bg-amber-50 border-2 border-black rounded-xl space-y-2">
+                        <div class="flex items-center justify-between">
+                            <label for="create-unlimited" class="text-xs font-black uppercase cursor-pointer">
+                                Sem limite de vagas?
+                            </label>
+                            <input type="checkbox" id="create-unlimited" checked
+                                class="w-5 h-5 border-2 border-black accent-blue-600 cursor-pointer">
+                        </div>
+                        <div id="create-limit-wrapper" class="hidden">
+                            <input type="number" min="2" id="create-limit"
+                                class="w-full px-3 py-2 bg-white border-2 border-black rounded-xl font-bold text-xs outline-none"
+                                placeholder="Máximo de participantes">
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 pt-2">
+                        <button type="button" onclick="window.navTo('home')"
+                            class="flex-1 btn-homer bg-gray-200 text-gray-800 py-3 rounded-xl text-xs">
+                            Voltar
+                        </button>
+                        <button type="submit" id="btn-submit-create"
+                            class="flex-[2] btn-homer bg-green-500 text-white py-3.5 rounded-xl text-sm">
+                            Lançar a Braba! 🚀
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
 
-        <div id="event-view" class="space-y-5">
-            <div class="glass-card rounded-3xl p-6 relative">
-                <button id="btn-share" class="absolute top-5 right-5 bg-white text-orange-500 p-3 rounded-full shadow-md w-12 h-12 flex items-center justify-center z-10 active:scale-90"><i class="fa-solid fa-share-nodes"></i></button>
-                <p class="text-sm text-gray-700 mb-5 pr-16 font-medium leading-tight" id="display-address-text">
-                    <i class="fa-solid fa-location-dot text-orange-500 mr-1"></i> <span>Endereço...</span>
+        <!-- VIEW: O ROLÊ (DETALHES DO EVENTO COM ABAS MODULARES) -->
+        <div id="view-event" class="app-view space-y-4">
+            
+            <!-- CARD DO TOPO DO ROLÊ -->
+            <div class="glass-card p-5 relative overflow-hidden">
+                <div class="flex items-start justify-between gap-2 mb-2 pr-12">
+                    <div>
+                        <span id="event-badge-cat" class="badge-tag bg-yellow-300 mb-1.5">
+                            🏐 VÔLEI
+                        </span>
+                        <h2 id="event-display-title" class="text-2xl font-black text-black uppercase italic leading-tight">
+                            Carregando...
+                        </h2>
+                    </div>
+                    <button onclick="window.openEditModal()"
+                        class="absolute top-4 right-4 w-9 h-9 bg-white border-2 border-black rounded-xl flex items-center justify-center shadow-[2px_2px_0px_#000] active:scale-95 text-xs">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+                </div>
+
+                <p id="event-display-datetime" class="text-xs font-bold text-gray-700 flex items-center gap-1.5 mb-1">
+                    <i class="fa-regular fa-clock text-blue-600"></i> <span>--/--/-- às --:--</span>
                 </p>
 
-                <div class="flex items-center gap-3 mb-6 no-scrollbar overflow-x-auto pb-1">
-                    <div class="h-11 px-4 bg-orange-100 border border-orange-200 rounded-2xl flex flex-col items-center justify-center shrink-0 shadow-sm">
-                        <span class="text-[8px] uppercase font-bold text-orange-400 leading-none">CÓDIGO</span>
-                        <span class="text-xs font-mono font-black text-orange-700 tracking-tighter" id="display-game-id">--0000</span>
+                <p id="event-display-address" class="text-xs font-bold text-gray-700 flex items-center gap-1.5 mb-4">
+                    <i class="fa-solid fa-location-dot text-red-600"></i> <span class="truncate">Carregando endereço...</span>
+                </p>
+
+                <!-- BOTÕES DE AÇÃO RÁPIDA -->
+                <div class="flex items-center gap-2 mb-4 overflow-x-auto no-scrollbar pb-1">
+                    <div class="h-10 px-3 bg-amber-100 border-2 border-black rounded-xl flex flex-col items-center justify-center shrink-0 shadow-[2px_2px_0px_#000]">
+                        <span class="text-[7px] uppercase font-black text-amber-700 leading-none">CÓDIGO</span>
+                        <span id="event-display-code" class="text-xs font-mono font-black text-black">------</span>
                     </div>
-                    <a id="link-maps" target="_blank" class="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm border border-gray-100 text-blue-600 active:scale-90 shrink-0"><i class="fa-solid fa-map-location-dot text-lg"></i></a>
-                    <a id="link-waze" target="_blank" class="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm border border-gray-100 text-cyan-500 active:scale-90 shrink-0"><i class="fa-brands fa-waze text-xl"></i></a>
-                    <button id="btn-calendar" class="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm border border-gray-100 text-orange-500 active:scale-90 shrink-0"><i class="fa-regular fa-calendar-plus text-lg"></i></button>
+                    <button id="btn-copy-code" onclick="window.copyEventCode()" title="Copiar Código"
+                        class="w-10 h-10 rounded-xl bg-white border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_#000] active:scale-95 shrink-0 text-sm">
+                        <i class="fa-regular fa-copy"></i>
+                    </button>
+                    <button id="btn-share" onclick="window.shareEvent()" title="Compartilhar Link"
+                        class="w-10 h-10 rounded-xl bg-white border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_#000] active:scale-95 shrink-0 text-sm text-orange-600">
+                        <i class="fa-solid fa-share-nodes"></i>
+                    </button>
+                    <a id="link-maps" target="_blank" rel="noopener" title="Google Maps"
+                        class="w-10 h-10 rounded-xl bg-white border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_#000] active:scale-95 shrink-0 text-sm text-blue-600">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                    </a>
+                    <a id="link-waze" target="_blank" rel="noopener" title="Waze"
+                        class="w-10 h-10 rounded-xl bg-white border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_#000] active:scale-95 shrink-0 text-sm text-cyan-600">
+                        <i class="fa-brands fa-waze"></i>
+                    </a>
+                    <button id="btn-calendar" onclick="window.addToCalendar()" title="Calendário"
+                        class="w-10 h-10 rounded-xl bg-white border-2 border-black flex items-center justify-center shadow-[2px_2px_0px_#000] active:scale-95 shrink-0 text-sm text-emerald-600">
+                        <i class="fa-regular fa-calendar-plus"></i>
+                    </button>
                 </div>
 
-                <div class="bg-white/40 rounded-2xl p-4 flex justify-between items-center border border-white/50">
-                    <div><p class="text-[10px] uppercase font-bold text-gray-500">Valor Total</p><p class="font-bold text-gray-800" id="display-total-cost">R$ 0,00</p></div>
-                    <div class="text-right"><p class="text-[10px] uppercase font-bold text-gray-500">Por Pessoa</p><p class="font-black text-green-600 text-2xl" id="display-person-cost">R$ 0,00</p></div>
+                <!-- BOX FINANCEIRO -->
+                <div class="bg-blue-600 border-3 border-black rounded-xl p-3.5 flex justify-between items-center text-white shadow-[3px_3px_0px_#000]">
+                    <div>
+                        <p class="text-[9px] font-black uppercase opacity-80">Custo Total</p>
+                        <p id="event-display-total" class="font-black text-lg">R$ 0,00</p>
+                    </div>
+                    <div class="text-right">
+                        <p id="event-label-cota" class="text-[9px] font-black uppercase opacity-80">Cota / Pessoa</p>
+                        <p id="event-display-cota" class="font-black text-yellow-300 text-2xl">R$ 0,00</p>
+                    </div>
+                </div>
+
+                <!-- BOTÃO INTELIGENTE DE PRESENÇA -->
+                <div class="mt-4">
+                    <button id="btn-join-main" onclick="window.togglePresence()"
+                        class="w-full btn-homer bg-green-500 text-white py-3.5 rounded-xl text-sm flex items-center justify-center gap-2">
+                        <span>TÔ DENTRO! 🚀</span>
+                    </button>
                 </div>
             </div>
 
-            <div class="flex p-1 bg-white/30 backdrop-blur-lg rounded-2xl border border-white/40 shadow-sm">
-                <button id="tab-btn-players" class="flex-1 py-2.5 rounded-xl text-[10px] font-bold bg-white text-orange-600 shadow-sm uppercase transition-all">Jogadores</button>
-                <button id="tab-btn-teams" class="flex-1 py-2.5 rounded-xl text-[10px] font-bold text-white uppercase transition-all">Sortear</button>
-                <button id="tab-btn-score" class="flex-1 py-2.5 rounded-xl text-[10px] font-bold text-white uppercase transition-all">Placar</button>
+            <!-- SUB-ABAS DINÂMICAS DO ROLÊ -->
+            <div id="event-tab-bar" class="flex gap-2 overflow-x-auto no-scrollbar p-1">
+                <!-- Gerado dinamicamente dependendo da categoria (volei, viagem, churrasco) -->
             </div>
 
-            <div id="tab-content-players" class="glass-card rounded-3xl p-6 block animate-pop">
-                <div class="flex justify-between items-end mb-4"><h3 class="text-xl font-bold text-gray-800">Presença</h3><span id="display-count" class="bg-orange-500 text-white text-sm font-bold px-3 py-1 rounded-xl shadow-md">0</span></div>
-                <div id="progress-container" class="w-full bg-white/50 rounded-full h-3 mb-5 hidden overflow-hidden shadow-inner"><div id="progress-bar" class="bg-gradient-to-r from-yellow-400 to-orange-500 h-full"></div></div>
-                <ul id="participants-list" class="space-y-2 mb-6 max-h-[300px] overflow-y-auto pr-1"></ul>
-                <div id="action-area" class="border-t pt-5">
-                    <div class="flex gap-2">
-                        <input type="text" id="input-name" class="flex-1 px-4 py-3 bg-white border-0 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none shadow-inner" placeholder="Seu Nome...">
-                        <button id="btn-join" class="bg-green-500 text-white font-bold px-6 rounded-2xl shadow-lg active:scale-95 transition-transform"><i class="fa-solid fa-plus"></i></button>
-                    </div>
-                    <a id="btn-join-group" target="_blank" class="hidden w-full mt-4 bg-green-500 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 shadow-xl hover:brightness-110 transition-all border-b-4 border-green-700 uppercase text-[10px] tracking-widest"><i class="fa-brands fa-whatsapp text-xl"></i> Grupo do Vôlei</a>
-                </div>
-            </div>
+            <!-- ÁREA DE CONTEÚDO DAS SUB-ABAS -->
+            <div id="event-tabs-container">
 
-            <div id="tab-content-teams" class="glass-card rounded-3xl p-6 hidden animate-pop">
-                <h3 class="text-xl font-bold text-gray-800 mb-4 tracking-tight">Sortear Times</h3>
-                <div class="space-y-4 mb-6">
-                    <div class="flex gap-2">
-                        <input type="text" id="input-name-teams" class="flex-1 px-4 py-3 bg-white border-0 rounded-2xl focus:ring-2 focus:ring-orange-500 outline-none shadow-inner" placeholder="Adicionar avulso...">
-                        <button onclick="window.addPlayerFromTeams()" class="bg-orange-500 text-white font-bold px-5 rounded-2xl shadow-md active:scale-95 transition-transform"><i class="fa-solid fa-user-plus"></i></button>
-                    </div>
-                    <div class="bg-white/50 p-3 rounded-2xl border border-white space-y-3">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-gray-600 uppercase tracking-tighter">Jogadores por Time:</span>
-                            <select id="players-per-team" class="bg-white border rounded-xl px-2 py-1 font-bold text-orange-600 outline-none text-sm cursor-pointer">
-                                <option value="2">2x2</option><option value="3">3x3</option><option value="4">4x4</option><option value="5">5x5</option><option value="6" selected>6x6</option><option value="colher">Colher de Chá (5x4)</option>
-                            </select>
+                <!-- ═════════════════════════════════════════════════════════════════ -->
+                <!-- SUB-ABA GERAL: PRESENÇA / GALERA -->
+                <!-- ═════════════════════════════════════════════════════════════════ -->
+                <div id="subtab-players" class="subtab-view space-y-3">
+                    <div class="glass-card p-5">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="text-base font-black text-black uppercase italic">
+                                Confirmados na Fuga
+                            </h3>
+                            <span id="display-confirmed-count" class="badge-tag bg-blue-500 text-white border-2 border-black">
+                                0 Jogadores
+                            </span>
+                        </div>
+
+                        <!-- Barra de Vagas -->
+                        <div id="progress-wrapper" class="w-full bg-gray-200 border-2 border-black rounded-full h-3.5 mb-4 hidden overflow-hidden p-0.5">
+                            <div id="progress-fill" class="bg-gradient-to-r from-amber-400 to-red-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+
+                        <!-- LISTA DE PARTICIPANTES -->
+                        <ul id="participants-list" class="space-y-2 mb-4 max-h-[360px] overflow-y-auto pr-1">
+                            <!-- Injetado via JS -->
+                        </ul>
+
+                        <!-- ADICIONAR AVULSO -->
+                        <div class="pt-2 border-t-2 border-black border-dashed flex gap-2">
+                            <input type="text" id="input-add-avulso"
+                                class="flex-1 px-4 py-2.5 bg-white border-2 border-black rounded-xl font-bold text-xs outline-none uppercase"
+                                placeholder="Adicionar alguém que não tem zap...">
+                            <button onclick="window.addAvulsoPlayer()"
+                                class="btn-homer bg-amber-400 text-black px-4 rounded-xl text-xs font-black">
+                                + Add
+                            </button>
+                        </div>
+
+                        <!-- LINK WHATSAPP -->
+                        <div id="group-link-area" class="mt-3 hidden">
+                            <a id="btn-group-link" target="_blank" rel="noopener"
+                                class="w-full btn-homer bg-emerald-500 text-white py-3 rounded-xl text-xs flex items-center justify-center gap-2">
+                                <i class="fa-brands fa-whatsapp text-lg"></i>
+                                <span>Entrar no Grupo do Zap</span>
+                            </a>
                         </div>
                     </div>
-                    <button onclick="window.drawTeams()" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold py-4 rounded-2xl shadow-lg uppercase tracking-widest active:scale-95 transition-all"><i class="fa-solid fa-shuffle mr-2"></i> Sortear Agora</button>
                 </div>
-                <div id="teams-result" class="space-y-3"></div>
-            </div>
 
-            <div id="tab-content-score" class="glass-card rounded-3xl p-6 hidden text-center animate-pop">
-                <div class="flex flex-col gap-3 mb-6">
-                    <div class="flex justify-between items-center bg-white/60 p-3 rounded-2xl border border-white/50"><span class="text-xs font-bold text-gray-600 uppercase tracking-widest">Set Fecha em:</span><select id="config-max-score" class="bg-white border rounded-xl px-2 py-1 text-sm font-black text-orange-600 focus:outline-none"><option value="15">15 pts</option><option value="21">21 pts</option><option value="25">25 pts</option></select></div>
-                    <button id="btn-voice" class="w-full bg-white/80 text-gray-700 font-bold py-3 rounded-2xl border border-gray-200 shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95"><i class="fa-solid fa-microphone-lines text-gray-400"></i><span>Ativar Juiz de Voz</span></button>
+                <!-- ═════════════════════════════════════════════════════════════════ -->
+                <!-- SUB-ABA VÔLEI: SORTEAR TIMES -->
+                <!-- ═════════════════════════════════════════════════════════════════ -->
+                <div id="subtab-teams" class="subtab-view space-y-3 hidden">
+                    <div class="glass-card p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-base font-black uppercase italic">Sortear Equipes</h3>
+                            <span class="badge-duff">ALEATÓRIO</span>
+                        </div>
+
+                        <div class="bg-amber-50 border-2 border-black rounded-xl p-3 mb-4 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-black uppercase text-gray-700">Formato:</span>
+                                <select id="select-team-mode" class="bg-white border-2 border-black rounded-xl px-3 py-1.5 font-black text-blue-700 text-xs outline-none cursor-pointer">
+                                    <option value="2">2x2 (Dupla)</option>
+                                    <option value="3">3x3 (Trio)</option>
+                                    <option value="4">4x4 (Quarteto)</option>
+                                    <option value="5">5x5 (Quinteto)</option>
+                                    <option value="6" selected>6x6 (Oficial)</option>
+                                    <option value="colher">Colher de Chá (5x4)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button onclick="window.drawTeams()"
+                            class="w-full btn-homer bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3.5 rounded-xl text-sm flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-shuffle"></i>
+                            <span>Embaralhar Times Agora!</span>
+                        </button>
+
+                        <div id="teams-draw-result" class="space-y-3 mt-4">
+                            <!-- Cards de times desenhados aqui -->
+                        </div>
+                    </div>
                 </div>
-                <div class="flex justify-between items-stretch gap-3">
-                    <div class="flex-1 bg-white/60 rounded-2xl p-4 shadow-sm border border-white/40"><div class="text-[10px] font-bold text-gray-400 mb-2 uppercase">Sets: <span id="sets-a" class="text-orange-600 text-sm">0</span></div><input type="text" id="name-team-a" class="w-full text-center bg-transparent font-bold text-xs border-b mb-3 focus:outline-none uppercase" value="TIME A"><div class="text-6xl font-black text-gray-800 my-4" id="score-a">0</div><div class="flex gap-2"><button onclick="updateScore('A', -1)" class="flex-1 bg-red-100 text-red-600 py-3 rounded-xl">-</button><button onclick="updateScore('A', 1)" class="flex-[2] bg-green-500 text-white py-3 rounded-xl font-bold shadow-md active:scale-95 transition-all">+</button></div></div>
-                    <div class="flex items-center text-gray-300 font-black">X</div>
-                    <div class="flex-1 bg-white/60 rounded-2xl p-4 shadow-sm border border-white/40"><div class="text-[10px] font-bold text-gray-400 mb-2 uppercase">Sets: <span id="sets-b" class="text-orange-600 text-sm">0</span></div><input type="text" id="name-team-b" class="w-full text-center bg-transparent font-bold text-xs border-b mb-3 focus:outline-none uppercase" value="TIME B"><div class="text-6xl font-black text-gray-800 my-4" id="score-b">0</div><div class="flex gap-2"><button onclick="updateScore('B', -1)" class="flex-1 bg-red-100 text-red-600 py-3 rounded-xl">-</button><button onclick="updateScore('B', 1)" class="flex-[2] bg-blue-500 text-white py-3 rounded-xl font-bold shadow-md active:scale-95 transition-all">+</button></div></div>
+
+                <!-- ═════════════════════════════════════════════════════════════════ -->
+                <!-- SUB-ABA VÔLEI: PLACAR & JUIZ DE VOZ -->
+                <!-- ═════════════════════════════════════════════════════════════════ -->
+                <div id="subtab-score" class="subtab-view space-y-3 hidden">
+                    <div class="glass-card p-5 text-center">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-black uppercase text-gray-600">Set fecha em:</span>
+                                <select id="config-max-score" class="bg-white border-2 border-black rounded-xl px-2 py-1 text-xs font-black text-orange-600 outline-none">
+                                    <option value="15">15 pts</option>
+                                    <option value="21" selected>21 pts</option>
+                                    <option value="25">25 pts</option>
+                                </select>
+                            </div>
+
+                            <button id="btn-voice-ref" onclick="window.toggleVoiceRef()"
+                                class="btn-homer-sm bg-white text-gray-800 px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-xs font-black">
+                                <i class="fa-solid fa-microphone"></i>
+                                <span>Juiz de Voz</span>
+                            </button>
+                        </div>
+
+                        <!-- PLACAR PRINCIPAL -->
+                        <div class="flex items-stretch justify-between gap-3 mb-4">
+                            <!-- TIME A -->
+                            <div class="flex-1 glass-card-sub p-3 bg-red-50">
+                                <div class="text-[9px] font-black text-gray-500 uppercase mb-1">
+                                    SETS: <span id="sets-a" class="text-red-600 text-sm">0</span>
+                                </div>
+                                <input type="text" id="name-team-a"
+                                    class="w-full text-center bg-transparent font-black text-xs border-b-2 border-black mb-2 focus:outline-none uppercase"
+                                    value="TIME DUFF">
+                                <div id="score-a" class="text-5xl font-black text-gray-900 my-2">0</div>
+                                <div class="flex gap-1.5">
+                                    <button onclick="window.updateScore('A', -1)" class="flex-1 btn-homer-sm bg-red-200 text-red-800 py-2 rounded-lg text-sm font-black">-</button>
+                                    <button onclick="window.updateScore('A', 1)" class="flex-[2] btn-homer-sm bg-green-500 text-white py-2 rounded-lg text-base font-black">+</button>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center font-black text-2xl text-black">VS</div>
+
+                            <!-- TIME B -->
+                            <div class="flex-1 glass-card-sub p-3 bg-blue-50">
+                                <div class="text-[9px] font-black text-gray-500 uppercase mb-1">
+                                    SETS: <span id="sets-b" class="text-blue-600 text-sm">0</span>
+                                </div>
+                                <input type="text" id="name-team-b"
+                                    class="w-full text-center bg-transparent font-black text-xs border-b-2 border-black mb-2 focus:outline-none uppercase"
+                                    value="TIME DONUT">
+                                <div id="score-b" class="text-5xl font-black text-gray-900 my-2">0</div>
+                                <div class="flex gap-1.5">
+                                    <button onclick="window.updateScore('B', -1)" class="flex-1 btn-homer-sm bg-red-200 text-red-800 py-2 rounded-lg text-sm font-black">-</button>
+                                    <button onclick="window.updateScore('B', 1)" class="flex-[2] btn-homer-sm bg-blue-500 text-white py-2 rounded-lg text-base font-black">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="window.resetScore()"
+                            class="text-[10px] font-black uppercase text-gray-500 hover:text-red-600 transition-colors">
+                            <i class="fa-solid fa-rotate-left mr-1"></i> Zerar Placar e Sets
+                        </button>
+                    </div>
                 </div>
-                <div class="mt-6"><button onclick="resetScore()" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest hover:text-red-500 transition-colors"><i class="fa-solid fa-rotate-left mr-1"></i> Zerar Partida</button></div>
+
+                <!-- ═════════════════════════════════════════════════════════════════ -->
+                <!-- SUB-ABA VIAGEM: CARONAS -->
+                <!-- ═════════════════════════════════════════════════════════════════ -->
+                <div id="subtab-carpool" class="subtab-view space-y-3 hidden">
+                    <div class="glass-card p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <div>
+                                <h3 class="text-base font-black uppercase italic">Esquema das Caronas</h3>
+                                <p class="text-[10px] text-gray-600 font-bold">Quem vai com quem?</p>
+                            </div>
+                            <button onclick="window.openAddCarModal()" class="btn-homer-sm bg-yellow-400 text-black px-3 py-1.5 rounded-xl text-xs">
+                                + Oferecer Carro
+                            </button>
+                        </div>
+
+                        <div id="carpool-list" class="space-y-3 mb-4">
+                            <!-- Lista de carros gerada via JS -->
+                        </div>
+
+                        <div id="carpool-unassigned" class="bg-amber-100 border-2 border-black rounded-xl p-3">
+                            <h4 class="text-[10px] font-black uppercase text-amber-800 mb-1">
+                                🚶‍♂️ Sem Carona Definida:
+                            </h4>
+                            <p id="unassigned-riders-text" class="text-xs font-bold text-gray-700">
+                                Nenhum passageiro sobrando!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═════════════════════════════════════════════════════════════════ -->
+                <!-- SUB-ABA VIAGEM: ROTEIRO & TIMELINE -->
+                <!-- ═════════════════════════════════════════════════════════════════ -->
+                <div id="subtab-itinerary" class="subtab-view space-y-3 hidden">
+                    <div class="glass-card p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-base font-black uppercase italic">Roteiro da Viagem</h3>
+                            <button onclick="window.openAddActivityModal()" class="btn-homer-sm bg-yellow-400 text-black px-3 py-1.5 rounded-xl text-xs">
+                                + Programação
+                            </button>
+                        </div>
+
+                        <div id="itinerary-list" class="space-y-2 mb-4">
+                            <!-- Linha do tempo de atividades -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═════════════════════════════════════════════════════════════════ -->
+                <!-- SUB-ABA VIAGEM / CHURRAS: CHECKLIST & MOCHILA -->
+                <!-- ═════════════════════════════════════════════════════════════════ -->
+                <div id="subtab-checklist" class="subtab-view space-y-3 hidden">
+                    <div class="glass-card p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <div>
+                                <h3 class="text-base font-black uppercase italic">Checklist do Rolê</h3>
+                                <p class="text-[10px] text-gray-600 font-bold">Quem leva o quê pra não faltar nada!</p>
+                            </div>
+                            <button onclick="window.openAddChecklistModal()" class="btn-homer-sm bg-yellow-400 text-black px-3 py-1.5 rounded-xl text-xs">
+                                + Item
+                            </button>
+                        </div>
+
+                        <div id="checklist-items" class="space-y-2 mb-3">
+                            <!-- Itens do checklist -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═════════════════════════════════════════════════════════════════ -->
+                <!-- SUB-ABA CHURRASCO: CALCULADORA RÁPIDA DE INSUMOS -->
+                <!-- ═════════════════════════════════════════════════════════════════ -->
+                <div id="subtab-bbqcalc" class="subtab-view space-y-3 hidden">
+                    <div class="glass-card p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-base font-black uppercase italic">Calculadora do Homer 🥩</h3>
+                            <span class="badge-duff">RESENHA</span>
+                        </div>
+
+                        <!-- FORMULÁRIO DE PESSOAS -->
+                        <div class="grid grid-cols-3 gap-2 mb-3">
+                            <div class="bg-amber-50 border-2 border-black rounded-xl p-2 text-center">
+                                <span class="text-xl">👨</span>
+                                <p class="text-[9px] font-black uppercase text-gray-700">Homens</p>
+                                <input type="number" min="0" id="bbq-input-men" value="5" oninput="window.calcBbq()"
+                                    class="w-full text-center bg-white border-2 border-black rounded-lg font-black text-sm py-1 mt-1 outline-none">
+                            </div>
+                            <div class="bg-amber-50 border-2 border-black rounded-xl p-2 text-center">
+                                <span class="text-xl">👩</span>
+                                <p class="text-[9px] font-black uppercase text-gray-700">Mulheres</p>
+                                <input type="number" min="0" id="bbq-input-women" value="5" oninput="window.calcBbq()"
+                                    class="w-full text-center bg-white border-2 border-black rounded-lg font-black text-sm py-1 mt-1 outline-none">
+                            </div>
+                            <div class="bg-amber-50 border-2 border-black rounded-xl p-2 text-center">
+                                <span class="text-xl">👶</span>
+                                <p class="text-[9px] font-black uppercase text-gray-700">Crianças</p>
+                                <input type="number" min="0" id="bbq-input-kids" value="2" oninput="window.calcBbq()"
+                                    class="w-full text-center bg-white border-2 border-black rounded-lg font-black text-sm py-1 mt-1 outline-none">
+                            </div>
+                        </div>
+
+                        <!-- RESULTADOS CALCULADOS -->
+                        <div class="space-y-2 mb-4">
+                            <div class="flex items-center justify-between p-2.5 bg-red-50 border-2 border-black rounded-xl font-bold text-xs">
+                                <span>🥩 Carne Bovina (Picanha/Alcatra)</span>
+                                <span id="res-carne" class="font-black text-red-700">3.5 kg</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2.5 bg-orange-50 border-2 border-black rounded-xl font-bold text-xs">
+                                <span>🍗 Frango / Linguiça</span>
+                                <span id="res-frango" class="font-black text-orange-700">2.0 kg</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2.5 bg-yellow-50 border-2 border-black rounded-xl font-bold text-xs">
+                                <span>🥖 Pão de Alho & Queijo Coalho</span>
+                                <span id="res-paodealho" class="font-black text-yellow-800">12 unid</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2.5 bg-amber-50 border-2 border-black rounded-xl font-bold text-xs">
+                                <span>🍺 Cerveja (Latas 350ml)</span>
+                                <span id="res-cerveja" class="font-black text-amber-800">45 latas (3 cx)</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2.5 bg-cyan-50 border-2 border-black rounded-xl font-bold text-xs">
+                                <span>🥤 Refri / Água / Suco</span>
+                                <span id="res-refri" class="font-black text-cyan-800">8 Litros</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2.5 bg-gray-100 border-2 border-black rounded-xl font-bold text-xs">
+                                <span>🧊 Carvão & Gelo</span>
+                                <span id="res-extras" class="font-black text-gray-800">2 sacos carvão / 2 gelo</span>
+                            </div>
+                        </div>
+
+                        <button onclick="window.copyBbqList()"
+                            class="w-full btn-homer bg-amber-400 text-black py-3 rounded-xl text-xs flex items-center justify-center gap-1.5">
+                            <i class="fa-regular fa-copy"></i>
+                            <span>Copiar Lista de Compras Formatada</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ═════════════════════════════════════════════════════════════════ -->
+                <!-- SUB-ABA GERAL: DESPESAS & NOTAS (QUEM PAGOU O QUÊ) -->
+                <!-- ═════════════════════════════════════════════════════════════════ -->
+                <div id="subtab-finance" class="subtab-view space-y-3 hidden">
+                    <div class="glass-card p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <div>
+                                <h3 class="text-base font-black uppercase italic">Despesas Extras</h3>
+                                <p class="text-[10px] text-gray-600 font-bold">Adicione notas de mercado, gelo, gasolina, etc.</p>
+                            </div>
+                            <button onclick="window.openNoteModal()" class="btn-homer-sm bg-green-500 text-white px-3 py-1.5 rounded-xl text-xs">
+                                + Lançar Nota
+                            </button>
+                        </div>
+
+                        <div id="receipts-list" class="space-y-2 mb-4">
+                            <!-- Injetado via JS -->
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
+
+        <!-- VIEW: CALCULADORA STANDALONE (ACESSO DIRETO PELA NAV) -->
+        <div id="view-calculator" class="app-view space-y-4">
+            <div class="glass-card p-6">
+                <div class="flex items-center justify-between border-b-2 border-black pb-3 mb-4">
+                    <h2 class="text-2xl font-black text-black uppercase italic">
+                        Churrascômetro 🥩
+                    </h2>
+                    <span class="badge-duff">SIMPSONS</span>
+                </div>
+                <p class="text-xs font-bold text-gray-700 mb-4">
+                    Calcule as quantidades exatas de comida e bebida pra qualquer churrasco da galera sem faltar nem sobrar cerveja!
+                </p>
+
+                <!-- REUTILIZA O BLOCO DA CALCULADORA -->
+                <div class="grid grid-cols-3 gap-2 mb-4">
+                    <div class="bg-amber-50 border-2 border-black rounded-xl p-2.5 text-center">
+                        <span class="text-2xl">👨</span>
+                        <p class="text-[10px] font-black uppercase text-gray-700">Homens</p>
+                        <input type="number" min="0" id="std-bbq-men" value="6" oninput="window.calcStandBbq()"
+                            class="w-full text-center bg-white border-2 border-black rounded-lg font-black text-base py-1 mt-1 outline-none">
+                    </div>
+                    <div class="bg-amber-50 border-2 border-black rounded-xl p-2.5 text-center">
+                        <span class="text-2xl">👩</span>
+                        <p class="text-[10px] font-black uppercase text-gray-700">Mulheres</p>
+                        <input type="number" min="0" id="std-bbq-women" value="6" oninput="window.calcStandBbq()"
+                            class="w-full text-center bg-white border-2 border-black rounded-lg font-black text-base py-1 mt-1 outline-none">
+                    </div>
+                    <div class="bg-amber-50 border-2 border-black rounded-xl p-2.5 text-center">
+                        <span class="text-2xl">👶</span>
+                        <p class="text-[10px] font-black uppercase text-gray-700">Crianças</p>
+                        <input type="number" min="0" id="std-bbq-kids" value="2" oninput="window.calcStandBbq()"
+                            class="w-full text-center bg-white border-2 border-black rounded-lg font-black text-base py-1 mt-1 outline-none">
+                    </div>
+                </div>
+
+                <div class="space-y-2 mb-5">
+                    <div class="flex items-center justify-between p-3 bg-red-50 border-2 border-black rounded-xl font-bold text-xs">
+                        <span>🥩 Carne Bovina (Total)</span>
+                        <span id="std-res-carne" class="font-black text-red-700 text-sm">4.2 kg</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-orange-50 border-2 border-black rounded-xl font-bold text-xs">
+                        <span>🍗 Linguiça & Asinha</span>
+                        <span id="std-res-frango" class="font-black text-orange-700 text-sm">2.4 kg</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-yellow-50 border-2 border-black rounded-xl font-bold text-xs">
+                        <span>🥖 Pão de Alho / Queijo</span>
+                        <span id="std-res-paodealho" class="font-black text-yellow-800 text-sm">14 unid</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-amber-50 border-2 border-black rounded-xl font-bold text-xs">
+                        <span>🍺 Cerveja Duff (Latas)</span>
+                        <span id="std-res-cerveja" class="font-black text-amber-800 text-sm">54 latas</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-cyan-50 border-2 border-black rounded-xl font-bold text-xs">
+                        <span>🥤 Refrigerante / Suco / Água</span>
+                        <span id="std-res-refri" class="font-black text-cyan-800 text-sm">9 Litros</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-100 border-2 border-black rounded-xl font-bold text-xs">
+                        <span>🧊 Carvão & Gelo</span>
+                        <span id="std-res-extras" class="font-black text-gray-800 text-sm">3 carvão / 3 gelo</span>
+                    </div>
+                </div>
+
+                <button onclick="window.copyStandBbqList()"
+                    class="w-full btn-homer bg-green-500 text-white py-3.5 rounded-xl text-sm flex items-center justify-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                    <span>Copiar Lista pro Zap!</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- VIEW: PERFIL & DIRETORIA -->
+        <div id="view-profile" class="app-view space-y-4">
+            <div class="glass-card p-6 text-center animate-pop">
+                <div class="text-6xl mb-3">😎</div>
+                <h2 id="profile-name" class="text-2xl font-black text-black uppercase italic">
+                    Visitante
+                </h2>
+                <p id="profile-role" class="text-xs font-black text-blue-600 uppercase tracking-widest mt-1">
+                    Convidado
+                </p>
+
+                <div class="mt-6 space-y-2">
+                    <button onclick="window.logout()"
+                        class="w-full btn-homer bg-red-600 text-white py-3 rounded-xl text-xs">
+                        Trocar de Nome / Sair
+                    </button>
+                </div>
+            </div>
+
+            <!-- PAINEL DA DIRETORIA (SÓ ADMIN) -->
+            <div id="admin-panel" class="glass-card p-5 space-y-4 hidden">
+                <div class="flex items-center justify-between border-b-2 border-black pb-2">
+                    <h3 class="text-sm font-black uppercase italic">Membros da Diretoria</h3>
+                    <span class="badge-tag bg-blue-500 text-white">ADMIN</span>
+                </div>
+
+                <form id="form-add-user" class="space-y-2">
+                    <input type="text" id="new-user-name" required
+                        class="w-full px-3 py-2 bg-white border-2 border-black rounded-xl font-bold text-xs outline-none"
+                        placeholder="Nome do Membro">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" id="new-user-login" required
+                            class="w-full px-3 py-2 bg-white border-2 border-black rounded-xl font-bold text-xs outline-none lowercase"
+                            placeholder="login">
+                        <input type="text" id="new-user-pass" required
+                            class="w-full px-3 py-2 bg-white border-2 border-black rounded-xl font-bold text-xs outline-none"
+                            placeholder="senha">
+                    </div>
+                    <button type="submit" class="w-full btn-homer-sm bg-blue-600 text-white py-2 rounded-xl text-xs">
+                        + Cadastrar Membro
+                    </button>
+                </form>
+
+                <div id="users-list" class="space-y-2 max-h-48 overflow-y-auto">
+                    <!-- Lista de usuários -->
+                </div>
+            </div>
+        </div>
+
     </main>
 
-    <div id="edit-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4" style="background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);">
-        <div class="glass-card w-full max-w-sm rounded-3xl p-6 relative animate-pop shadow-2xl">
-            <h3 class="text-xl font-bold mb-4 flex items-center gap-2"><i class="fa-solid fa-gear text-orange-500"></i> Ajustar Detalhes</h3>
-            <div class="space-y-3">
-                <input type="text" id="modal-edit-title" class="w-full px-4 py-3 border rounded-2xl focus:outline-none" placeholder="Nome do Jogo">
-                <input type="text" id="modal-edit-address" class="w-full px-4 py-3 border rounded-2xl focus:outline-none" placeholder="Endereço">
-                <input type="text" id="modal-edit-group" class="w-full px-4 py-3 border rounded-2xl focus:outline-none" placeholder="Link do Grupo">
-                <div class="flex gap-2 pt-2"><button id="modal-cancel" class="flex-1 py-3 font-bold text-gray-500">Voltar</button><button id="modal-save" class="flex-[2] bg-green-500 text-white font-bold py-3 rounded-2xl shadow-lg">Salvar</button></div>
+    <!-- BOTTOM NAVIGATION -->
+    <nav id="bottom-nav" class="bottom-nav hidden">
+        <button id="nav-btn-home" onclick="window.navTo('home')" class="nav-item">
+            <i class="fa-solid fa-calendar-days"></i>
+            <span>Agenda</span>
+        </button>
+        <button id="nav-btn-volei" onclick="window.filterAndNav('volei')" class="nav-item">
+            <i class="fa-solid fa-volleyball"></i>
+            <span>Vôlei</span>
+        </button>
+        <button id="nav-btn-viagem" onclick="window.filterAndNav('viagem')" class="nav-item">
+            <i class="fa-solid fa-car"></i>
+            <span>Viagens</span>
+        </button>
+        <button id="nav-btn-churras" onclick="window.filterAndNav('churrasco')" class="nav-item">
+            <i class="fa-solid fa-fire-burner"></i>
+            <span>Churras</span>
+        </button>
+        <button id="nav-btn-profile" onclick="window.navTo('profile')" class="nav-item">
+            <i class="fa-solid fa-user"></i>
+            <span>Perfil</span>
+        </button>
+    </nav>
+
+    <!-- MODAL: AJUSTAR DETALHES (EDITAR EVENTO) -->
+    <div id="modal-edit" class="fixed inset-0 z-[6000] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="glass-card w-full max-w-sm p-5 space-y-3 animate-pop">
+            <h3 class="text-lg font-black uppercase italic flex items-center gap-2">
+                <i class="fa-solid fa-gear text-amber-500"></i> Ajustar Rolê
+            </h3>
+            <div>
+                <label class="block text-[9px] font-black uppercase text-gray-600 mb-1">Título</label>
+                <input type="text" id="modal-edit-title" class="w-full px-3 py-2.5 border-2 border-black rounded-xl font-bold text-xs outline-none">
+            </div>
+            <div>
+                <label class="block text-[9px] font-black uppercase text-gray-600 mb-1">Endereço</label>
+                <input type="text" id="modal-edit-address" class="w-full px-3 py-2.5 border-2 border-black rounded-xl font-bold text-xs outline-none">
+            </div>
+            <div>
+                <label class="block text-[9px] font-black uppercase text-gray-600 mb-1">Custo Fixo (R$)</label>
+                <input type="number" step="0.01" id="modal-edit-total" class="w-full px-3 py-2.5 border-2 border-black rounded-xl font-bold text-xs outline-none">
+            </div>
+            <div>
+                <label class="block text-[9px] font-black uppercase text-gray-600 mb-1">Link do Grupo</label>
+                <input type="url" id="modal-edit-group" class="w-full px-3 py-2.5 border-2 border-black rounded-xl font-bold text-xs outline-none">
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="window.closeEditModal()" class="flex-1 btn-homer-sm bg-gray-200 py-2.5 rounded-xl text-xs font-black">
+                    Cancelar
+                </button>
+                <button onclick="window.saveEditModal()" class="flex-[2] btn-homer bg-green-500 text-white py-2.5 rounded-xl text-xs font-black">
+                    Salvar Mudanças
+                </button>
             </div>
         </div>
     </div>
 
-    <div id="toast" class="toast fixed bottom-6 left-1/2 bg-gray-900/90 text-white px-6 py-3 rounded-full shadow-2xl text-sm flex items-center gap-3 font-medium"><i class="fa-solid fa-circle-check text-green-400"></i><span id="toast-msg">Mensagem</span></div>
+    <!-- MODAL: LANÇAR NOTA / DESPESA EXTRA -->
+    <div id="modal-note" class="fixed inset-0 z-[6000] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="glass-card w-full max-w-sm p-5 space-y-3 animate-pop">
+            <h3 class="text-lg font-black uppercase italic">Lançar Despesa 💸</h3>
+            <input type="text" id="note-title" class="w-full px-3 py-2.5 border-2 border-black rounded-xl font-bold text-xs outline-none" placeholder="O que comprou? (Ex: Gelo, Carvão)">
+            <input type="number" step="0.01" id="note-val" class="w-full px-3 py-2.5 border-2 border-black rounded-xl font-bold text-xs outline-none" placeholder="Valor R$">
+            <div class="flex gap-2 pt-2">
+                <button onclick="window.closeNoteModal()" class="flex-1 btn-homer-sm bg-gray-200 py-2.5 rounded-xl text-xs font-black">Sair</button>
+                <button onclick="window.saveNote()" class="flex-[2] btn-homer bg-blue-600 text-white py-2.5 rounded-xl text-xs font-black">Salvar Nota</button>
+            </div>
+        </div>
+    </div>
 
+    <!-- MODAL: ADICIONAR CARRO (CARONA) -->
+    <div id="modal-car" class="fixed inset-0 z-[6000] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="glass-card w-full max-w-sm p-5 space-y-3 animate-pop">
+            <h3 class="text-lg font-black uppercase italic">Oferecer Carona 🚗</h3>
+            <input type="text" id="car-model" class="w-full px-3 py-2.5 border-2 border-black rounded-xl font-bold text-xs outline-none" placeholder="Modelo do Carro (Ex: Celta Prata)">
+            <input type="number" min="1" max="8" id="car-seats" value="4" class="w-full px-3 py-2.5 border-2 border-black rounded-xl font-bold text-xs outline-none" placeholder="Total de Vagas de Passageiros">
+            <div class="flex gap-2 pt-2">
+                <button onclick="window.closeAddCarModal()" class="flex-1 btn-homer-sm bg-gray-200 py-2.5 rounded-xl text-xs font-black">Cancelar</button>
+                <button onclick="window.saveNewCar()" class="flex-[2] btn-homer bg-green-500 text-white py-2.5 rounded-xl text-xs font-black">Cadastrar Carro</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADICIONAR ATIVIDADE AO ROTEIRO -->
+    <div id="modal-activity" class="fixed inset-0 z-[6000] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="glass-card w-full max-w-sm p-5 space-y-3 animate-pop">
+            <h3 class="text-lg font-black uppercase italic">Nova Parada / Atividade 🗺️</h3>
+            <input type="text" id="act-day" class="w-full px-3 py-2.5 border-2 border-black rounded-xl font-bold text-xs outline-none" placeholder="Dia/Horário (Ex: Sábado 10:00)">
+            <input type="text" id="act-desc" class="w-full px-3 py-2.5 border-2 border-black rounded-xl font-bold text-xs outline-none" placeholder="Atividade (Ex: Trilha da Praia)">
+            <div class="flex gap-2 pt-2">
+                <button onclick="window.closeAddActivityModal()" class="flex-1 btn-homer-sm bg-gray-200 py-2.5 rounded-xl text-xs font-black">Cancelar</button>
+                <button onclick="window.saveNewActivity()" class="flex-[2] btn-homer bg-blue-600 text-white py-2.5 rounded-xl text-xs font-black">Adicionar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADICIONAR ITEM AO CHECKLIST -->
+    <div id="modal-checklist" class="fixed inset-0 z-[6000] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="glass-card w-full max-w-sm p-5 space-y-3 animate-pop">
+            <h3 class="text-lg font-black uppercase italic">Item pra Levar 🎒</h3>
+            <input type="text" id="check-item-name" class="w-full px-3 py-2.5 border-2 border-black rounded-xl font-bold text-xs outline-none" placeholder="Nome do Item (Ex: Protetor Solar, Caixa JBL)">
+            <input type="text" id="check-item-resp" class="w-full px-3 py-2.5 border-2 border-black rounded-xl font-bold text-xs outline-none" placeholder="Quem leva? (Deixe em branco se ninguém pegou ainda)">
+            <div class="flex gap-2 pt-2">
+                <button onclick="window.closeAddChecklistModal()" class="flex-1 btn-homer-sm bg-gray-200 py-2.5 rounded-xl text-xs font-black">Cancelar</button>
+                <button onclick="window.saveNewChecklistItem()" class="flex-[2] btn-homer bg-green-500 text-white py-2.5 rounded-xl text-xs font-black">Adicionar Item</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="toast fixed bottom-24 left-1/2 bg-black text-white px-5 py-2.5 rounded-full font-black uppercase text-xs tracking-wider shadow-[4px_4px_0px_rgba(0,0,0,0.4)] border-2 border-white flex items-center gap-2">
+        <span id="toast-icon">✨</span>
+        <span id="toast-msg">Mensagem</span>
+    </div>
+
+    <!-- SCRIPT DA APLICAÇÃO: FIREBASE MODULAR & REGRAS DE NEGÓCIO -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, collection, setDoc, getDoc, updateDoc, onSnapshot, arrayUnion, arrayRemove, increment, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { 
+            getFirestore, doc, collection, setDoc, getDoc, updateDoc, deleteDoc, 
+            onSnapshot, arrayUnion, arrayRemove, increment, enableIndexedDbPersistence 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyA3RQucgd5vMeJzZgZnC4Zim9hkFVVWXnw", authDomain: "volei-3f30d.firebaseapp.com", projectId: "volei-3f30d", storageBucket: "volei-3f30d.firebasestorage.app", messagingSenderId: "969073040869", appId: "1:969073040869:web:c0f6005d98fae4144de30c" };
-        let db, auth, currentUser, currentEventId, localEventData, deferredPrompt;
+        // Configuração do Firebase
+        const firebaseConfig = { 
+            apiKey: "AIzaSyA3RQucgd5vMeJzZgZnC4Zim9hkFVVWXnw", 
+            authDomain: "volei-3f30d.firebaseapp.com", 
+            projectId: "volei-3f30d", 
+            storageBucket: "volei-3f30d.firebasestorage.app", 
+            messagingSenderId: "969073040869", 
+            appId: "1:969073040869:web:c0f6005d98fae4144de30c" 
+        };
+
+        let db, auth, currentUser, userData = null, localEventData = null;
+        window.currentEventId = null;
+        let currentAgendaFilter = 'todos';
+        let currentActiveEventTab = 'players';
+
         const urlParams = new URLSearchParams(window.location.search);
-        const rawId = urlParams.get('id');
-        if (rawId) { currentEventId = (rawId.length === 6) ? rawId.toUpperCase() : rawId; }
+        const queryId = urlParams.get('id');
+        if (queryId) { window.currentEventId = queryId.toUpperCase().trim(); }
 
-        const viewLoading = document.getElementById('loading-view');
-        const viewCreate = document.getElementById('create-view');
-        const viewEvent = document.getElementById('event-view');
-        const toastEl = document.getElementById('toast');
-        const toastMsg = document.getElementById('toast-msg');
+        const views = {
+            loading: document.getElementById('view-loading'),
+            login: document.getElementById('view-login'),
+            agenda: document.getElementById('view-agenda'),
+            create: document.getElementById('view-create'),
+            event: document.getElementById('view-event'),
+            calculator: document.getElementById('view-calculator'),
+            profile: document.getElementById('view-profile')
+        };
 
-        // --- LÓGICA DE INSTALAÇÃO ---
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            // Só mostra o banner se não estiver rodando no modo standalone
-            if (!window.matchMedia('(display-mode: standalone)').matches) {
-                document.getElementById('install-banner').style.display = 'block';
-            }
-        });
+        // --- TOAST ---
+        window.showToast = (msg, icon = '✨') => {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            document.getElementById('toast-icon').innerText = icon;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2800);
+        };
 
-        document.getElementById('btn-install-app').onclick = async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    hideInstallBanner();
+        // --- NAVEGAÇÃO DE TELAS ---
+        window.navTo = (target) => {
+            Object.values(views).forEach(v => { if (v) v.classList.remove('active-view'); });
+            
+            const navButtons = ['nav-btn-home', 'nav-btn-volei', 'nav-btn-viagem', 'nav-btn-churras', 'nav-btn-profile'];
+            navButtons.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.classList.remove('active');
+            });
+
+            if (target === 'login') {
+                views.login.classList.add('active-view');
+                document.getElementById('bottom-nav').style.display = 'none';
+            } else {
+                document.getElementById('bottom-nav').style.display = 'flex';
+                
+                if (target === 'home') {
+                    views.agenda.classList.add('active-view');
+                    document.getElementById('nav-btn-home').classList.add('active');
+                } else if (target === 'create') {
+                    views.create.classList.add('active-view');
+                } else if (target === 'event') {
+                    if (localEventData) {
+                        views.event.classList.add('active-view');
+                    } else {
+                        views.agenda.classList.add('active-view');
+                        document.getElementById('nav-btn-home').classList.add('active');
+                    }
+                } else if (target === 'calculator') {
+                    views.calculator.classList.add('active-view');
+                    document.getElementById('nav-btn-churras').classList.add('active');
+                    window.calcStandBbq();
+                } else if (target === 'profile') {
+                    views.profile.classList.add('active-view');
+                    document.getElementById('nav-btn-profile').classList.add('active');
                 }
-                deferredPrompt = null;
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.filterAndNav = (category) => {
+            currentAgendaFilter = category;
+            window.navTo('home');
+            window.filterAgenda(category);
+        };
+
+        // --- ESCAPE HTML ---
+        const escapeHtml = (str) => {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        };
+
+        // --- INICIALIZAÇÃO FIREBASE ---
+        const init = async () => {
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                try { await enableIndexedDbPersistence(db); } catch (_) {}
+
+                // Cria ou garante conta admin principal
+                try {
+                    await setDoc(doc(db, 'app_users', 'weverson'), {
+                        name: "Weverson", username: "weverson", password: "023240", role: "admin"
+                    }, { merge: true });
+                } catch(_) {}
+
+                await signInAnonymously(auth);
+
+                onAuthStateChanged(auth, async (u) => {
+                    if (!u) return;
+                    currentUser = u;
+
+                    // Verifica sessão local
+                    const sessionUser = localStorage.getItem('cuida_session');
+                    const guestName = localStorage.getItem('cuida_guest_name');
+
+                    if (sessionUser) {
+                        // Sessão autenticada de usuário registrado
+                        onSnapshot(doc(db, 'app_users', sessionUser), (snap) => {
+                            if (snap.exists()) {
+                                userData = snap.data();
+                                userData.uid = snap.id;
+                                setupUserUI();
+                            } else {
+                                window.logout();
+                            }
+                        });
+                    } else if (guestName) {
+                        // Sessão de Convidado Rápido
+                        userData = {
+                            uid: 'guest_' + (localStorage.getItem('cuida_guest_id') || Math.random().toString(36).substring(2, 9)),
+                            name: guestName,
+                            username: guestName.toLowerCase().replace(/\s+/g, ''),
+                            role: 'guest'
+                        };
+                        localStorage.setItem('cuida_guest_id', userData.uid);
+                        setupUserUI();
+                    } else {
+                        // Sem sessão -> Tela de entrada amigável
+                        views.loading.classList.remove('active-view');
+                        window.navTo('login');
+                    }
+
+                    // Carrega agenda em tempo real
+                    loadAgenda();
+
+                    // Se veio ID na URL, escuta o evento
+                    if (window.currentEventId) {
+                        loadEvent(window.currentEventId);
+                    }
+                });
+
+            } catch (err) {
+                console.error("Firebase init error:", err);
+                window.showToast("Modo Offline Ativado", "📡");
             }
         };
 
-        window.hideInstallBanner = () => {
-            document.getElementById('install-banner').style.display = 'none';
+        const setupUserUI = () => {
+            document.getElementById('user-display-name').innerText = userData.name;
+            document.getElementById('user-role-icon').innerText = userData.role === 'admin' ? '⭐' : '👤';
+            document.getElementById('profile-name').innerText = userData.name;
+            document.getElementById('profile-role').innerText = userData.role === 'admin' ? 'Diretoria Oficial ⭐' : 'Convidado de Honra';
+
+            if (userData.role === 'admin') {
+                document.getElementById('admin-panel').classList.remove('hidden');
+                loadUsersList();
+            } else {
+                document.getElementById('admin-panel').classList.add('hidden');
+            }
+
+            // Se estava no loading ou no login, direciona
+            if (views.loading.classList.contains('active-view') || views.login.classList.contains('active-view')) {
+                if (window.currentEventId && localEventData) {
+                    window.navTo('event');
+                } else {
+                    window.navTo('home');
+                }
+            }
         };
 
-        // --- MONITOR OFFLINE ---
-        window.addEventListener('online', () => { document.body.classList.remove('is-offline'); showToast("Conectado!"); });
-        window.addEventListener('offline', () => { document.body.classList.add('is-offline'); });
+        // --- AUTH: GUEST & ADMIN ---
+        document.getElementById('form-guest').onsubmit = (e) => {
+            e.preventDefault();
+            const name = document.getElementById('guest-name').value.trim();
+            if (!name) return;
+            localStorage.setItem('cuida_guest_name', name);
+            localStorage.removeItem('cuida_session');
+            userData = {
+                uid: 'guest_' + Math.random().toString(36).substring(2, 9),
+                name: name,
+                username: name.toLowerCase().replace(/\s+/g, ''),
+                role: 'guest'
+            };
+            localStorage.setItem('cuida_guest_id', userData.uid);
+            setupUserUI();
+            window.showToast(`Bem-vindo, ${name}! 🚀`);
+            if (window.currentEventId) window.navTo('event');
+            else window.navTo('home');
+        };
 
-        // --- FIREBASE INIT ---
-        const init = async () => {
-            const app = initializeApp(firebaseConfig);
-            auth = getAuth(app); db = getFirestore(app);
-            try { await enableIndexedDbPersistence(db); } catch (err) {}
-            await signInAnonymously(auth);
-            onAuthStateChanged(auth, (u) => {
-                if(!u) return; currentUser = u;
-                if(currentEventId) {
-                    onSnapshot(doc(db, 'volei_events', currentEventId), (s) => {
-                        if(!s.exists()) { showToast("Código inválido!"); setTimeout(() => window.location.href = window.location.pathname, 1500); return; }
-                        localEventData = s.data(); renderEvent(localEventData);
-                        viewLoading.style.display = 'none'; viewEvent.style.display = 'block';
-                        document.getElementById('btn-open-edit').classList.remove('hidden');
-                    });
-                } else { viewLoading.style.display = 'none'; viewCreate.style.display = 'block'; }
+        document.getElementById('form-login').onsubmit = async (e) => {
+            e.preventDefault();
+            const u = document.getElementById('login-user').value.toLowerCase().trim();
+            const p = document.getElementById('login-pass').value.trim();
+            try {
+                const snap = await getDoc(doc(db, 'app_users', u));
+                if (snap.exists() && snap.data().password === p) {
+                    localStorage.setItem('cuida_session', u);
+                    localStorage.removeItem('cuida_guest_name');
+                    userData = snap.data();
+                    userData.uid = snap.id;
+                    setupUserUI();
+                    window.showToast("Diretoria Conectada! ⭐");
+                    if (window.currentEventId) window.navTo('event');
+                    else window.navTo('home');
+                } else {
+                    window.showToast("Senha incorreta!", "❌");
+                }
+            } catch (_) {
+                window.showToast("Erro ao conectar", "❌");
+            }
+        };
+
+        window.logout = () => {
+            localStorage.removeItem('cuida_session');
+            localStorage.removeItem('cuida_guest_name');
+            userData = null;
+            window.navTo('login');
+        };
+
+        // --- AGENDA & CARREGAMENTO DE EVENTOS ---
+        const loadAgenda = () => {
+            onSnapshot(collection(db, 'volei_events'), (snapshot) => {
+                const listEl = document.getElementById('agenda-list');
+                listEl.innerHTML = '';
+                const events = [];
+
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    events.push({ id: docSnap.id, ...data });
+                });
+
+                // Ordena por data decrescente
+                events.sort((a, b) => new Date(b.datetime || 0) - new Date(a.datetime || 0));
+
+                const filtered = events.filter(ev => {
+                    if (currentAgendaFilter === 'todos') return true;
+                    return (ev.category || 'volei') === currentAgendaFilter;
+                });
+
+                if (filtered.length === 0) {
+                    listEl.innerHTML = `
+                        <div class="glass-card p-6 text-center text-gray-500">
+                            <p class="text-4xl mb-2">🤷‍♂️</p>
+                            <p class="font-black uppercase text-xs">Nenhum rolê encontrado nessa categoria!</p>
+                            <p class="text-[10px] mt-1">Crie um novo no botão laranja acima.</p>
+                        </div>`;
+                    return;
+                }
+
+                filtered.forEach(ev => {
+                    const cat = ev.category || 'volei';
+                    let catIcon = '🏐', catBadge = 'VÔLEI', catBg = 'bg-yellow-300';
+                    if (cat === 'viagem') { catIcon = '🚗'; catBadge = 'VIAGEM'; catBg = 'bg-blue-300'; }
+                    else if (cat === 'churrasco') { catIcon = '🔥'; catBadge = 'CHURRAS'; catBg = 'bg-red-400 text-white'; }
+                    else if (cat === 'jogos') { catIcon = '🎮'; catBadge = 'JOGOS'; catBg = 'bg-purple-300'; }
+
+                    const participantsCount = (ev.participants || []).length;
+                    const formattedDate = ev.datetime ? new Date(ev.datetime).toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' }) : 'Data a definir';
+
+                    const card = document.createElement('div');
+                    card.className = "glass-card p-4 active:scale-[0.98] transition-transform cursor-pointer border-2 hover:border-blue-600";
+                    card.onclick = () => {
+                        window.currentEventId = ev.id;
+                        loadEvent(ev.id);
+                        window.navTo('event');
+                    };
+
+                    card.innerHTML = `
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="flex items-center gap-2.5">
+                                <span class="text-3xl">${catIcon}</span>
+                                <div>
+                                    <span class="badge-tag ${catBg} text-[9px] mb-1">${catBadge}</span>
+                                    <h4 class="font-black text-black uppercase italic text-base leading-tight">${escapeHtml(ev.location || 'Sem título')}</h4>
+                                    <p class="text-[10px] font-bold text-gray-600 truncate max-w-[200px]">${escapeHtml(ev.address || '')}</p>
+                                </div>
+                            </div>
+                            <div class="text-right shrink-0">
+                                <span class="text-[9px] font-mono font-black bg-amber-100 border border-black px-2 py-0.5 rounded-lg">${ev.id}</span>
+                                <p class="text-[9px] font-bold text-gray-500 mt-1">${formattedDate}</p>
+                                <p class="text-[10px] font-black text-blue-600 mt-1">${participantsCount} Confirmados</p>
+                            </div>
+                        </div>`;
+                    listEl.appendChild(card);
+                });
             });
         };
 
-        // --- SORTEIO ---
+        window.filterAgenda = (cat) => {
+            currentAgendaFilter = cat;
+            document.querySelectorAll('#view-agenda .tab-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById(`filter-btn-${cat}`);
+            if (activeBtn) activeBtn.classList.add('active');
+            loadAgenda();
+        };
+
+        window.searchEvent = () => {
+            const code = document.getElementById('input-search-id').value.trim().toUpperCase();
+            if (!code) return;
+            window.currentEventId = code;
+            loadEvent(code);
+            window.navTo('event');
+        };
+
+        // --- CARREGAMENTO DO EVENTO ATIVO ---
+        const loadEvent = (eventId) => {
+            onSnapshot(doc(db, 'volei_events', eventId), (snap) => {
+                if (!snap.exists()) {
+                    window.showToast("Código inválido!", "❌");
+                    window.navTo('home');
+                    return;
+                }
+                localEventData = snap.data();
+                localEventData.id = snap.id;
+                renderEvent();
+            });
+        };
+
+        // --- RENDERIZAÇÃO DO ROLÊ ATIVO ---
+        const renderEvent = () => {
+            if (!localEventData) return;
+            const ev = localEventData;
+            const cat = ev.category || 'volei';
+
+            // Top Header
+            document.getElementById('event-display-title').innerText = ev.location || 'Sem Título';
+            document.getElementById('event-display-address').querySelector('span').innerText = ev.address || 'Endereço não informado';
+            document.getElementById('event-display-code').innerText = localEventData.id;
+
+            if (ev.datetime) {
+                const d = new Date(ev.datetime);
+                document.getElementById('event-display-datetime').querySelector('span').innerText = 
+                    d.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+            }
+
+            // Badge da Categoria
+            const badgeCat = document.getElementById('event-badge-cat');
+            if (cat === 'volei') { badgeCat.innerText = '🏐 VÔLEI'; badgeCat.className = 'badge-tag bg-yellow-300'; }
+            else if (cat === 'viagem') { badgeCat.innerText = '🚗 VIAGEM'; badgeCat.className = 'badge-tag bg-blue-300'; }
+            else if (cat === 'churrasco') { badgeCat.innerText = '🔥 CHURRASCO'; badgeCat.className = 'badge-tag bg-red-400 text-white'; }
+            else { badgeCat.innerText = '🎮 RESENHA'; badgeCat.className = 'badge-tag bg-purple-300'; }
+
+            // Links Maps & Waze
+            const addrEnc = encodeURIComponent(ev.address || ev.location || '');
+            document.getElementById('link-maps').href = `https://www.google.com/maps/search/?api=1&query=${addrEnc}`;
+            document.getElementById('link-waze').href = `https://waze.com/ul?q=${addrEnc}`;
+
+            // Grupo do Zap
+            const groupArea = document.getElementById('group-link-area');
+            const btnGroup = document.getElementById('btn-group-link');
+            if (ev.groupLink) {
+                btnGroup.href = ev.groupLink;
+                groupArea.classList.remove('hidden');
+            } else {
+                groupArea.classList.add('hidden');
+            }
+
+            // Cálculos Financeiros
+            const participants = ev.participants || [];
+            const receipts = ev.receipts || [];
+            const totalReceipts = receipts.reduce((acc, cur) => acc + (parseFloat(cur.value) || 0), 0);
+            const grandTotal = (parseFloat(ev.totalCost) || 0) + totalReceipts;
+
+            document.getElementById('event-display-total').innerText = `R$ ${grandTotal.toFixed(2).replace('.', ',')}`;
+
+            let cota = 0;
+            if (cat === 'churrasco') {
+                document.getElementById('event-label-cota').innerText = "Cota Média";
+                cota = participants.length > 0 ? (grandTotal / participants.length) : 0;
+            } else {
+                document.getElementById('event-label-cota').innerText = "Por Pessoa";
+                cota = participants.length > 0 ? (grandTotal / participants.length) : 0;
+            }
+            document.getElementById('event-display-cota').innerText = `R$ ${cota.toFixed(2).replace('.', ',')}`;
+
+            // Botão "Tô Dentro" / "Tô Fora"
+            const joinBtn = document.getElementById('btn-join-main');
+            const isUserJoined = userData && participants.some(p => p.entryId === userData.uid);
+            if (isUserJoined) {
+                joinBtn.innerHTML = `<span>TÔ FORA (SAIR DO ROLÊ) ❌</span>`;
+                joinBtn.classList.replace('bg-green-500', 'bg-red-600');
+            } else {
+                joinBtn.innerHTML = `<span>TÔ DENTRO! 🚀</span>`;
+                joinBtn.classList.replace('bg-red-600', 'bg-green-500');
+            }
+
+            // Configuração das Sub-Abas do Evento
+            setupEventTabs(cat);
+
+            // Renderiza o conteúdo das sub-abas
+            renderParticipantsList(participants, ev.playerLimit);
+            renderReceiptsList(receipts);
+
+            if (cat === 'volei') {
+                document.getElementById('score-a').innerText = ev.scoreA || 0;
+                document.getElementById('score-b').innerText = ev.scoreB || 0;
+                document.getElementById('sets-a').innerText = ev.setsA || 0;
+                document.getElementById('sets-b').innerText = ev.setsB || 0;
+            } else if (cat === 'viagem') {
+                renderCarpool(ev.cars || [], participants);
+                renderItinerary(ev.itinerary || []);
+                renderChecklist(ev.checklist || []);
+            } else if (cat === 'churrasco') {
+                renderChecklist(ev.checklist || []);
+            }
+        };
+
+        // --- SUB-ABAS POR CATEGORIA ---
+        const setupEventTabs = (category) => {
+            const tabBar = document.getElementById('event-tab-bar');
+            tabBar.innerHTML = '';
+
+            let tabs = [];
+            if (category === 'volei') {
+                tabs = [
+                    { id: 'players', label: '👥 Presença' },
+                    { id: 'teams', label: '🎲 Sortear' },
+                    { id: 'score', label: '🏆 Placar' },
+                    { id: 'finance', label: '💰 Despesas' }
+                ];
+            } else if (category === 'viagem') {
+                tabs = [
+                    { id: 'players', label: '👥 Galera' },
+                    { id: 'carpool', label: '🚗 Caronas' },
+                    { id: 'itinerary', label: '🗺️ Roteiro' },
+                    { id: 'checklist', label: '🎒 Mochila' },
+                    { id: 'finance', label: '💰 Despesas' }
+                ];
+            } else if (category === 'churrasco') {
+                tabs = [
+                    { id: 'players', label: '👥 Confirmados' },
+                    { id: 'bbqcalc', label: '🥩 Calculadora' },
+                    { id: 'checklist', label: '🛒 Compras' },
+                    { id: 'finance', label: '💰 Rateio' }
+                ];
+            } else {
+                tabs = [
+                    { id: 'players', label: '👥 Galera' },
+                    { id: 'checklist', label: '📋 Itens' },
+                    { id: 'finance', label: '💰 Despesas' }
+                ];
+            }
+
+            tabs.forEach(t => {
+                const btn = document.createElement('button');
+                btn.className = `tab-btn ${currentActiveEventTab === t.id ? 'active' : ''}`;
+                btn.innerText = t.label;
+                btn.onclick = () => window.switchEventTab(t.id);
+                tabBar.appendChild(btn);
+            });
+
+            window.switchEventTab(currentActiveEventTab || tabs[0].id);
+        };
+
+        window.switchEventTab = (tabId) => {
+            currentActiveEventTab = tabId;
+            document.querySelectorAll('#event-tab-bar .tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.subtab-view').forEach(v => v.classList.add('hidden'));
+
+            const targetSubtab = document.getElementById(`subtab-${tabId}`);
+            if (targetSubtab) targetSubtab.classList.remove('hidden');
+
+            const buttons = document.querySelectorAll('#event-tab-bar .tab-btn');
+            buttons.forEach(b => {
+                if (b.innerText.toLowerCase().includes(tabId)) b.classList.add('active');
+            });
+        };
+
+        // --- RENDERIZAR LISTA DE PARTICIPANTES ---
+        const renderParticipantsList = (participants, playerLimit) => {
+            const listEl = document.getElementById('participants-list');
+            listEl.innerHTML = '';
+
+            document.getElementById('display-confirmed-count').innerText = `${participants.length} Confirmados`;
+
+            // Barra de Vagas
+            const progressWrap = document.getElementById('progress-wrapper');
+            const progressFill = document.getElementById('progress-fill');
+            if (playerLimit && playerLimit > 0) {
+                progressWrap.classList.remove('hidden');
+                const pct = Math.min(100, Math.round((participants.length / playerLimit) * 100));
+                progressFill.style.width = `${pct}%`;
+                document.getElementById('display-confirmed-count').innerText = `${participants.length} / ${playerLimit} Vagas`;
+            } else {
+                progressWrap.classList.add('hidden');
+            }
+
+            if (participants.length === 0) {
+                listEl.innerHTML = `<li class="p-4 text-center text-xs font-bold text-gray-500 bg-white/50 border-2 border-dashed border-gray-400 rounded-xl">Ninguém confirmado ainda. Seja o primeiro a lançar a braba! 🚀</li>`;
+                return;
+            }
+
+            participants.forEach((p, idx) => {
+                const isPaid = p.paid === true;
+                const isMe = userData && p.entryId === userData.uid;
+                const canRemove = userData && (userData.role === 'admin' || isMe);
+
+                const li = document.createElement('li');
+                li.className = "flex items-center justify-between p-3 bg-white/70 border-2 border-black rounded-xl shadow-[2px_2px_0px_#000] animate-pop";
+                li.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="font-black text-xs text-black uppercase">${idx + 1}. ${escapeHtml(p.name)}</span>
+                        ${p.churras === false ? '<span class="text-[8px] bg-cyan-100 border border-black font-black px-1.5 py-0.5 rounded">SEM ÁLCOOL</span>' : ''}
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="window.togglePlayerPaid('${p.entryId}')"
+                            class="px-2 py-1 rounded-lg text-[9px] font-black border border-black ${isPaid ? 'bg-green-400 text-black' : 'bg-gray-200 text-gray-700'}">
+                            ${isPaid ? 'PAGO ✅' : 'PENDENTE ⏳'}
+                        </button>
+                        ${canRemove ? `
+                            <button onclick="window.removeParticipant('${p.entryId}')" class="text-red-600 p-1.5 active:scale-90" title="Remover">
+                                <i class="fa-solid fa-trash-can text-sm"></i>
+                            </button>
+                        ` : ''}
+                    </div>`;
+                listEl.appendChild(li);
+            });
+        };
+
+        // --- ENTRAR / SAIR DO EVENTO ---
+        window.togglePresence = async () => {
+            if (!userData) { window.navTo('login'); return; }
+            if (!window.currentEventId || !localEventData) return;
+
+            const participants = localEventData.participants || [];
+            const me = participants.find(p => p.entryId === userData.uid);
+
+            if (me) {
+                // Sair
+                await updateDoc(doc(db, 'volei_events', window.currentEventId), {
+                    participants: arrayRemove(me)
+                });
+                window.showToast("Você saiu do rolê!", "👋");
+            } else {
+                // Verificar limite
+                if (localEventData.playerLimit && localEventData.playerLimit > 0 && participants.length >= localEventData.playerLimit) {
+                    window.showToast("Vagas esgotadas!", "🛑");
+                    return;
+                }
+
+                await updateDoc(doc(db, 'volei_events', window.currentEventId), {
+                    participants: arrayUnion({
+                        entryId: userData.uid,
+                        name: userData.name,
+                        paid: false,
+                        churras: true,
+                        joinedAt: new Date().toISOString()
+                    })
+                });
+                window.showToast("Tô Dentro! 🚀 Presença confirmada!");
+            }
+        };
+
+        window.togglePlayerPaid = async (entryId) => {
+            if (!window.currentEventId || !localEventData) return;
+            const participants = [...(localEventData.participants || [])];
+            const p = participants.find(x => x.entryId === entryId);
+            if (!p) return;
+            p.paid = !p.paid;
+
+            await updateDoc(doc(db, 'volei_events', window.currentEventId), { participants });
+            window.showToast(p.paid ? "Marcado como Pago! ✅" : "Marcado como Pendente ⏳");
+        };
+
+        window.removeParticipant = async (entryId) => {
+            if (!confirm("Remover da lista?")) return;
+            const p = localEventData.participants.find(x => x.entryId === entryId);
+            if (!p) return;
+            await updateDoc(doc(db, 'volei_events', window.currentEventId), {
+                participants: arrayRemove(p)
+            });
+            window.showToast("Removido da lista!");
+        };
+
+        window.addAvulsoPlayer = async () => {
+            const input = document.getElementById('input-add-avulso');
+            const name = input.value.trim().toUpperCase();
+            if (!name) return;
+
+            const entryId = 'avulso_' + Math.random().toString(36).substring(2, 9);
+            await updateDoc(doc(db, 'volei_events', window.currentEventId), {
+                participants: arrayUnion({
+                    entryId, name, paid: false, churras: true, isAvulso: true
+                })
+            });
+            input.value = '';
+            window.showToast("Jogador avulso adicionado!");
+        };
+
+        // --- SORTEADOR DE TIMES DO VÔLEI ---
         window.drawTeams = () => {
-            if (!localEventData || !localEventData.participants.length) return showToast("Sem jogadores na lista!");
-            const mode = document.getElementById('players-per-team').value;
-            let players = [...localEventData.participants].map(p => p.name);
-            for (let i = players.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [players[i], players[j]] = [players[j], players[i]]; }
-            const res = document.getElementById('teams-result'); res.innerHTML = '';
-            const createTeamCard = (num, members, color) => {
-                const card = document.createElement('div'); card.className = "bg-white/70 p-4 rounded-2xl border border-white animate-pop shadow-sm";
-                card.innerHTML = `<p class="text-[10px] font-black text-${color}-500 uppercase tracking-widest mb-2">Time ${num}</p><div class="space-y-1">${members.map(n => `<p class="font-bold text-gray-700 uppercase text-xs">• ${n}</p>`).join('')}</div>`;
+            if (!localEventData || !localEventData.participants?.length) {
+                window.showToast("Sem jogadores na lista!", "❌");
+                return;
+            }
+
+            const mode = document.getElementById('select-team-mode').value;
+            const players = [...localEventData.participants].map(p => p.name).sort(() => Math.random() - 0.5);
+
+            const res = document.getElementById('teams-draw-result');
+            res.innerHTML = '';
+
+            const simpsonsTeams = [
+                { name: 'Time Duff 🍺', color: 'bg-red-50 border-red-500 text-red-700' },
+                { name: 'Time Donut 🍩', color: 'bg-pink-50 border-pink-500 text-pink-700' },
+                { name: 'Time Isótopos ⚾', color: 'bg-blue-50 border-blue-500 text-blue-700' },
+                { name: 'Time Moe’s Tavern 🍻', color: 'bg-amber-50 border-amber-500 text-amber-800' },
+                { name: 'Time Kwik-E-Mart 🏪', color: 'bg-green-50 border-green-500 text-green-700' },
+                { name: 'Time Krusty 🤡', color: 'bg-purple-50 border-purple-500 text-purple-700' }
+            ];
+
+            const createCard = (label, members, teamIdx) => {
+                const teamInfo = simpsonsTeams[teamIdx % simpsonsTeams.length];
+                const card = document.createElement('div');
+                card.className = `p-3.5 rounded-2xl border-2 border-black shadow-[3px_3px_0px_#000] animate-pop ${teamInfo.color}`;
+                card.innerHTML = `
+                    <div class="flex items-center justify-between border-b-2 border-black pb-1 mb-2">
+                        <p class="text-xs font-black uppercase tracking-wider">${label || teamInfo.name}</p>
+                        <span class="text-[9px] font-black bg-black text-white px-2 py-0.5 rounded-lg">${members.length} Jogadores</span>
+                    </div>
+                    <div class="space-y-1">
+                        ${members.map(m => `<p class="text-xs font-black uppercase text-gray-800">• ${escapeHtml(m)}</p>`).join('')}
+                    </div>`;
                 res.appendChild(card);
             };
+
             if (mode === 'colher') {
-                if (players.length < 9) return showToast("Mínimo 9 jogadores para 5x4!");
-                createTeamCard("A (Vantagem)", players.splice(0, 5), "orange"); createTeamCard("B", players.splice(0, 4), "blue");
+                if (players.length < 9) { window.showToast("Mínimo 9 jogadores pra 5x4!", "⚠️"); return; }
+                createCard('Time A (Vantagem 5)', players.splice(0, 5), 0);
+                createCard('Time B (4)', players.splice(0, 4), 1);
             } else {
-                const n = parseInt(mode); let tCount = 1;
-                while(players.length >= n) { createTeamCard(tCount, players.splice(0, n), "indigo"); tCount++; }
+                const n = parseInt(mode);
+                let count = 0;
+                while (players.length >= n) {
+                    createCard(simpsonsTeams[count % simpsonsTeams.length].name, players.splice(0, n), count);
+                    count++;
+                }
             }
+
             if (players.length > 0) {
-                const next = document.createElement('div'); next.className = "bg-gray-100/50 p-4 rounded-2xl border border-dashed border-gray-300";
-                next.innerHTML = `<p class="text-[10px] font-bold text-gray-400 uppercase mb-2">Reserva / Próximos</p><div class="space-y-1">${players.map(n => `<p class="text-gray-500 uppercase text-xs">• ${n}</p>`).join('')}</div>`;
-                res.appendChild(next);
+                const reserve = document.createElement('div');
+                reserve.className = "p-3.5 rounded-2xl border-2 border-dashed border-black bg-yellow-50 shadow-[2px_2px_0px_#000]";
+                reserve.innerHTML = `
+                    <p class="text-xs font-black uppercase text-amber-800 mb-1">⏳ Próximos da Fila / Reserva:</p>
+                    <div class="space-y-0.5">
+                        ${players.map(m => `<p class="text-xs font-bold uppercase text-gray-700">• ${escapeHtml(m)}</p>`).join('')}
+                    </div>`;
+                res.appendChild(reserve);
             }
-            showToast("Times embaralhados!");
+
+            window.showToast("Times embaralhados! 🎲");
         };
 
-        window.addPlayerFromTeams = async () => {
-            const i = document.getElementById('input-name-teams'); const name = i.value.trim();
-            if(!name) return;
-            const entryId = Math.random().toString(36).substr(2, 9);
-            await updateDoc(doc(db, 'volei_events', currentEventId), { participants: arrayUnion({ entryId, name }) });
-            i.value = '';
-        };
-
+        // --- PLACAR & JUIZ DE VOZ ---
         window.updateScore = async (team, amt) => {
-            if(!currentEventId || !localEventData) return;
+            if (!window.currentEventId || !localEventData) return;
             const field = team === 'A' ? 'scoreA' : 'scoreB';
             const setField = team === 'A' ? 'setsA' : 'setsB';
-            let cur = (localEventData[field] || 0) + amt;
-            const max = parseInt(document.getElementById('config-max-score').value);
-            const other = team === 'A' ? (localEventData.scoreB || 0) : (localEventData.scoreA || 0);
-            if(cur >= max && (cur - other) >= 2) { await updateDoc(doc(db, 'volei_events', currentEventId), { scoreA:0, scoreB:0, [setField]: increment(1) }); }
-            else { await updateDoc(doc(db, 'volei_events', currentEventId), { [field]: Math.max(0, cur) }); }
+            const otherField = team === 'A' ? 'scoreB' : 'scoreA';
+
+            const cur = Math.max(0, (localEventData[field] || 0) + amt);
+            const other = localEventData[otherField] || 0;
+            const max = parseInt(document.getElementById('config-max-score').value) || 21;
+
+            if (cur >= max && (cur - other) >= 2) {
+                // Venceu o set
+                await updateDoc(doc(db, 'volei_events', window.currentEventId), {
+                    scoreA: 0, scoreB: 0, [setField]: increment(1)
+                });
+                window.showToast(`Time ${team} fechou o set! 🏆`);
+            } else {
+                await updateDoc(doc(db, 'volei_events', window.currentEventId), { [field]: cur });
+            }
         };
 
-        window.resetScore = async () => { if(confirm("Zerar partida?")) await updateDoc(doc(db, 'volei_events', currentEventId), { scoreA:0, scoreB:0, setsA:0, setsB:0 }); };
-        window.removePlayer = async (id) => { const p = localEventData.participants.find(x => x.entryId === id); await updateDoc(doc(db, 'volei_events', currentEventId), { participants: arrayRemove(p) }); };
-
-        const renderEvent = (d) => {
-            document.getElementById('main-title-text').innerText = d.location;
-            document.querySelector('#display-address-text span').innerText = d.address;
-            document.getElementById('display-game-id').innerText = currentEventId;
-            const enc = encodeURIComponent(d.address);
-            document.getElementById('link-maps').href = `https://www.google.com/maps/search/?api=1&query=$00{enc}`;
-            document.getElementById('link-waze').href = `https://waze.com/ul?q=${enc}`;
-            if(d.groupLink) { document.getElementById('btn-join-group').href = d.groupLink; document.getElementById('btn-join-group').classList.remove('hidden'); }
-            document.getElementById('display-total-cost').innerText = `R$ ${d.totalCost.toFixed(2)}`;
-            const p = d.participants || [];
-            document.getElementById('display-person-cost').innerText = `R$ ${(d.totalCost / Math.max(1, p.length)).toFixed(2)}`;
-            document.getElementById('display-count').innerText = d.playerLimit ? `${p.length}/${d.playerLimit}` : p.length;
-            if(d.playerLimit) { document.getElementById('progress-container').classList.remove('hidden'); document.getElementById('progress-bar').style.width = Math.min(100, (p.length/d.playerLimit*100)) + '%'; }
-            document.getElementById('participants-list').innerHTML = p.map(u => `<li class="flex items-center justify-between p-3 bg-white/80 rounded-2xl shadow-sm border border-white/50 animate-pop"><span class="font-bold text-gray-700 uppercase text-xs ml-2">${u.name}</span><button onclick="removePlayer('${u.entryId}')" class="text-red-300 p-2 hover:bg-red-50 rounded-full transition-all"><i class="fa-solid fa-trash-can"></i></button></li>`).join('');
-            document.getElementById('score-a').innerText = d.scoreA || 0; document.getElementById('score-b').innerText = d.scoreB || 0;
-            document.getElementById('sets-a').innerText = d.setsA || 0; document.getElementById('sets-b').innerText = d.setsB || 0;
+        window.resetScore = async () => {
+            if (!confirm("Zerar pontuação e sets deste racha?")) return;
+            await updateDoc(doc(db, 'volei_events', window.currentEventId), {
+                scoreA: 0, scoreB: 0, setsA: 0, setsB: 0
+            });
+            window.showToast("Placar zerado!");
         };
 
-        const switchTab = (tab) => {
-            ['players', 'teams', 'score'].forEach(t => document.getElementById(`tab-content-${t}`).classList.add('hidden'));
-            ['players', 'teams', 'score'].forEach(t => { document.getElementById(`tab-btn-${t}`).classList.remove('bg-white', 'text-orange-600', 'shadow-sm'); document.getElementById(`tab-btn-${t}`).classList.add('text-white'); });
-            document.getElementById(`tab-content-${tab}`).classList.remove('hidden');
-            document.getElementById(`tab-btn-${tab}`).classList.add('bg-white', 'text-orange-600', 'shadow-sm');
-            document.getElementById(`tab-btn-${tab}`).classList.remove('text-white');
-        };
-        document.getElementById('tab-btn-players').onclick = () => switchTab('players');
-        document.getElementById('tab-btn-teams').onclick = () => switchTab('teams');
-        document.getElementById('tab-btn-score').onclick = () => switchTab('score');
+        // JUIZ DE VOZ
+        let voiceRecognition = null;
+        window.toggleVoiceRef = () => {
+            const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRec) { window.showToast("Navegador sem suporte a voz", "❌"); return; }
 
-        // --- VOZ ---
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if(SpeechRecognition) {
-            const rec = new SpeechRecognition(); rec.lang = 'pt-BR'; rec.continuous = true;
-            rec.onresult = (e) => {
+            const btn = document.getElementById('btn-voice-ref');
+            if (voiceRecognition) {
+                voiceRecognition.stop();
+                voiceRecognition = null;
+                btn.classList.remove('mic-listening');
+                btn.querySelector('span').innerText = 'Juiz de Voz';
+                window.showToast("Juiz de Voz Desativado");
+                return;
+            }
+
+            voiceRecognition = new SpeechRec();
+            voiceRecognition.lang = 'pt-BR';
+            voiceRecognition.continuous = true;
+
+            voiceRecognition.onresult = (e) => {
                 const text = e.results[e.results.length - 1][0].transcript.toLowerCase();
                 const teamA = document.getElementById('name-team-a').value.toLowerCase();
                 const teamB = document.getElementById('name-team-b').value.toLowerCase();
-                if(text.includes('ponto') || text.includes('marca')) {
-                    if(text.includes(teamA)) window.updateScore('A', 1);
-                    else if(text.includes(teamB)) window.updateScore('B', 1);
+
+                if (text.includes('ponto') || text.includes('marca') || text.includes('mais')) {
+                    if (text.includes('a') || text.includes('duff') || text.includes(teamA)) {
+                        window.updateScore('A', 1);
+                        window.showToast("Ponto pro Time A! 🗣️");
+                    } else if (text.includes('b') || text.includes('donut') || text.includes(teamB)) {
+                        window.updateScore('B', 1);
+                        window.showToast("Ponto pro Time B! 🗣️");
+                    }
                 }
             };
-            document.getElementById('btn-voice').onclick = () => {
-                const btn = document.getElementById('btn-voice');
-                if(btn.classList.contains('listening')) { rec.stop(); btn.classList.remove('listening', 'bg-red-100', 'animate-pulse'); btn.querySelector('span').innerText = "Ativar Juiz de Voz"; }
-                else { rec.start(); btn.classList.add('listening', 'bg-red-100', 'animate-pulse'); btn.querySelector('span').innerText = "Ouvindo..."; }
-            };
-        }
 
-        document.getElementById('create-form').onsubmit = async (e) => {
-            e.preventDefault(); const btn = e.target.querySelector('button'); btn.disabled = true;
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; const shortId = chars[Math.floor(Math.random() * 26)] + chars[Math.floor(Math.random() * 26)] + Math.floor(1000 + Math.random() * 9000);
-            try { await setDoc(doc(db, 'volei_events', shortId), { location: document.getElementById('input-location').value, address: document.getElementById('input-address').value, groupLink: document.getElementById('input-group-link').value, totalCost: parseFloat(document.getElementById('input-total').value), playerLimit: document.getElementById('check-unlimited').checked ? 0 : parseInt(document.getElementById('input-limit').value), participants: [], scoreA:0, scoreB:0, setsA:0, setsB:0, maxScore: 21, datetime: document.getElementById('input-datetime').value }); window.location.href = `?id=${shortId}`; } catch(err) { showToast("Erro ao criar."); btn.disabled = false; }
+            voiceRecognition.onerror = () => {
+                btn.classList.remove('mic-listening');
+                btn.querySelector('span').innerText = 'Juiz de Voz';
+                voiceRecognition = null;
+            };
+
+            voiceRecognition.start();
+            btn.classList.add('mic-listening');
+            btn.querySelector('span').innerText = 'Ouvindo... 🎙️';
+            window.showToast("Juiz de Voz ouvindo! Fale 'Ponto pro Time A'");
         };
 
-        document.getElementById('btn-share').onclick = () => { navigator.clipboard.writeText(window.location.href); showToast("Link Copiado! 🏐"); };
-        document.getElementById('btn-search-id').onclick = () => { const id = document.getElementById('input-search-id').value.trim().toUpperCase(); if(id) window.location.href = `?id=${id}`; };
-        const showToast = (m) => { toastMsg.innerText = m; toastEl.classList.add('show'); setTimeout(() => toastEl.classList.remove('show'), 3000); };
-        
+        // --- CARONAS (MÓDULO VIAGEM) ---
+        const renderCarpool = (cars, participants) => {
+            const listEl = document.getElementById('carpool-list');
+            listEl.innerHTML = '';
+
+            const assignedRiders = new Set();
+
+            if (cars.length === 0) {
+                listEl.innerHTML = `<div class="p-3 text-center text-xs font-bold text-gray-500 bg-white/50 border-2 border-dashed border-gray-400 rounded-xl">Nenhum carro oferecido ainda. Clique em "+ Oferecer Carro"!</div>`;
+            } else {
+                cars.forEach((car, cIdx) => {
+                    const riders = car.passengers || [];
+                    riders.forEach(r => assignedRiders.add(r));
+
+                    const isUserInCar = userData && (riders.includes(userData.name) || car.driver === userData.name);
+                    const hasSpace = riders.length < (car.seats || 4);
+
+                    const card = document.createElement('div');
+                    card.className = "glass-card-sub p-3.5 space-y-2 bg-white";
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between border-b border-black pb-1.5">
+                            <div>
+                                <h4 class="font-black text-xs uppercase">${escapeHtml(car.model)}</h4>
+                                <p class="text-[9px] font-bold text-blue-700 uppercase">Motorista: ${escapeHtml(car.driver)}</p>
+                            </div>
+                            <span class="text-[9px] font-black ${hasSpace ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} border border-black px-2 py-0.5 rounded-lg">
+                                ${riders.length} / ${car.seats} Vagas
+                            </span>
+                        </div>
+                        <div class="text-[10px] font-bold text-gray-700">
+                            Passageiros: ${riders.length > 0 ? riders.map(r => `<span class="bg-gray-100 border border-black px-1.5 py-0.5 rounded text-[9px] mr-1 uppercase">${escapeHtml(r)}</span>`).join('') : 'Carro vazio'}
+                        </div>
+                        <div class="pt-1 flex gap-2">
+                            ${isUserInCar ? `
+                                <button onclick="window.leaveCar(${cIdx})" class="btn-homer-sm bg-red-500 text-white px-3 py-1 rounded-lg text-[9px]">Sair da Carona</button>
+                            ` : (hasSpace ? `
+                                <button onclick="window.joinCar(${cIdx})" class="btn-homer-sm bg-blue-500 text-white px-3 py-1 rounded-lg text-[9px]">Entrar nesse Carro</button>
+                            ` : '<span class="text-[9px] font-bold text-gray-400">Carro Lotado!</span>')}
+                        </div>`;
+                    listEl.appendChild(card);
+                });
+            }
+
+            // Quem está sem carona
+            const unassigned = participants.filter(p => !assignedRiders.has(p.name)).map(p => p.name);
+            const unassignedEl = document.getElementById('unassigned-riders-text');
+            if (unassigned.length > 0) {
+                unassignedEl.innerText = unassigned.join(', ');
+            } else {
+                unassignedEl.innerText = 'Todo mundo já tem vaga garantida! 🚀';
+            }
+        };
+
+        window.openAddCarModal = () => document.getElementById('modal-car').classList.remove('hidden');
+        window.closeAddCarModal = () => document.getElementById('modal-car').classList.add('hidden');
+
+        window.saveNewCar = async () => {
+            const model = document.getElementById('car-model').value.trim();
+            const seats = parseInt(document.getElementById('car-seats').value) || 4;
+            if (!model || !userData) return;
+
+            const newCar = {
+                id: Date.now(),
+                model,
+                driver: userData.name,
+                seats,
+                passengers: []
+            };
+
+            await updateDoc(doc(db, 'volei_events', window.currentEventId), {
+                cars: arrayUnion(newCar)
+            });
+            window.closeAddCarModal();
+            window.showToast("Carro cadastrado com sucesso! 🚗");
+        };
+
+        window.joinCar = async (carIdx) => {
+            if (!userData || !localEventData) return;
+            const cars = [...(localEventData.cars || [])];
+            if (!cars[carIdx]) return;
+
+            // Remove de outros carros primeiro
+            cars.forEach(c => { c.passengers = (c.passengers || []).filter(p => p !== userData.name); });
+
+            cars[carIdx].passengers = cars[carIdx].passengers || [];
+            if (!cars[carIdx].passengers.includes(userData.name)) {
+                cars[carIdx].passengers.push(userData.name);
+            }
+
+            await updateDoc(doc(db, 'volei_events', window.currentEventId), { cars });
+            window.showToast("Você pegou vaga nesse carro! 🚗");
+        };
+
+        window.leaveCar = async (carIdx) => {
+            if (!userData || !localEventData) return;
+            const cars = [...(localEventData.cars || [])];
+            if (!cars[carIdx]) return;
+
+            cars[carIdx].passengers = (cars[carIdx].passengers || []).filter(p => p !== userData.name);
+            await updateDoc(doc(db, 'volei_events', window.currentEventId), { cars });
+            window.showToast("Você saiu da carona!");
+        };
+
+        // --- ROTEIRO (MÓDULO VIAGEM) ---
+        const renderItinerary = (itinerary) => {
+            const listEl = document.getElementById('itinerary-list');
+            listEl.innerHTML = '';
+            if (itinerary.length === 0) {
+                listEl.innerHTML = `<div class="p-3 text-center text-xs font-bold text-gray-500 bg-white/50 border-2 border-dashed border-gray-400 rounded-xl">Nenhum passeio programado ainda. Clique em "+ Programação"!</div>`;
+                return;
+            }
+
+            itinerary.forEach((act, idx) => {
+                const div = document.createElement('div');
+                div.className = `p-3 rounded-xl border-2 border-black flex items-center justify-between ${act.done ? 'bg-gray-100 opacity-60' : 'bg-white shadow-[2px_2px_0px_#000]'}`;
+                div.innerHTML = `
+                    <div>
+                        <span class="text-[9px] font-black uppercase text-blue-700">${escapeHtml(act.day)}</span>
+                        <p class="font-black text-xs text-black ${act.done ? 'line-through' : ''}">${escapeHtml(act.desc)}</p>
+                    </div>
+                    <button onclick="window.toggleActivityDone(${idx})" class="text-sm font-black p-1">
+                        ${act.done ? '✅' : '⬜'}
+                    </button>`;
+                listEl.appendChild(div);
+            });
+        };
+
+        window.openAddActivityModal = () => document.getElementById('modal-activity').classList.remove('hidden');
+        window.closeAddActivityModal = () => document.getElementById('modal-activity').classList.add('hidden');
+
+        window.saveNewActivity = async () => {
+            const day = document.getElementById('act-day').value.trim();
+            const desc = document.getElementById('act-desc').value.trim();
+            if (!day || !desc) return;
+
+            await updateDoc(doc(db, 'volei_events', window.currentEventId), {
+                itinerary: arrayUnion({ day, desc, done: false, createdAt: Date.now() })
+            });
+            window.closeAddActivityModal();
+            window.showToast("Parada adicionada ao roteiro!");
+        };
+
+        window.toggleActivityDone = async (idx) => {
+            const itinerary = [...(localEventData.itinerary || [])];
+            if (!itinerary[idx]) return;
+            itinerary[idx].done = !itinerary[idx].done;
+            await updateDoc(doc(db, 'volei_events', window.currentEventId), { itinerary });
+        };
+
+        // --- CHECKLIST / MOCHILA ---
+        const renderChecklist = (checklist) => {
+            const listEl = document.getElementById('checklist-items');
+            listEl.innerHTML = '';
+            if (checklist.length === 0) {
+                listEl.innerHTML = `<div class="p-3 text-center text-xs font-bold text-gray-500 bg-white/50 border-2 border-dashed border-gray-400 rounded-xl">Checklist vazio. Adicione itens como gelo, carvão, protetor, caixa de som!</div>`;
+                return;
+            }
+
+            checklist.forEach((item, idx) => {
+                const div = document.createElement('div');
+                div.className = `p-2.5 rounded-xl border-2 border-black flex items-center justify-between ${item.packed ? 'bg-green-50' : 'bg-white shadow-[2px_2px_0px_#000]'}`;
+                div.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <button onclick="window.toggleCheckItem(${idx})" class="text-base">${item.packed ? '✅' : '⬜'}</button>
+                        <div>
+                            <p class="font-black text-xs ${item.packed ? 'line-through text-gray-500' : 'text-black'}">${escapeHtml(item.name)}</p>
+                            <span class="text-[9px] font-bold text-gray-500 uppercase">Leva: ${escapeHtml(item.assigned || 'Quem puder')}</span>
+                        </div>
+                    </div>
+                    <button onclick="window.deleteCheckItem(${idx})" class="text-gray-400 hover:text-red-600 p-1 text-xs">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>`;
+                listEl.appendChild(div);
+            });
+        };
+
+        window.openAddChecklistModal = () => document.getElementById('modal-checklist').classList.remove('hidden');
+        window.closeAddChecklistModal = () => document.getElementById('modal-checklist').classList.add('hidden');
+
+        window.saveNewChecklistItem = async () => {
+            const name = document.getElementById('check-item-name').value.trim();
+            const assigned = document.getElementById('check-item-resp').value.trim();
+            if (!name) return;
+
+            await updateDoc(doc(db, 'volei_events', window.currentEventId), {
+                checklist: arrayUnion({ name, assigned, packed: false, id: Date.now() })
+            });
+            window.closeAddChecklistModal();
+            window.showToast("Item adicionado ao checklist!");
+        };
+
+        window.toggleCheckItem = async (idx) => {
+            const checklist = [...(localEventData.checklist || [])];
+            if (!checklist[idx]) return;
+            checklist[idx].packed = !checklist[idx].packed;
+            await updateDoc(doc(db, 'volei_events', window.currentEventId), { checklist });
+        };
+
+        window.deleteCheckItem = async (idx) => {
+            const checklist = [...(localEventData.checklist || [])];
+            checklist.splice(idx, 1);
+            await updateDoc(doc(db, 'volei_events', window.currentEventId), { checklist });
+        };
+
+        // --- CALCULADORA DE CHURRASCO DO ROLÊ ---
+        window.calcBbq = () => {
+            const m = parseInt(document.getElementById('bbq-input-men').value) || 0;
+            const w = parseInt(document.getElementById('bbq-input-women').value) || 0;
+            const k = parseInt(document.getElementById('bbq-input-kids').value) || 0;
+
+            const carneTotalKg = ((m * 450) + (w * 300) + (k * 200)) / 1000;
+            const carneBovina = (carneTotalKg * 0.65).toFixed(1);
+            const frangoLinguica = (carneTotalKg * 0.35).toFixed(1);
+            const paoDeAlho = Math.ceil((m * 1.5) + (w * 1) + (k * 0.5));
+            const latasCerveja = Math.ceil((m * 6) + (w * 4));
+            const caixasCerva = Math.ceil(latasCerveja / 12);
+            const litrosRefri = Math.ceil(((m * 0.5) + (w * 0.8) + (k * 0.8)));
+            const carvao = Math.max(1, Math.ceil(carneTotalKg / 5));
+            const gelo = Math.max(1, Math.ceil(latasCerveja / 24));
+
+            document.getElementById('res-carne').innerText = `${carneBovina} kg`;
+            document.getElementById('res-frango').innerText = `${frangoLinguica} kg`;
+            document.getElementById('res-paodealho').innerText = `${paoDeAlho} unid`;
+            document.getElementById('res-cerveja').innerText = `${latasCerveja} latas (${caixasCerva} cx)`;
+            document.getElementById('res-refri').innerText = `${litrosRefri} Litros`;
+            document.getElementById('res-extras').innerText = `${carvao} saco(s) carvão / ${gelo} saco(s) gelo`;
+        };
+
+        window.copyBbqList = () => {
+            const text = `🔥 LISTA DO CHURRASCO - CUIDA NA FUGA 🍻\n` +
+                `🥩 Carne Bovina: ${document.getElementById('res-carne').innerText}\n` +
+                `🍗 Frango/Linguiça: ${document.getElementById('res-frango').innerText}\n` +
+                `🥖 Pão de Alho: ${document.getElementById('res-paodealho').innerText}\n` +
+                `🍺 Cerveja: ${document.getElementById('res-cerveja').innerText}\n` +
+                `🥤 Refri/Água: ${document.getElementById('res-refri').innerText}\n` +
+                `🧊 Carvão & Gelo: ${document.getElementById('res-extras').innerText}`;
+            navigator.clipboard.writeText(text);
+            window.showToast("Lista copiada pro Clipboard! 📋");
+        };
+
+        // --- CALCULADORA STANDALONE ---
+        window.calcStandBbq = () => {
+            const m = parseInt(document.getElementById('std-bbq-men').value) || 0;
+            const w = parseInt(document.getElementById('std-bbq-women').value) || 0;
+            const k = parseInt(document.getElementById('std-bbq-kids').value) || 0;
+
+            const carneTotalKg = ((m * 450) + (w * 300) + (k * 200)) / 1000;
+            const carneBovina = (carneTotalKg * 0.65).toFixed(1);
+            const frangoLinguica = (carneTotalKg * 0.35).toFixed(1);
+            const paoDeAlho = Math.ceil((m * 1.5) + (w * 1) + (k * 0.5));
+            const latasCerveja = Math.ceil((m * 6) + (w * 4));
+            const caixasCerva = Math.ceil(latasCerveja / 12);
+            const litrosRefri = Math.ceil(((m * 0.5) + (w * 0.8) + (k * 0.8)));
+            const carvao = Math.max(1, Math.ceil(carneTotalKg / 5));
+            const gelo = Math.max(1, Math.ceil(latasCerveja / 24));
+
+            document.getElementById('std-res-carne').innerText = `${carneBovina} kg`;
+            document.getElementById('std-res-frango').innerText = `${frangoLinguica} kg`;
+            document.getElementById('std-res-paodealho').innerText = `${paoDeAlho} unid`;
+            document.getElementById('std-res-cerveja').innerText = `${latasCerveja} latas (${caixasCerva} cx)`;
+            document.getElementById('std-res-refri').innerText = `${litrosRefri} Litros`;
+            document.getElementById('std-res-extras').innerText = `${carvao} carvão / ${gelo} gelo`;
+        };
+
+        window.copyStandBbqList = () => {
+            const text = `🔥 CHURRASCÔMETRO DO HOMER - CUIDA NA FUGA 🥩\n` +
+                `🥩 Carne Bovina: ${document.getElementById('std-res-carne').innerText}\n` +
+                `🍗 Frango & Linguiça: ${document.getElementById('std-res-frango').innerText}\n` +
+                `🥖 Pão de Alho: ${document.getElementById('std-res-paodealho').innerText}\n` +
+                `🍺 Cerveja Duff: ${document.getElementById('std-res-cerveja').innerText}\n` +
+                `🥤 Bebidas não alcoólicas: ${document.getElementById('std-res-refri').innerText}\n` +
+                `🧊 Carvão & Gelo: ${document.getElementById('std-res-extras').innerText}`;
+            navigator.clipboard.writeText(text);
+            window.showToast("Lista copiada! Mande no WhatsApp 🚀");
+        };
+
+        // --- DESPESAS EXTRAS & NOTAS ---
+        const renderReceiptsList = (receipts) => {
+            const listEl = document.getElementById('receipts-list');
+            listEl.innerHTML = '';
+            if (receipts.length === 0) {
+                listEl.innerHTML = `<div class="p-3 text-center text-xs font-bold text-gray-500 bg-white/50 border-2 border-dashed border-gray-400 rounded-xl">Nenhuma nota ou despesa extra lançada ainda.</div>`;
+                return;
+            }
+
+            receipts.forEach((r, idx) => {
+                const div = document.createElement('div');
+                div.className = "flex items-center justify-between p-3 bg-white border-2 border-black rounded-xl shadow-[2px_2px_0px_#000]";
+                div.innerHTML = `
+                    <div>
+                        <p class="font-black text-xs uppercase">${escapeHtml(r.title)}</p>
+                        <span class="text-[9px] font-bold text-gray-500">Lançado por ${escapeHtml(r.by || 'Alguém')}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-black text-xs text-blue-700">R$ ${parseFloat(r.value).toFixed(2).replace('.', ',')}</span>
+                        <button onclick="window.deleteReceipt(${idx})" class="text-red-500 p-1 text-xs"><i class="fa-solid fa-trash"></i></button>
+                    </div>`;
+                listEl.appendChild(div);
+            });
+        };
+
+        window.openNoteModal = () => document.getElementById('modal-note').classList.remove('hidden');
+        window.closeNoteModal = () => document.getElementById('modal-note').classList.add('hidden');
+
+        window.saveNote = async () => {
+            const t = document.getElementById('note-title').value.trim();
+            const v = parseFloat(document.getElementById('note-val').value);
+            if (!t || isNaN(v) || v <= 0) return;
+
+            await updateDoc(doc(db, 'volei_events', window.currentEventId), {
+                receipts: arrayUnion({
+                    id: Date.now(),
+                    title: t,
+                    value: v,
+                    by: userData ? userData.name : 'Convidado'
+                })
+            });
+            document.getElementById('note-title').value = '';
+            document.getElementById('note-val').value = '';
+            window.closeNoteModal();
+            window.showToast("Nota adicionada com sucesso!");
+        };
+
+        window.deleteReceipt = async (idx) => {
+            const receipts = [...(localEventData.receipts || [])];
+            receipts.splice(idx, 1);
+            await updateDoc(doc(db, 'volei_events', window.currentEventId), { receipts });
+            window.showToast("Nota removida!");
+        };
+
+        // --- CRIAR EVENTO ---
+        document.getElementById('create-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit-create');
+            btn.disabled = true;
+            btn.innerText = "Lançando...";
+
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const shortId = chars[Math.floor(Math.random() * 26)] +
+                            chars[Math.floor(Math.random() * 26)] +
+                            Math.floor(1000 + Math.random() * 9000);
+
+            const isUnlimited = document.getElementById('create-unlimited').checked;
+            const limitVal = parseInt(document.getElementById('create-limit').value) || 0;
+
+            const newEvent = {
+                category: document.getElementById('create-category').value,
+                location: document.getElementById('create-title').value.trim(),
+                address: document.getElementById('create-address').value.trim(),
+                datetime: document.getElementById('create-datetime').value,
+                totalCost: parseFloat(document.getElementById('create-total').value) || 0,
+                groupLink: document.getElementById('create-group').value.trim(),
+                playerLimit: isUnlimited ? 0 : limitVal,
+                participants: userData ? [{
+                    entryId: userData.uid,
+                    name: userData.name,
+                    paid: false,
+                    churras: true,
+                    joinedAt: new Date().toISOString()
+                }] : [],
+                scoreA: 0, scoreB: 0,
+                setsA: 0, setsB: 0,
+                receipts: [],
+                cars: [],
+                itinerary: [],
+                checklist: [],
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                await setDoc(doc(db, 'volei_events', shortId), newEvent);
+                window.currentEventId = shortId;
+                window.location.href = `?id=${shortId}`;
+            } catch (err) {
+                console.error("Erro ao criar:", err);
+                window.showToast("Erro ao criar rolê!", "❌");
+                btn.disabled = false;
+                btn.innerText = "Lançar a Braba! 🚀";
+            }
+        };
+
+        // Toggle checkbox limite de pessoas
+        document.getElementById('create-unlimited').onchange = (e) => {
+            document.getElementById('create-limit-wrapper').classList.toggle('hidden', e.target.checked);
+        };
+
+        // --- EDITAR EVENTO (MODAL) ---
+        window.openEditModal = () => {
+            if (!localEventData) return;
+            document.getElementById('modal-edit-title').value = localEventData.location || '';
+            document.getElementById('modal-edit-address').value = localEventData.address || '';
+            document.getElementById('modal-edit-total').value = localEventData.totalCost || '';
+            document.getElementById('modal-edit-group').value = localEventData.groupLink || '';
+            document.getElementById('modal-edit').classList.remove('hidden');
+        };
+
+        window.closeEditModal = () => document.getElementById('modal-edit').classList.add('hidden');
+
+        window.saveEditModal = async () => {
+            const title = document.getElementById('modal-edit-title').value.trim();
+            const address = document.getElementById('modal-edit-address').value.trim();
+            const total = parseFloat(document.getElementById('modal-edit-total').value) || 0;
+            const group = document.getElementById('modal-edit-group').value.trim();
+
+            if (!title) return;
+            await updateDoc(doc(db, 'volei_events', window.currentEventId), {
+                location: title,
+                address: address,
+                totalCost: total,
+                groupLink: group
+            });
+            window.closeEditModal();
+            window.showToast("Detalhes atualizados!");
+        };
+
+        // --- COMPARTILHAR & CÓDIGOS ---
+        window.copyEventCode = () => {
+            if (!window.currentEventId) return;
+            navigator.clipboard.writeText(window.currentEventId);
+            window.showToast(`Código ${window.currentEventId} copiado!`);
+        };
+
+        window.shareEvent = () => {
+            if (navigator.share) {
+                navigator.share({
+                    title: localEventData?.location || 'Cuida na Fuga',
+                    text: `Bora pro rolê: ${localEventData?.location}! Código: ${window.currentEventId}`,
+                    url: window.location.href
+                }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                window.showToast("Link copiado! Mande pra galera 🚀");
+            }
+        };
+
+        window.addToCalendar = () => {
+            if (!localEventData?.datetime) { window.showToast("Sem data definida!", "⚠️"); return; }
+            const d = new Date(localEventData.datetime);
+            const start = d.toISOString().replace(/-|:|\.\d\d\d/g, "");
+            const end = new Date(d.getTime() + 2 * 60 * 60 * 1000).toISOString().replace(/-|:|\.\d\d\d/g, "");
+            const title = encodeURIComponent(localEventData.location || 'Rolê Cuida na Fuga');
+            const loc = encodeURIComponent(localEventData.address || '');
+            const gCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&location=${loc}`;
+            window.open(gCalUrl, '_blank');
+        };
+
+        // --- GESTÃO DE USUÁRIOS DA DIRETORIA (ADMIN) ---
+        document.getElementById('form-add-user').onsubmit = async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('new-user-name').value.trim();
+            const login = document.getElementById('new-user-login').value.trim().toLowerCase();
+            const pass = document.getElementById('new-user-pass').value.trim();
+
+            if (!name || !login || !pass) return;
+            await setDoc(doc(db, 'app_users', login), {
+                name, username: login, password: pass, role: 'admin'
+            });
+            e.target.reset();
+            window.showToast("Membro da Diretoria salvo!");
+        };
+
+        const loadUsersList = () => {
+            onSnapshot(collection(db, 'app_users'), (snap) => {
+                const list = document.getElementById('users-list');
+                list.innerHTML = '';
+                snap.forEach(d => {
+                    const u = d.data();
+                    const div = document.createElement('div');
+                    div.className = "p-2 bg-white border border-black rounded-lg flex items-center justify-between text-xs";
+                    div.innerHTML = `
+                        <div>
+                            <p class="font-black uppercase">${escapeHtml(u.name)} ⭐</p>
+                            <span class="text-[9px] text-gray-500 font-mono">@${escapeHtml(u.username)} • Senha: ${escapeHtml(u.password)}</span>
+                        </div>
+                        ${u.username !== 'weverson' ? `
+                            <button onclick="window.deleteUser('${u.username}')" class="text-red-600 p-1"><i class="fa-solid fa-trash"></i></button>
+                        ` : ''}`;
+                    list.appendChild(div);
+                });
+            });
+        };
+
+        window.deleteUser = async (uLogin) => {
+            if (!confirm(`Remover @${uLogin}?`)) return;
+            await deleteDoc(doc(db, 'app_users', uLogin));
+            window.showToast("Usuário removido!");
+        };
+
+        // --- MONITOR DE STATUS OFFLINE ---
+        window.addEventListener('online', () => {
+            document.getElementById('offline-indicator').classList.add('hidden');
+            window.showToast("Conexão restabelecida! 🟢");
+        });
+        window.addEventListener('offline', () => {
+            document.getElementById('offline-indicator').classList.remove('hidden');
+        });
+
+        // Inicia aplicação
         init();
     </script>
+
+    <!-- SERVICE WORKER -->
     <script>
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(err => console.log("SW error:", err)); });
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(() => {});
+            });
         }
     </script>
 </body>
