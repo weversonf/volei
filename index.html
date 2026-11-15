@@ -59,6 +59,19 @@ label{font-size:11px;text-align:left;text-transform:uppercase;font-weight:900;co
 
 
 .calendar-panel{padding:18px}.calendar-header{flex-wrap:nowrap;gap:8px;margin-bottom:10px}.calendar-header h3{text-align:center;margin:0;font-size:20px}.calendar-arrow{width:44px;min-width:44px;height:44px;padding:0;font-size:27px}.calendar-tools{flex-wrap:nowrap;align-items:flex-end;margin-bottom:16px}.calendar-filter{flex:1;max-width:240px}.calendar-filter select{margin:3px 0 0;padding:8px;font-size:12px}.calendar-weekdays,.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}.calendar-weekdays{margin-bottom:6px}.calendar-weekdays span{text-align:center;font-size:10px;font-weight:900;color:#555}.calendar-day{min-width:0;min-height:58px;border:2px solid #111;border-radius:10px;background:white;color:#111;box-shadow:2px 2px #000;padding:5px 2px;display:flex;align-items:center;flex-direction:column;gap:2px;font-size:14px}.calendar-day.other-month{border-color:#ddd;color:#999;background:#f7f7f7;box-shadow:none}.calendar-day.is-today .day-number{background:#FFD90F;border:1px solid #000;border-radius:50%}.calendar-day.is-selected{background:#1654d8;color:white;box-shadow:3px 3px #000}.calendar-day.is-selected .day-number{background:transparent;color:white}.calendar-day.is-selected .calendar-dot{background:white}.day-number{min-width:23px;line-height:23px;text-align:center;font-weight:900}.calendar-dots{display:flex;gap:3px;flex-wrap:wrap;justify-content:center}.calendar-dot{width:7px;height:7px;background:#e95624;border:1px solid #111;border-radius:50%}.calendar-event-count{font-size:9px;font-weight:900}.calendar-legend{display:flex;justify-content:space-between;gap:7px;padding-top:13px;font-size:10px;font-weight:800}.agenda-day-title{margin:14px 0}.agenda-day-title h3{margin:0}@media(max-width:430px){.calendar-panel{padding:12px}.calendar-weekdays,.calendar-grid{gap:3px}.calendar-day{min-height:52px;padding:3px 1px;font-size:12px}.calendar-header h3{font-size:17px}}
+
+/* Agenda: alternar calendário e lista */
+.agenda-view-switch{display:flex;gap:8px;margin:14px 0 18px}
+.agenda-view-switch button{flex:1;background:#fff;color:#111;border:3px solid #111;box-shadow:3px 3px 0 #000;padding:11px 7px;min-width:0;font-size:12px}
+.agenda-view-switch button.active{background:#1654d8;color:#fff}
+.list-filter-panel{padding:14px 18px;margin-bottom:12px}
+.list-filter-panel label{max-width:100%;margin:0}
+.list-filter-panel select{margin:5px 0 0}
+.event-list-date{font-size:13px;font-weight:900;color:#1654d8;text-transform:capitalize;margin:8px 0}
+.event-list-card{cursor:pointer}
+.event-list-card:focus-visible{outline:4px solid #1654d8;outline-offset:4px}
+.event-list-card h3{margin-top:10px}
+.event-list-card p{margin:6px 0}
 </style></head>
 <body><header><div class="inner"><div class="logo-wrap"><div class="logo-donut" aria-hidden="true">🍩</div><div><div class="brand-title">Cuida na Fuga</div><span class="brand-caption">O Hub Oficial dos Rolês</span></div></div><span id="who" class="muted">Visitante 👤</span></div></header>
 <div id="nav" class="bottom hidden"><button data-page="agenda">📅 Agenda</button><button data-page="novo" class="manager-only">➕ Evento</button><button data-page="perfil">👤 Perfil</button><button data-page="gestao" class="owner-only">🛡️ Gestão</button></div>
@@ -73,13 +86,14 @@ label{font-size:11px;text-align:left;text-transform:uppercase;font-weight:900;co
 <section id="waiting" class="panel hidden" style="text-align:center"><h2 id="waitTitle">Aguardando aprovação ⏳</h2><p id="waitText">Seu cadastro está na fila do Super Admin.</p><button id="logoutWaiting">Sair</button></section>
 <section id="agenda" class="hidden">
 <div class="row between"><h2>📅 Agenda da Galera</h2><span id="eventCount" class="muted"></span></div>
-<div class="panel calendar-panel">
+<div class="agenda-view-switch" role="group" aria-label="Modo de visualização"><button id="viewCalendar" type="button" aria-pressed="true">📅 Calendário</button><button id="viewList" type="button" aria-pressed="false">☷ Lista de eventos</button></div>
+<div id="calendarView"><div class="panel calendar-panel">
 <div class="row between calendar-header"><button id="monthPrev" class="secondary calendar-arrow" aria-label="Mês anterior">‹</button><h3 id="monthTitle"></h3><button id="monthNext" class="secondary calendar-arrow" aria-label="Próximo mês">›</button></div>
 <div class="row between calendar-tools"><button id="monthToday" class="secondary small">Hoje</button><label class="calendar-filter">Filtrar<select id="categoryFilter"><option value="all">Todos</option><option value="volei">🏐 Vôlei</option><option value="churrasco">🍖 Churrasco</option><option value="viagem">🚗 Viagem</option><option value="aniversario">🎂 Aniversário</option><option value="jogos">🎮 Jogos</option><option value="outro">🎉 Outros</option></select></label></div>
 <div class="calendar-weekdays"><span>SEG</span><span>TER</span><span>QUA</span><span>QUI</span><span>SEX</span><span>SÁB</span><span>DOM</span></div>
 <div id="calendarGrid" class="calendar-grid" role="group" aria-label="Dias do mês"></div>
 <div class="calendar-legend"><span>● Dia com rolê</span><span>🔒 Evento privado</span></div>
-</div><div class="row between agenda-day-title"><h3 id="selectedDayTitle"></h3><span id="selectedDayCount" class="tag"></span></div><div id="eventList" class="grid" aria-live="polite"></div></section>
+</div><div class="row between agenda-day-title"><h3 id="selectedDayTitle"></h3><span id="selectedDayCount" class="tag"></span></div><div id="eventList" class="grid" aria-live="polite"></div></div><div id="allEventsView" class="hidden"><div class="panel list-filter-panel"><label>Filtrar eventos<select id="listCategoryFilter"><option value="all">Todos os tipos</option><option value="volei">🏐 Vôlei</option><option value="churrasco">🍖 Churrasco</option><option value="viagem">🚗 Viagem</option><option value="aniversario">🎂 Aniversário</option><option value="jogos">🎮 Jogos</option><option value="outro">🎉 Outros</option></select></label></div><div class="row between agenda-day-title"><h3>Todos os rolês</h3><span id="allEventsCount" class="tag"></span></div><div id="allEventsList" class="grid" aria-live="polite"></div></div></section>
 <section id="novo" class="hidden panel"><h2>Novo evento</h2><p class="muted">Disponível para a Diretoria.</p><form id="eventForm"><label>Categoria<select id="eventCategory"><option value="volei">🏐 Vôlei</option><option value="churrasco">🍖 Churrasco</option><option value="viagem">🚗 Viagem</option><option value="aniversario">🎂 Aniversário</option><option value="jogos">🎮 Jogos</option><option value="outro">🎉 Outro</option></select></label><label>Nome do evento<input id="eventName" required maxlength="120"></label><label>Local<input id="eventPlace" required maxlength="250"></label><label>Data e hora<input id="eventDate" type="datetime-local" required></label><label>Custo previsto (R$)<input id="eventCost" type="number" step=".01" min="0" value="0"></label><label>Visibilidade<select id="visibility"><option value="open">🌐 Aberto para membros</option><option value="private">🔒 Privado — somente convidados</option></select></label><div id="inviteeWrap" class="sub hidden"><h3>Convidar membros</h3><div id="inviteeList"></div></div><button type="submit">Criar evento</button></form></section>
 <section id="detalhe" class="hidden"><button id="back" class="secondary">← Agenda</button><article class="panel" style="margin-top:14px"><div class="row between"><h2 id="detailTitle"></h2><span id="detailPrivacy" class="tag"></span></div><p id="detailMeta"></p><p id="detailCost" class="muted"></p><div class="row"><button id="join">Confirmar presença</button><button id="copyEvent" class="secondary">Compartilhar</button><button id="deleteEvent" class="danger manager-only">Excluir</button></div></article><article class="panel"><h3>👥 Presenças</h3><div id="presenceList"></div></article><article class="panel"><h3>💰 Despesas</h3><p id="expenseTotal"></p><div id="expenses"></div><form id="expenseForm" class="manager-only"><label>Descrição<input id="expenseName" required></label><label>Valor<input id="expenseValue" type="number" min="0" step=".01" required></label><button>Adicionar despesa</button></form></article><article class="panel"><h3>✅ Checklist</h3><div id="checklist"></div><form id="checklistForm" class="manager-only"><label>Item<input id="checklistName" required></label><button>Adicionar item</button></form></article></section>
 <section id="perfil" class="hidden panel"><h2>Meu perfil</h2><p id="profileDetails"></p><button id="logout" class="danger">Sair da conta</button></section>
@@ -136,7 +150,41 @@ const keyDay=(y,m,d)=>y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2
 let selectedDay=todayKey(),viewYear=Number(selectedDay.slice(0,4)),viewMonth=Number(selectedDay.slice(5,7))-1;
 const dayLabel=key=>{const a=key.split('-').map(Number);return new Date(a[0],a[1]-1,a[2]).toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})};
 const typeIcon={volei:'🏐',churrasco:'🍖',viagem:'🚗',aniversario:'🎂',jogos:'🎮',outro:'🎉'};
+let agendaView='calendar';
+function setAgendaView(mode){
+ agendaView=mode==='list'?'list':'calendar';
+ $('calendarView').classList.toggle('hidden',agendaView!=='calendar');
+ $('allEventsView').classList.toggle('hidden',agendaView!=='list');
+ for(const [id,selected] of [['viewCalendar',agendaView==='calendar'],['viewList',agendaView==='list']]){
+  $(id).classList.toggle('active',selected);
+  $(id).setAttribute('aria-pressed',String(selected));
+ }
+ renderEvents();
+}
+$('viewCalendar').onclick=()=>setAgendaView('calendar');
+$('viewList').onclick=()=>setAgendaView('list');
+$('listCategoryFilter').onchange=renderEvents;
+function renderAllEvents(){
+ const cat=$('listCategoryFilter').value;
+ const events=[...allEvents.values()].filter(e=>cat==='all'||e.category===cat).sort((a,b)=>{
+  const ad=a.datetime||'',bd=b.datetime||'';
+  return (ad?0:1)-(bd?0:1)||ad.localeCompare(bd);
+ });
+ $('allEventsCount').textContent=events.length+' evento(s)';
+ const root=$('allEventsList');root.replaceChildren();
+ if(!events.length){const empty=document.createElement('div');empty.className='panel muted';empty.textContent='Nenhum evento encontrado.';root.append(empty);return}
+ for(const ev of events){
+  const card=document.createElement('article');card.className='event panel event-list-card';card.tabIndex=0;card.setAttribute('role','button');
+  const date=typeof ev.datetime==='string'&&ev.datetime.length>=10?dayLabel(ev.datetime.slice(0,10)):'Data a definir';
+  card.innerHTML='<div class="event-list-date">📆 '+safe(date)+(ev.datetime?.slice(11,16)?' · '+safe(ev.datetime.slice(11,16)):'')+'</div><span class="tag '+(ev.visibility==='private'?'private':'')+'">'+(ev.visibility==='private'?'🔒 Privado':'🌐 Aberto')+'</span><h3>'+(typeIcon[ev.category]||'🎉')+' '+safe(ev.location||'Sem título')+'</h3><p class="muted">'+safe(ev.address||'Local a definir')+'</p><p class="muted">👥 '+(ev.participants?.length||0)+' confirmado(s)</p>';
+  card.onclick=()=>openEvent(ev.id);
+  card.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openEvent(ev.id)}};
+  root.append(card);
+ }
+}
+
 function renderEvents(){
+ renderAllEvents();
  const cat=$('categoryFilter').value;
  const events=[...allEvents.values()].filter(e=>cat==='all'||e.category===cat);
  const dates=new Map();
