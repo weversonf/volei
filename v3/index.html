@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#FFD90F"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="volleyball.png"><link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"><title>Cuida na Fuga</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#172033;background:#f3f5fa}*{box-sizing:border-box}body{margin:0}header{background:#151c2f;color:#fff;padding:22px 16px;position:sticky;top:0;z-index:5}header .inner{max-width:920px;margin:auto;display:flex;justify-content:space-between;align-items:center}h1{font-size:23px;margin:0}header small{color:#b5c3e0}main{max-width:920px;margin:22px auto 92px;padding:0 16px}.panel{background:white;border:1px solid #e3e7f0;border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:0 5px 15px #17203309}h2{font-size:21px;margin:0 0 12px}h3{margin:4px 0 10px;font-size:16px}p{line-height:1.5}button,input,select,textarea{font:inherit}input,select,textarea{width:100%;border:1px solid #cdd5e4;border-radius:10px;padding:12px;margin:6px 0 12px;background:#fff;color:#172033}button{border:0;background:#315cda;color:white;border-radius:11px;padding:11px 14px;font-weight:700;cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}button.secondary{background:#eef1f8;color:#172033}button.danger{background:#b72b43}button.outline{background:transparent;border:1px solid #c9d0df;color:#172033}button.small{padding:6px 9px;font-size:12px}label{font-size:13px;font-weight:700}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}.grow{flex:1}.muted{color:#697386;font-size:13px}.hidden{display:none!important}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}.event{border:1px solid #e0e4ed;border-radius:14px;padding:15px;cursor:pointer}.event:hover{border-color:#315cda}.tag{display:inline-block;background:#eff2fa;border-radius:99px;padding:4px 9px;font-size:12px;font-weight:700}.tag.private{background:#f9e9ee;color:#9e2442}.bottom{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;gap:7px;padding:9px;background:white;border-top:1px solid #e5e8ef;z-index:10}.bottom button{min-width:80px;flex:0 1 140px}.checkrow{display:flex;align-items:center;gap:9px;padding:7px;border-bottom:1px solid #eee}.checkrow input{width:auto;margin:0}.sub{background:#f6f8fc;padding:12px;border-radius:12px;margin:9px 0}.notice{background:#fff6dc;border-radius:12px;padding:13px}.error{color:#ba2440}.nowrap{white-space:nowrap}.kpi{font-size:26px;font-weight:900}@media(min-width:750px){.bottom{position:static;border:0;background:transparent;margin:14px auto;max-width:920px}.bottom button{flex:0 1 170px}} 
+
+
+/* Cuida na Fuga — identidade original preservada (homenagem Springfield) */
+:root{font-family:'Fredoka',system-ui,sans-serif;color:#101010;background:#FFD90F;--yellow:#FFD90F;--blue:#1654d8}
+body{font-family:'Fredoka',system-ui,sans-serif;color:#101010;background-color:var(--yellow);background-image:radial-gradient(circle at 15% 15%,rgba(255,255,255,.46),transparent 35%),radial-gradient(circle at 85% 85%,rgba(255,255,255,.46),transparent 35%),radial-gradient(#f6c80e 2px,transparent 2px);background-size:100% 100%,100% 100%,28px 28px;background-attachment:fixed;min-height:100vh}
+header{position:static;padding:28px 16px 14px;background:none;color:#000}
+header .inner{max-width:560px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo-wrap{display:flex;align-items:center;gap:12px;min-width:0}
+.logo-donut{width:58px;height:58px;border:3px solid #000;background:#fff;border-radius:50%;box-shadow:4px 4px 0 #000;display:grid;place-items:center;font-size:30px;flex-shrink:0}
+.brand-title{font-weight:900;font-size:clamp(19px,4.8vw,29px);line-height:1;letter-spacing:-.7px;text-transform:uppercase;font-style:italic;text-shadow:2px 2px #fff;white-space:nowrap}
+.brand-caption{display:block;color:#1648c0;font-weight:900;letter-spacing:1.8px;font-size:10px;text-transform:uppercase;padding-top:7px}
+#who{border:3px solid #000;border-radius:16px;box-shadow:3px 3px 0 #000;background:#fff;color:#000;font-size:12px;font-weight:900;padding:9px 12px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+main{max-width:560px;margin:14px auto 100px;padding:0 16px}
+.panel{background:rgba(255,255,255,.95);border:3px solid #000;border-radius:24px;padding:25px;box-shadow:7px 7px 0 #000;margin-bottom:18px;color:#111}
+#auth{max-width:100%!important;text-align:center;padding:30px 27px 28px}
+.auth-icon{font-size:62px;line-height:1;margin:6px 0 18px}
+h1,h2,h3{font-family:'Fredoka',system-ui,sans-serif;font-weight:900}
+h2{text-transform:uppercase;font-style:italic;font-size:clamp(24px,5vw,32px);line-height:1.16;letter-spacing:-.3px}
+h3{text-transform:uppercase;font-size:16px}
+#auth>h2{font-size:clamp(26px,5.6vw,34px);margin:7px 0 10px}
+#auth>p.muted{max-width:390px;margin:0 auto 25px;font-size:13px;color:#5a5b66;font-weight:800;line-height:1.5}
+p{line-height:1.45}
+.muted{color:#5f6470;font-weight:650}
+button{font-family:'Fredoka',sans-serif;border:3px solid #000;background:#1654d8;color:#fff;border-radius:13px;box-shadow:4px 4px 0 #000;text-transform:uppercase;font-weight:900;letter-spacing:.25px;transition:transform .12s,box-shadow .12s;min-height:42px}
+button:hover{filter:brightness(1.04)}
+button:active{transform:translate(2px,2px);box-shadow:2px 2px 0 #000}
+button.secondary{background:#fff;color:#151515}
+button.danger{background:#d61b22;color:white}
+button.outline{background:#fff;color:#174dd6}
+button.small{box-shadow:2px 2px #000;border-width:2px;min-height:31px}
+#login button{background:#20c45b;color:white;padding:14px}
+#google{background:#fff;color:#181818}
+#forgot{box-shadow:none;border:0;font-size:12px;text-decoration:underline;color:#1654d8;min-height:32px}
+input,select,textarea{font-family:'Fredoka',sans-serif;border:2px solid #000;border-radius:14px;background:#fff;color:#101010;font-size:14px;font-weight:700;padding:14px;margin-top:7px;margin-bottom:15px;outline-color:#1654d8}
+input::placeholder{color:#9399a7}
+label{font-size:11px;text-align:left;text-transform:uppercase;font-weight:900;color:#272727;display:block}
+#auth label{text-align:left}
+#register{border-top:3px dashed #111;margin-top:22px;padding-top:20px}
+.sub{background:rgba(255,255,255,.8);border:2px solid #000;border-radius:14px;padding:12px;margin:12px 0}
+.notice{border:2px solid #000}
+.event{border:3px solid #000;border-radius:17px;box-shadow:4px 4px 0 #000;background:#fff;padding:17px}
+.event:hover{border-color:#1654d8}
+.grid{grid-template-columns:1fr}
+.tag{background:#ffde64;border:2px solid #000;border-radius:9px;padding:4px 8px;font-size:11px;font-weight:900;text-transform:uppercase;color:#111}
+.tag.private{background:#ffadd0;color:#000}
+.bottom{max-width:560px;position:fixed;bottom:0;left:0;right:0;margin:0 auto;display:flex;justify-content:space-around;gap:3px;padding:8px 5px calc(10px + env(safe-area-inset-bottom));background:#fff;border:3px solid #000;border-bottom:0;border-radius:20px 20px 0 0;box-shadow:0 -4px 0 #0002;z-index:10}
+.bottom button{flex:1;min-width:0;border:0;box-shadow:none;background:transparent;color:#111;padding:9px 5px;min-height:42px;font-size:11px}
+.bottom button:hover{color:#1554d8}
+#agenda>.row h2,#novo>h2{font-size:25px}
+.checkrow{display:flex;text-align:left;align-items:center;gap:10px}
+.checkrow input{margin:0;width:auto}
+#toast{border:3px solid #000!important;box-shadow:3px 3px 0 #000!important;font-weight:800}
+@media(min-width:750px){.bottom{position:fixed;max-width:560px;background:#fff;border:3px solid #000;border-bottom:0}.bottom button{flex:1}main{margin-top:14px}}
+@media(max-width:430px){header{padding:16px 12px 10px}main{padding:0 14px}.logo-donut{width:47px;height:47px;font-size:24px}.brand-title{font-size:19px}.brand-caption{font-size:8px;letter-spacing:1.1px}#who{font-size:10px;padding:7px;max-width:96px}#auth{padding:24px 20px}.panel{padding:19px}}
+
+
+.calendar-panel{padding:18px}.calendar-header{flex-wrap:nowrap;gap:8px;margin-bottom:10px}.calendar-header h3{text-align:center;margin:0;font-size:20px}.calendar-arrow{width:44px;min-width:44px;height:44px;padding:0;font-size:27px}.calendar-tools{flex-wrap:nowrap;align-items:flex-end;margin-bottom:16px}.calendar-filter{flex:1;max-width:240px}.calendar-filter select{margin:3px 0 0;padding:8px;font-size:12px}.calendar-weekdays,.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}.calendar-weekdays{margin-bottom:6px}.calendar-weekdays span{text-align:center;font-size:10px;font-weight:900;color:#555}.calendar-day{min-width:0;min-height:58px;border:2px solid #111;border-radius:10px;background:white;color:#111;box-shadow:2px 2px #000;padding:5px 2px;display:flex;align-items:center;flex-direction:column;gap:2px;font-size:14px}.calendar-day.other-month{border-color:#ddd;color:#999;background:#f7f7f7;box-shadow:none}.calendar-day.is-today .day-number{background:#FFD90F;border:1px solid #000;border-radius:50%}.calendar-day.is-selected{background:#1654d8;color:white;box-shadow:3px 3px #000}.calendar-day.is-selected .day-number{background:transparent;color:white}.calendar-day.is-selected .calendar-dot{background:white}.day-number{min-width:23px;line-height:23px;text-align:center;font-weight:900}.calendar-dots{display:flex;gap:3px;flex-wrap:wrap;justify-content:center}.calendar-dot{width:7px;height:7px;background:#e95624;border:1px solid #111;border-radius:50%}.calendar-event-count{font-size:9px;font-weight:900}.calendar-legend{display:flex;justify-content:space-between;gap:7px;padding-top:13px;font-size:10px;font-weight:800}.agenda-day-title{margin:14px 0}.agenda-day-title h3{margin:0}@media(max-width:430px){.calendar-panel{padding:12px}.calendar-weekdays,.calendar-grid{gap:3px}.calendar-day{min-height:52px;padding:3px 1px;font-size:12px}.calendar-header h3{font-size:17px}}
+</style></head>
+<body><header><div class="inner"><div class="logo-wrap"><div class="logo-donut" aria-hidden="true">🍩</div><div><div class="brand-title">Cuida na Fuga</div><span class="brand-caption">O Hub Oficial dos Rolês</span></div></div><span id="who" class="muted">Visitante 👤</span></div></header>
+<div id="nav" class="bottom hidden"><button data-page="agenda">📅 Agenda</button><button data-page="novo" class="manager-only">➕ Evento</button><button data-page="perfil">👤 Perfil</button><button data-page="gestao" class="owner-only">🛡️ Gestão</button></div>
+<main>
+<section id="loading" class="panel"><h2>Carregando...</h2><p>Conectando ao Firebase.</p></section>
+<section id="auth" class="panel hidden" style="max-width:480px;margin:auto">
+<div class="auth-icon" aria-hidden="true">🍻</div><h2>Quem é você no rolê?</h2><p class="muted">Entre com seu e-mail ou Google. Novos membros precisam de convite e aprovação da Diretoria!</p>
+<form id="login"><label>E-mail<input id="email" type="email" required autocomplete="email"></label><label>Senha<input id="password" type="password" required autocomplete="current-password"></label><button style="width:100%">Entrar com e-mail</button></form>
+<button class="secondary" id="google" style="width:100%;margin-top:10px">Entrar com Google</button><button class="outline" id="forgot" style="width:100%;margin-top:10px">Esqueci minha senha</button>
+<div id="register" class="hidden sub"><h3>Cadastro por convite</h3><form id="signup"><label>Nome<input id="signupName" maxlength="80" required></label><label>E-mail<input id="signupEmail" type="email" required></label><label>Senha (8+ caracteres)<input id="signupPass" minlength="8" type="password" required></label><button style="width:100%">Solicitar cadastro</button></form><p class="muted">Você também pode usar o botão Google acima para cadastrar.</p></div>
+<p id="authInfo" class="muted"></p></section>
+<section id="waiting" class="panel hidden" style="text-align:center"><h2 id="waitTitle">Aguardando aprovação ⏳</h2><p id="waitText">Seu cadastro está na fila do Super Admin.</p><button id="logoutWaiting">Sair</button></section>
+<section id="agenda" class="hidden">
+<div class="row between"><h2>📅 Agenda da Galera</h2><span id="eventCount" class="muted"></span></div>
+<div class="panel calendar-panel">
+<div class="row between calendar-header"><button id="monthPrev" class="secondary calendar-arrow" aria-label="Mês anterior">‹</button><h3 id="monthTitle"></h3><button id="monthNext" class="secondary calendar-arrow" aria-label="Próximo mês">›</button></div>
+<div class="row between calendar-tools"><button id="monthToday" class="secondary small">Hoje</button><label class="calendar-filter">Filtrar<select id="categoryFilter"><option value="all">Todos</option><option value="volei">🏐 Vôlei</option><option value="churrasco">🍖 Churrasco</option><option value="viagem">🚗 Viagem</option><option value="aniversario">🎂 Aniversário</option><option value="jogos">🎮 Jogos</option><option value="outro">🎉 Outros</option></select></label></div>
+<div class="calendar-weekdays"><span>SEG</span><span>TER</span><span>QUA</span><span>QUI</span><span>SEX</span><span>SÁB</span><span>DOM</span></div>
+<div id="calendarGrid" class="calendar-grid" role="group" aria-label="Dias do mês"></div>
+<div class="calendar-legend"><span>● Dia com rolê</span><span>🔒 Evento privado</span></div>
+</div><div class="row between agenda-day-title"><h3 id="selectedDayTitle"></h3><span id="selectedDayCount" class="tag"></span></div><div id="eventList" class="grid" aria-live="polite"></div></section>
+<section id="novo" class="hidden panel"><h2>Novo evento</h2><p class="muted">Disponível para a Diretoria.</p><form id="eventForm"><label>Categoria<select id="eventCategory"><option value="volei">🏐 Vôlei</option><option value="churrasco">🍖 Churrasco</option><option value="viagem">🚗 Viagem</option><option value="aniversario">🎂 Aniversário</option><option value="jogos">🎮 Jogos</option><option value="outro">🎉 Outro</option></select></label><label>Nome do evento<input id="eventName" required maxlength="120"></label><label>Local<input id="eventPlace" required maxlength="250"></label><label>Data e hora<input id="eventDate" type="datetime-local" required></label><label>Custo previsto (R$)<input id="eventCost" type="number" step=".01" min="0" value="0"></label><label>Visibilidade<select id="visibility"><option value="open">🌐 Aberto para membros</option><option value="private">🔒 Privado — somente convidados</option></select></label><div id="inviteeWrap" class="sub hidden"><h3>Convidar membros</h3><div id="inviteeList"></div></div><button type="submit">Criar evento</button></form></section>
+<section id="detalhe" class="hidden"><button id="back" class="secondary">← Agenda</button><article class="panel" style="margin-top:14px"><div class="row between"><h2 id="detailTitle"></h2><span id="detailPrivacy" class="tag"></span></div><p id="detailMeta"></p><p id="detailCost" class="muted"></p><div class="row"><button id="join">Confirmar presença</button><button id="copyEvent" class="secondary">Compartilhar</button><button id="deleteEvent" class="danger manager-only">Excluir</button></div></article><article class="panel"><h3>👥 Presenças</h3><div id="presenceList"></div></article><article class="panel"><h3>💰 Despesas</h3><p id="expenseTotal"></p><div id="expenses"></div><form id="expenseForm" class="manager-only"><label>Descrição<input id="expenseName" required></label><label>Valor<input id="expenseValue" type="number" min="0" step=".01" required></label><button>Adicionar despesa</button></form></article><article class="panel"><h3>✅ Checklist</h3><div id="checklist"></div><form id="checklistForm" class="manager-only"><label>Item<input id="checklistName" required></label><button>Adicionar item</button></form></article></section>
+<section id="perfil" class="hidden panel"><h2>Meu perfil</h2><p id="profileDetails"></p><button id="logout" class="danger">Sair da conta</button></section>
+<section id="gestao" class="hidden"><div class="panel"><h2>🛡️ Super Admin</h2><p>Cadastros só entram por convite e precisam ser aprovados.</p><button id="generateInvite">🔗 Gerar link de convite (7 dias)</button><div id="inviteOutput" class="hidden sub"><input id="inviteUrl" readonly aria-label="Convite gerado"><button id="copyInvite">Copiar link</button></div><button id="migrateLegacy" class="secondary" style="width:100%;margin-top:9px">Atualizar eventos antigos para o novo formato</button></div><div class="panel"><h3>Solicitações pendentes</h3><div id="pendingUsers"></div></div><div class="panel"><h3>Membros e Diretoria</h3><div id="members"></div></div></section>
+</main><div id="toast" role="status" aria-live="polite" style="position:fixed;top:72px;right:14px;background:#202b45;color:white;padding:12px;border-radius:12px;display:none;max-width:340px;z-index:15"></div>
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import {getAuth,onAuthStateChanged,GoogleAuthProvider,signInWithPopup,signInWithEmailAndPassword,createUserWithEmailAndPassword,sendEmailVerification,sendPasswordResetEmail,signOut,reload} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import {getFirestore,doc,collection,query,where,getDoc,setDoc,updateDoc,deleteDoc,onSnapshot,serverTimestamp,arrayUnion,arrayRemove} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+const config={apiKey:'AIzaSyA3RQucgd5vMeJzZgZnC4Zim9hkFVVWXnw',authDomain:'volei-3f30d.firebaseapp.com',projectId:'volei-3f30d',storageBucket:'volei-3f30d.firebasestorage.app',messagingSenderId:'969073040869',appId:'1:969073040869:web:c0f6005d98fae4144de30c'};
+const auth=getAuth(initializeApp(config)),db=getFirestore(),OWNER='weversonf@gmail.com';
+const $=id=>document.getElementById(id), show=id=>{for(const el of document.querySelectorAll('main>section'))el.classList.add('hidden');$(id).classList.remove('hidden')};
+function toast(msg){$('toast').textContent=msg;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',4500)}
+function safe(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+const money=v=>'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const urlInvite=new URLSearchParams(location.search).get('convite');
+if(urlInvite&&/^[\w-]{24,100}$/.test(urlInvite))sessionStorage.setItem('cuidaInvite',urlInvite);
+const invite=sessionStorage.getItem('cuidaInvite');
+if(invite)$('register').classList.remove('hidden');
+let me=null,profile=null,event=null,allEvents=new Map(),userMap=new Map(),unsubs=[],profileStop=null;
+const manager=()=>profile?.status==='approved'&&['super_admin','director'].includes(profile.role);
+const boss=()=>profile?.status==='approved'&&profile.role==='super_admin';
+function clearSubs(){unsubs.forEach(f=>f());unsubs=[];allEvents.clear();userMap.clear()}
+function permissions(){document.querySelectorAll('.manager-only').forEach(x=>x.classList.toggle('hidden',!manager()));document.querySelectorAll('.owner-only').forEach(x=>x.classList.toggle('hidden',!boss()))}
+function page(name){if(!profile||profile.status!=='approved'||!me?.emailVerified)return; if(name==='novo'&&!manager()||name==='gestao'&&!boss())return;show(name);if(name==='perfil')$('profileDetails').textContent=profile.displayName+' · '+profile.email+' · '+profile.role}
+document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>page(b.dataset.page)));
+$('back').onclick=()=>page('agenda');
+$('logout').onclick=$('logoutWaiting').onclick=()=>signOut(auth);
+$('google').onclick=async()=>{try{await signInWithPopup(auth,new GoogleAuthProvider())}catch(e){console.error(e);toast('Não foi possível entrar com Google. Verifique domínios autorizados.')}};
+$('login').onsubmit=async e=>{e.preventDefault();try{await signInWithEmailAndPassword(auth,$('email').value.trim(),$('password').value)}catch(e){toast('E-mail ou senha inválidos.')}};
+$('signup').onsubmit=async e=>{e.preventDefault();if(!invite)return toast('Convite obrigatório');try{const c=await createUserWithEmailAndPassword(auth,$('signupEmail').value.trim(),$('signupPass').value);await sendEmailVerification(c.user);toast('Confira seu e-mail para confirmar a conta.')}catch(e){console.error(e);toast('Não foi possível criar a conta. Confira os dados.')}};
+$('forgot').onclick=async()=>{if(!$('email').value.trim())return toast('Informe seu e-mail acima');try{await sendPasswordResetEmail(auth,$('email').value.trim());toast('Se existir uma conta, enviaremos um e-mail.')}catch(e){toast('Falha na solicitação de recuperação.')}};
+function wait(title,desc){$('waitTitle').textContent=title;$('waitText').textContent=desc;show('waiting');$('nav').classList.add('hidden')}
+onAuthStateChanged(auth,async u=>{profileStop?.();profileStop=null;clearSubs();me=u;profile=null;$('nav').classList.add('hidden');if(!u){$('who').textContent='Visitante';show('auth');return}
+try{await reload(u);const ref=doc(db,'users',u.uid);let snap=await getDoc(ref);
+ if(!snap.exists()){
+  if(u.email?.toLowerCase()===OWNER&&u.emailVerified){await setDoc(ref,{displayName:u.displayName||'Weverson',email:u.email,role:'super_admin',status:'approved',inviteId:'',createdAt:serverTimestamp()})}
+  else if(invite){await setDoc(ref,{displayName:$('signupName').value.trim()||u.displayName||u.email.split('@')[0],email:u.email,role:'member',status:'pending',inviteId:invite,createdAt:serverTimestamp()});sessionStorage.removeItem('cuidaInvite')}
+  else{wait('Convite necessário','Solicite um link de cadastro ao Super Admin.');return}
+ }
+ profileStop=onSnapshot(ref,d=>{if(!d.exists()){wait('Cadastro indisponível','Entre em contato com o administrador.');return}profile={...d.data(),uid:u.uid};$('who').textContent=profile.displayName||u.email;
+ if(!u.emailVerified){wait('Verifique seu e-mail 📧','Clique no link enviado para seu e-mail e entre novamente.');return}
+ if(profile.status!=='approved'){wait(profile.status==='blocked'?'Conta bloqueada':profile.status==='rejected'?'Cadastro recusado':'Aguardando aprovação ⏳','Seu acesso ainda não foi liberado.');return}
+ $('nav').classList.remove('hidden');permissions();page('agenda');clearSubs();listenEvents();if(manager())listenApprovedUsers();if(boss())listenUsers();
+ },e=>{console.error(e);wait('Falha ao validar acesso','Não foi possível consultar seu perfil no Firebase.')})
+}catch(e){console.error(e);wait('Não foi possível concluir o cadastro','O convite pode estar inválido ou as regras de segurança ainda não foram publicadas. Entre em contato com o Super Admin.')}}
+);
+function listenEvents(){
+ const groups=manager()?[collection(db,'volei_events')]:[query(collection(db,'volei_events'),where('visibility','==','open')),query(collection(db,'volei_events'),where('visibility','==','private'),where('invitedUids','array-contains',me.uid))];
+ groups.forEach((q,i)=>{const unsub=onSnapshot(q,s=>{for(const [id,v] of [...allEvents])if(v._source===i)allEvents.delete(id);s.forEach(d=>allEvents.set(d.id,{...d.data(),id:d.id,_source:i}));renderEvents();if(event&&allEvents.has(event.id)){event=allEvents.get(event.id);renderDetail()}if(eventParam&&!event&&allEvents.has(eventParam))openEvent(eventParam)},e=>{console.error(e);toast('Não foi possível consultar eventos. Confira as regras Firestore.')});unsubs.push(unsub)});
+}
+const todayKey=()=>{const d=new Date();return keyDay(d.getFullYear(),d.getMonth(),d.getDate())};
+const keyDay=(y,m,d)=>y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+let selectedDay=todayKey(),viewYear=Number(selectedDay.slice(0,4)),viewMonth=Number(selectedDay.slice(5,7))-1;
+const dayLabel=key=>{const a=key.split('-').map(Number);return new Date(a[0],a[1]-1,a[2]).toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})};
+const typeIcon={volei:'🏐',churrasco:'🍖',viagem:'🚗',aniversario:'🎂',jogos:'🎮',outro:'🎉'};
+function renderEvents(){
+ const cat=$('categoryFilter').value;
+ const events=[...allEvents.values()].filter(e=>cat==='all'||e.category===cat);
+ const dates=new Map();
+ for(const ev of events){const key=typeof ev.datetime==='string'?ev.datetime.slice(0,10):'';if(key.length!==10)continue;if(!dates.has(key))dates.set(key,[]);dates.get(key).push(ev)}
+ $('eventCount').textContent=events.length+' evento(s)';
+ $('monthTitle').textContent=new Date(viewYear,viewMonth,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+ const grid=$('calendarGrid');grid.replaceChildren();
+ const offset=(new Date(viewYear,viewMonth,1).getDay()+6)%7;
+ const total=new Date(viewYear,viewMonth+1,0).getDate();
+ const cells=Math.ceil((offset+total)/7)*7;
+ for(let idx=0;idx<cells;idx++){
+  const d=new Date(viewYear,viewMonth,idx-offset+1);
+  const key=keyDay(d.getFullYear(),d.getMonth(),d.getDate());
+  const daily=dates.get(key)||[];
+  const btn=document.createElement('button');btn.type='button';btn.className='calendar-day';
+  if(d.getMonth()!==viewMonth)btn.classList.add('other-month');
+  if(key===todayKey())btn.classList.add('is-today');
+  if(key===selectedDay)btn.classList.add('is-selected');
+  btn.setAttribute('aria-label',dayLabel(key)+', '+daily.length+' evento(s)');
+  btn.setAttribute('aria-pressed',String(key===selectedDay));
+  const num=document.createElement('span');num.className='day-number';num.textContent=d.getDate();btn.append(num);
+  if(daily.length){const dots=document.createElement('span');dots.className='calendar-dots';for(const ev of daily.slice(0,3)){const dot=document.createElement('span');dot.className='calendar-dot';dot.title=ev.location||'Evento';dots.append(dot)}btn.append(dots);if(daily.length>3){const count=document.createElement('span');count.className='calendar-event-count';count.textContent='+'+(daily.length-3);btn.append(count)}}
+  btn.onclick=()=>{selectedDay=key;viewYear=d.getFullYear();viewMonth=d.getMonth();renderEvents()};
+  grid.append(btn);
+ }
+ $('selectedDayTitle').textContent=dayLabel(selectedDay);
+ const daily=(dates.get(selectedDay)||[]).sort((a,b)=>String(a.datetime||'').localeCompare(String(b.datetime||'')));
+ $('selectedDayCount').textContent=daily.length+' evento(s)';
+ $('eventList').replaceChildren();
+ if(!daily.length){const e=document.createElement('div');e.className='panel muted';e.textContent='Nenhum rolê marcado neste dia.';$('eventList').append(e);return}
+ for(const ev of daily){const c=document.createElement('article');c.className='event panel';c.tabIndex=0;c.setAttribute('role','button');c.innerHTML='<span class="tag '+(ev.visibility==='private'?'private':'')+'">'+(ev.visibility==='private'?'🔒 Privado':'🌐 Aberto')+'</span><h3>'+(typeIcon[ev.category]||'🎉')+' '+safe(ev.location||'Sem título')+'</h3><p class="muted">'+safe(ev.address||'Local a definir')+'</p><p>'+safe(ev.datetime?.slice(11,16)||'Horário a definir')+'</p><p class="muted">👥 '+(ev.participants?.length||0)+' confirmado(s)</p>';c.onclick=()=>openEvent(ev.id);c.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openEvent(ev.id)}};$('eventList').append(c)}
+}
+$('monthPrev').onclick=()=>{const d=new Date(viewYear,viewMonth-1,1);viewYear=d.getFullYear();viewMonth=d.getMonth();selectedDay=keyDay(viewYear,viewMonth,1);renderEvents()};
+$('monthNext').onclick=()=>{const d=new Date(viewYear,viewMonth+1,1);viewYear=d.getFullYear();viewMonth=d.getMonth();selectedDay=keyDay(viewYear,viewMonth,1);renderEvents()};
+$('monthToday').onclick=()=>{selectedDay=todayKey();viewYear=Number(selectedDay.slice(0,4));viewMonth=Number(selectedDay.slice(5,7))-1;renderEvents()};
+$('categoryFilter').onchange=renderEvents;
+function openEvent(id){event=allEvents.get(id);if(!event)return toast('Evento indisponível ou sem autorização');renderDetail();page('detalhe')}
+function renderDetail(){const e=event;if(!e)return;$('detailTitle').textContent=e.location||'Evento';$('detailPrivacy').textContent=e.visibility==='private'?'🔒 Privado':'🌐 Aberto';$('detailMeta').textContent=(e.datetime||'').replace('T',' ')+' · '+(e.address||'');$('detailCost').textContent='Custo fixo: '+money(e.totalCost);const joined=(e.participants||[]).some(p=>p.entryId===me.uid);$('join').textContent=joined?'Sair da lista':'Confirmar presença';$('presenceList').innerHTML=(e.participants||[]).map(p=>'<div class="sub">👤 '+safe(p.name)+' '+(p.paid?'✅ Pago':'')+'</div>').join('')||'<p class="muted">Sem confirmações</p>';$('expenses').innerHTML=(e.receipts||[]).map(x=>'<div class="sub">'+safe(x.title||x.name||'Despesa')+' — '+money(x.value)+'</div>').join('');$('expenseTotal').textContent='Total: '+money(Number(e.totalCost||0)+(e.receipts||[]).reduce((a,x)=>a+Number(x.value||0),0));$('checklist').innerHTML=(e.checklist||[]).map(x=>'<div class="sub">✅ '+safe(typeof x==='string'?x:(x.name||x.item||x.title||'Item'))+'</div>').join('');permissions()}
+$('join').onclick=async()=>{if(!event)return;const old=(event.participants||[]).find(x=>x.entryId===me.uid);try{await updateDoc(doc(db,'volei_events',event.id),{participants:old?arrayRemove(old):arrayUnion({entryId:me.uid,name:profile.displayName,paid:false,churras:true,joinedAt:new Date().toISOString()})});toast(old?'Presença cancelada':'Presença confirmada!')}catch(e){console.error(e);toast('Não foi possível alterar presença')}};
+$('copyEvent').onclick=async()=>{const url=location.origin+location.pathname+'?evento='+encodeURIComponent(event.id);try{await navigator.clipboard.writeText(url);toast('Link copiado!')}catch(e){toast(url)}};
+$('deleteEvent').onclick=async()=>{if(!manager()||!event||!confirm('Excluir este evento definitivamente?'))return;try{await deleteDoc(doc(db,'volei_events',event.id));event=null;page('agenda');toast('Evento excluído')}catch(e){toast('Falha ao excluir')}};
+$('expenseForm').onsubmit=async e=>{e.preventDefault();if(!manager()||!event)return;try{await updateDoc(doc(db,'volei_events',event.id),{receipts:arrayUnion({title:$('expenseName').value.trim(),value:Number($('expenseValue').value),by:profile.displayName})});e.target.reset()}catch(x){toast('Não foi possível adicionar despesa')}};
+$('checklistForm').onsubmit=async e=>{e.preventDefault();if(!manager()||!event)return;try{await updateDoc(doc(db,'volei_events',event.id),{checklist:arrayUnion({name:$('checklistName').value.trim(),responsible:''})});e.target.reset()}catch(x){toast('Não foi possível adicionar item')}};
+function listenApprovedUsers(){const q=query(collection(db,'users'),where('status','==','approved'));const stop=onSnapshot(q,s=>{userMap.clear();s.forEach(d=>userMap.set(d.id,{id:d.id,...d.data()}));renderInvitees()},e=>console.warn(e));unsubs.push(stop)}
+function renderInvitees(){$('inviteeList').innerHTML='';for(const u of userMap.values()){if(u.id===me.uid)continue;const label=document.createElement('label');label.className='checkrow';const c=document.createElement('input');c.type='checkbox';c.value=u.id;c.className='invitee';label.append(c,document.createTextNode(u.displayName||u.email));$('inviteeList').appendChild(label)}}
+$('visibility').onchange=()=>$('inviteeWrap').classList.toggle('hidden',$('visibility').value!=='private');
+$('eventForm').onsubmit=async e=>{e.preventDefault();if(!manager())return;const cat=$('eventCategory').value,visibility=$('visibility').value,invitedUids=[...document.querySelectorAll('.invitee:checked')].map(x=>x.value);const id=crypto.randomUUID().replaceAll('-','').slice(0,16).toUpperCase();const data={category:cat,location:$('eventName').value.trim(),address:$('eventPlace').value.trim(),datetime:$('eventDate').value,totalCost:Number($('eventCost').value||0),visibility,invitedUids,createdBy:me.uid,participants:[],scoreA:0,scoreB:0,setsA:0,setsB:0,receipts:[],cars:[],itinerary:[],checklist:[],groupLink:'',playerLimit:0,createdAt:new Date().toISOString()};try{await setDoc(doc(db,'volei_events',id),data);e.target.reset();$('inviteeWrap').classList.add('hidden');page('agenda');toast('Rolê criado! 🎉')}catch(e){console.error(e);toast('Falha ao criar evento. Verifique as permissões.')}};
+$('generateInvite').onclick=async()=>{if(!boss())return;const token=crypto.randomUUID().replaceAll('-','')+crypto.randomUUID().replaceAll('-','');const expiry=new Date(Date.now()+7*24*3600*1000);try{const {Timestamp}=await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');await setDoc(doc(db,'registrationInvites',token),{active:true,createdBy:me.uid,createdAt:serverTimestamp(),expiresAt:Timestamp.fromDate(expiry)});const url=location.origin+location.pathname+'?convite='+token;$('inviteUrl').value=url;$('inviteOutput').classList.remove('hidden');toast('Convite gerado')}catch(e){console.error(e);toast('Falha ao gerar convite. Confira as regras Firestore.')}};
+$('copyInvite').onclick=async()=>{try{await navigator.clipboard.writeText($('inviteUrl').value);toast('Convite copiado!')}catch(e){toast('Copie o texto do campo')}};
+$('migrateLegacy').onclick=async()=>{
+ if(!boss())return;
+ const old=[...allEvents.values()].filter(e=>!e.visibility);
+ if(!old.length)return toast('Todos os eventos já estão no formato novo.');
+ if(!confirm('Atualizar '+old.length+' evento(s) antigo(s) para aberto aos membros aprovados?'))return;
+ let done=0;
+ for(const e of old){try{await updateDoc(doc(db,'volei_events',e.id),{visibility:'open',invitedUids:[],createdBy:me.uid});done++}catch(x){console.error(x)}}
+ toast(done+' de '+old.length+' eventos atualizados.');
+};
+function listenUsers(){const stop=onSnapshot(collection(db,'users'),s=>{const pending=[],members=[];s.forEach(d=>{const v={id:d.id,...d.data()};(v.status==='pending'?pending:members).push(v)});drawUsers('pendingUsers',pending);drawUsers('members',members)},e=>{console.error(e);toast('Não foi possível listar usuários')});unsubs.push(stop)}
+function drawUsers(id,users){$(id).innerHTML='';if(!users.length){$(id).innerHTML='<p class="muted">Nenhum registro.</p>';return}for(const u of users){const d=document.createElement('div');d.className='sub';const label=document.createElement('div');label.textContent=(u.displayName||u.email)+' · '+u.email+' · '+u.status+' · '+u.role;d.append(label);if(u.role!=='super_admin'){const row=document.createElement('div');row.className='row';for(const [text,status,role] of u.status==='pending'?[['✅ Aprovar','approved','member'],['❌ Recusar','rejected','member']]:[['Membro','approved','member'],['Diretor','approved','director'],['Bloquear','blocked',u.role]]){const b=document.createElement('button');b.className='small '+(status==='blocked'||status==='rejected'?'danger':'secondary');b.textContent=text;b.onclick=()=>changeUser(u,status,role);row.append(b)}d.append(row)}$(id).append(d)}}
+async function changeUser(u,status,role){if(!boss()||u.id===me.uid)return;if(role==='director'&&u.role!=='director'){const count=[...document.querySelectorAll('#members .sub')].filter(x=>x.textContent.includes(' · director')).length;if(count>=3)return toast('Limite de três Diretores atingido.');if(!confirm('Dar permissão de Diretoria para '+u.displayName+'?'))return;}try{await updateDoc(doc(db,'users',u.id),{role,status,approvedAt:serverTimestamp(),approvedBy:me.uid});toast('Usuário atualizado')}catch(e){console.error(e);toast('Falha ao atualizar usuário')}}
+const eventParam=new URLSearchParams(location.search).get('evento');
+if(eventParam){const check=setInterval(()=>{if(profile?.status==='approved'){clearInterval(check);if(allEvents.has(eventParam))openEvent(eventParam);else setTimeout(()=>{if(allEvents.has(eventParam))openEvent(eventParam)},1000)}},500);setTimeout(()=>clearInterval(check),10000)}
+</script><script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).catch(()=>{});}</script></body></html>

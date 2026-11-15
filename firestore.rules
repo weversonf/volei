@@ -1,0 +1,106 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signed() { return request.auth != null; }
+    function owner() {
+      return signed() && request.auth.token.email == 'weversonf@gmail.com' &&
+        request.auth.token.email_verified == true;
+    }
+    function profile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    function active() {
+      return signed() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        profile().status == 'approved' && request.auth.token.email_verified == true;
+    }
+    function boss() { return active() && profile().role == 'super_admin'; }
+    function director() {
+      return active() && (profile().role == 'super_admin' || profile().role == 'director');
+    }
+    function validInvite(id) {
+      return id is string && id.size() >= 24 &&
+        exists(/databases/$(database)/documents/registrationInvites/$(id)) &&
+        get(/databases/$(database)/documents/registrationInvites/$(id)).data.active == true &&
+        get(/databases/$(database)/documents/registrationInvites/$(id)).data.expiresAt > request.time;
+    }
+    match /users/{uid} {
+      allow get: if signed() && (request.auth.uid == uid || boss() || (active() && resource.data.status == 'approved'));
+      allow list: if boss() || (active() && resource.data.status == 'approved');
+      allow create: if signed() && request.auth.uid == uid &&
+        request.resource.data.email == request.auth.token.email &&
+        request.resource.data.keys().hasOnly(['displayName','email','role','status','inviteId','createdAt']) &&
+        request.resource.data.displayName is string &&
+        request.resource.data.displayName.size() > 0 &&
+        request.resource.data.createdAt == request.time &&
+        (
+          (owner() && request.resource.data.role == 'super_admin' &&
+             request.resource.data.status == 'approved' &&
+             request.resource.data.inviteId == '') ||
+          (request.resource.data.role == 'member' &&
+             request.resource.data.status == 'pending' &&
+             validInvite(request.resource.data.inviteId))
+        );
+      allow update: if boss() && uid != request.auth.uid &&
+        resource.data.role != 'super_admin' &&
+        request.resource.data.role in ['member','director'] &&
+        request.resource.data.status in ['pending','approved','rejected','blocked'] &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['role','status','approvedAt','approvedBy']) &&
+        (request.resource.data.status != 'approved' || (request.resource.data.approvedBy == request.auth.uid &&
+           request.resource.data.approvedAt == request.time));
+      allow delete: if false;
+    }
+    match /registrationInvites/{token} {
+      allow read: if boss();
+      allow create: if boss() && token.size() >= 24 &&
+        request.resource.data.keys().hasOnly(['active','createdBy','createdAt','expiresAt']) &&
+        request.resource.data.active == true &&
+        request.resource.data.createdBy == request.auth.uid &&
+        request.resource.data.createdAt == request.time &&
+        request.resource.data.expiresAt > request.time &&
+        request.resource.data.expiresAt <= request.time + duration.value(14, 'd');
+      allow update: if boss() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['active']) &&
+        request.resource.data.active == false;
+      allow delete: if false;
+    }
+    match /volei_events/{eventId} {
+      function canRead() {
+        return active() && (
+          director() ||
+          resource.data.get('visibility', 'open') == 'open' ||
+          (resource.data.get('visibility', '') == 'private' &&
+            request.auth.uid in resource.data.get('invitedUids', []))
+        );
+      }
+      allow get: if canRead();
+      allow list: if canRead();
+      allow create: if director() &&
+        request.resource.data.visibility in ['open','private'] &&
+        request.resource.data.createdBy == request.auth.uid &&
+        request.resource.data.invitedUids is list;
+      function safeAttendanceChange() {
+        let oldList = resource.data.get('participants', []);
+        let newList = request.resource.data.participants;
+        let added = newList.removeAll(oldList);
+        let removed = oldList.removeAll(newList);
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
+          newList is list &&
+          (
+            (newList.size() == oldList.size() + 1 &&
+              newList.hasAll(oldList) &&
+              added.size() == 1 &&
+              added[0].entryId == request.auth.uid &&
+              added[0].paid == false) ||
+            (oldList.size() == newList.size() + 1 &&
+              oldList.hasAll(newList) &&
+              removed.size() == 1 &&
+              removed[0].entryId == request.auth.uid)
+          );
+      }
+      allow update: if director() || (canRead() && safeAttendanceChange());
+      allow delete: if director();
+    }
+    match /{path=**} { allow read, write: if false; }
+  }
+}
