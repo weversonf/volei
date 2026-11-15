@@ -38,3 +38,7 @@ Branch `feature/auth-convites-aprovacao`, `index.html`, `firestore.rules`, `fire
 8. Super Admin: promover no máximo três diretores na UI (regra robusta de cota requer backend).
 9. Conta bloqueada: revogação de acesso confirmada.
 10. Migrar evento legado em cópia de teste e revalidar todas as funcionalidades.
+
+## Preview Vercel
+- Commit de documentação para acionar a integração Git/Vercel nesta branch de homologação, sem modificar a branch main.
+- Confirmar na aba Deployments se a Vercel criou o Preview; caso contrário, verificar acesso da integração ao repositório.
