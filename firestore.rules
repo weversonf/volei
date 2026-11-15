@@ -79,8 +79,26 @@ service cloud.firestore {
         request.resource.data.visibility in ['open','private'] &&
         request.resource.data.createdBy == request.auth.uid &&
         request.resource.data.invitedUids is list;
-      allow update: if director() ||
-        (canRead() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']));
+      function safeAttendanceChange() {
+        let oldList = resource.data.get('participants', []);
+        let newList = request.resource.data.participants;
+        let added = newList.removeAll(oldList);
+        let removed = oldList.removeAll(newList);
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participants']) &&
+          newList is list &&
+          (
+            (newList.size() == oldList.size() + 1 &&
+              newList.hasAll(oldList) &&
+              added.size() == 1 &&
+              added[0].entryId == request.auth.uid &&
+              added[0].paid == false) ||
+            (oldList.size() == newList.size() + 1 &&
+              oldList.hasAll(newList) &&
+              removed.size() == 1 &&
+              removed[0].entryId == request.auth.uid)
+          );
+      }
+      allow update: if director() || (canRead() && safeAttendanceChange());
       allow delete: if director();
     }
     match /{path=**} { allow read, write: if false; }
